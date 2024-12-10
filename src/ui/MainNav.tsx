@@ -2,28 +2,49 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { HiOutlineCalendarDays, HiOutlineHome } from "react-icons/hi2";
 import { FaUsers } from "react-icons/fa6";
+import ToggleButton from "./ToggleButton.tsx";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store.ts";
+
+interface NavProps {
+  isCollapsed: boolean;
+}
+
+const StyledNav = styled.nav<NavProps>`
+  position: relative;
+  width: ${(props) => (props.isCollapsed ? "0" : "fit-content")};
+  transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 4rem;
+`;
 
 const NavList = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  margin-top: 2rem;
 `;
 
-const StyledNavLink = styled(NavLink)`
+const StyledNavLink = styled(NavLink)<NavProps>`
   &:link,
   &:visited {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    width: 100%;
+    gap: ${(props) => (props.isCollapsed ? "0" : "1.2rem")};
 
     color: var(--color-grey-600);
     font-size: 1.6rem;
     font-weight: 500;
-    padding: 1.2rem 2.4rem;
+    padding: 1.2rem ${(props) => (props.isCollapsed ? "1rem" : "2.4rem")};
     transition: all 0.3s;
+    justify-content: ${(props) =>
+      props.isCollapsed ? "center" : "flex-start"};
   }
 
-  /* This works because react-router places the active class on the active NavLink */
   &:hover,
   &:active,
   &.active:link,
@@ -46,61 +67,40 @@ const StyledNavLink = styled(NavLink)`
   &.active:visited svg {
     color: var(--color-brand-600);
   }
-`;
-const StyledImageBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 5rem 0;
-  gap: 0.5rem;
-`;
 
-const StyledImage = styled.img`
-  width: 50%; /* Limits image width to half of the container width */
-  max-width: 10rem; /* Ensures it doesn't grow too large */
-  height: auto; /* Maintains aspect ratio */
-  object-fit: contain; /* Ensures image fits nicely within the bounds */
-`;
-
-const StyledText = styled.p`
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #333;
+  span {
+    display: ${(props) => (props.isCollapsed ? "none" : "inline")};
+    transition: all 0.3s;
+  }
 `;
 
 function MainNav() {
+  const isCollapsed = useSelector((state: RootState) => state.app.isCollapsed);
+
   return (
-    <nav>
+    <StyledNav isCollapsed={isCollapsed}>
+      <ToggleButton />
       <NavList>
         <li>
-          <NavLink to="/">
-            <StyledImageBox>
-              <StyledImage src="/inventory.png" alt="Logo" />
-              <StyledText> Inventory system</StyledText>
-            </StyledImageBox>
-          </NavLink>
-        </li>
-        <li>
-          <StyledNavLink to="/dashboard">
+          <StyledNavLink to="/dashboard" isCollapsed={isCollapsed}>
             <HiOutlineHome />
             <span>Home</span>
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/devices">
+          <StyledNavLink to="/devices" isCollapsed={isCollapsed}>
             <HiOutlineCalendarDays />
             <span>Devices</span>
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/employees">
+          <StyledNavLink to="/employees" isCollapsed={isCollapsed}>
             <FaUsers />
             <span>Employees</span>
           </StyledNavLink>
         </li>
       </NavList>
-    </nav>
+    </StyledNav>
   );
 }
 

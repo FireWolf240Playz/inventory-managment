@@ -2,10 +2,17 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import styled from "styled-components";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store.ts";
 
-const StyledAppLayout = styled.div`
+interface StyledAppLayoutProps {
+  isCollapsed: boolean;
+}
+
+const StyledAppLayout = styled.div<StyledAppLayoutProps>`
   display: grid;
-  grid-template-columns: 26rem 1fr;
+  grid-template-columns: ${(props) =>
+    props.isCollapsed ? "6rem 1fr" : "26rem 1fr"};
   grid-template-rows: auto 1fr;
   height: 100vh;
 `;
@@ -25,8 +32,9 @@ const Container = styled.div`
 `;
 
 function AppLayout() {
+  const isCollapsed = useSelector((state: RootState) => state.app.isCollapsed);
   return (
-    <StyledAppLayout>
+    <StyledAppLayout isCollapsed={isCollapsed}>
       <Header />
       <Sidebar />
       <Main>

@@ -4,7 +4,7 @@ import styled from "styled-components";
 
 import { HiArrowLeftOnRectangle } from "react-icons/hi2";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { FaRegUser } from "react-icons/fa";
+import { HiOutlineUser } from "react-icons/hi";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
 
 interface NavItemProps {
@@ -25,8 +25,7 @@ const AvatarContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  border-radius: 1rem;
-  color: white;
+  color: #3333;
 `;
 
 const AvatarWrapper = styled.div`
@@ -43,7 +42,7 @@ const AvatarWrapper = styled.div`
     height: 4rem;
     color: white;
     border-radius: 50%;
-    background-color: var(--color-silver-700);
+    background-color: var(--color-indigo-700);
     font-size: 1.2rem;
   }
 
@@ -54,27 +53,39 @@ const AvatarWrapper = styled.div`
   }
 `;
 
+const IconWrapper = styled.span`
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+`;
+
 const DropdownMenu = styled.ul`
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 0.2rem;
   width: fit-content;
+  color: #333;
+  background-color: #ececec;
 
-  background-color: var(--color-indigo-700);
-
-  border: 1px solid var(--color-silver-100: #374151;);
+  border-radius: 1rem;
 
   box-shadow: var(--shadow-lg);
   z-index: 100;
 
   li {
-    padding: 1.75rem 2rem;
+    padding: 1rem 2rem;
     cursor: pointer;
 
     &:hover {
       background-color: var(--color-indigo-100);
-      color: #333;
     }
 
     a {
@@ -104,7 +115,9 @@ const DropdownMenu = styled.ul`
 const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, path }) => (
   <li>
     <Link to={path}>
-      <Icon className="icon" />
+      <IconWrapper>
+        <Icon />
+      </IconWrapper>
       <span className="label">{label}</span>
     </Link>
   </li>
@@ -114,7 +127,7 @@ function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navItems = [
-    { icon: FaRegUser, label: "Account", path: "/account" },
+    { icon: HiOutlineUser, label: "Account", path: "/account" },
     { icon: HiArrowLeftOnRectangle, label: "Log out", path: "/login" },
   ];
   //
