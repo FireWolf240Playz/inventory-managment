@@ -12,7 +12,7 @@ function Devices() {
 
   return (
     <Modal>
-      <Row type={width !== null && width < 700 ? "vertical" : "horizontal"}>
+      <Row type={width !== null && width < 800 ? "vertical" : "horizontal"}>
         <Heading as="h1">All devices</Heading>
 
         <Filter
@@ -29,7 +29,7 @@ function Devices() {
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button
             style={{
-              width: width !== null && width < 700 ? "100%" : "fit-content",
+              width: width !== null && width < 800 ? "100%" : "fit-content",
             }}
           >
             Add device
