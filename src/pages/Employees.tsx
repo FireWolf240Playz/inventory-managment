@@ -4,8 +4,10 @@ import EmployeesTable from "../features/employees/EmployeeTable.tsx";
 import Modal from "../ui/Modal.tsx";
 import Button from "../ui/Button.tsx";
 import CreateEmployee from "../features/employees/CreateEmployee.tsx";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 function Employees() {
+  const { width } = useWindowSize();
   return (
     <Modal>
       <Row>
@@ -16,7 +18,7 @@ function Employees() {
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button
             style={{
-              width: "fit-content",
+              width: width !== null && width < 700 ? "100%" : "fit-content",
             }}
           >
             Add employee

@@ -3,10 +3,9 @@ import React, { ReactNode } from "react";
 
 const StyledFormRow = styled.div`
   display: grid;
-  align-items: center;
   grid-template-columns: 24rem 1fr 1.2fr;
+  align-items: center;
   gap: 2.4rem;
-
   padding: 1.2rem 0;
 
   &:first-child {
@@ -22,9 +21,16 @@ const StyledFormRow = styled.div`
   }
 
   &:has(button) {
-    display: flex;
-    justify-content: flex-end;
+    /* Styles when a button is present */
+    flex-direction: row;
     gap: 1.2rem;
+  }
+
+  @media (max-width: 720px) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
   }
 `;
 

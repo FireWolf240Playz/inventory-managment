@@ -9,6 +9,9 @@ const StyledFilter = styled.div`
   padding: 0.4rem;
   display: flex;
   gap: 0.4rem;
+  @media (max-width: 740px) {
+    flex-direction: column;
+  }
 `;
 
 interface FilterButtonProps {

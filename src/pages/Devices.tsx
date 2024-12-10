@@ -5,11 +5,14 @@ import Filter from "../ui/Filter.tsx";
 import Modal from "../ui/Modal.tsx";
 import Button from "../ui/Button.tsx";
 import CreateDevice from "../features/devices/CreateDevice.tsx";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 function Devices() {
+  const { width } = useWindowSize();
+
   return (
     <Modal>
-      <Row type="horizontal">
+      <Row type={width !== null && width < 700 ? "vertical" : "horizontal"}>
         <Heading as="h1">All devices</Heading>
 
         <Filter
@@ -26,7 +29,7 @@ function Devices() {
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button
             style={{
-              width: "fit-content",
+              width: width !== null && width < 700 ? "100%" : "fit-content",
             }}
           >
             Add device

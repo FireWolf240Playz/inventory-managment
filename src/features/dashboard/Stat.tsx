@@ -13,6 +13,13 @@ const StyledStat = styled.div`
   grid-template-rows: auto auto;
   column-gap: 1.6rem;
   row-gap: 0.4rem;
+
+  @media (max-width: 800px) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 interface IconProps {
@@ -36,16 +43,23 @@ const Icon = styled.div<IconProps>`
   }
 `;
 const Title = styled.h5`
-  align-self: end;
   font-size: 1.3rem;
   text-transform: uppercase;
-  font-weight: 700; /* Explicit numeric value for bold */
-  color: var(--color-grey-700); /* Higher contrast color */
+  font-weight: 700;
+  color: var(--color-grey-700);
+  @media (max-width: 1200px) {
+    font-weight: 600;
+    font-size: 1.3rem;
+  }
 `;
 
 const Value = styled.p`
   font-size: 2rem;
   line-height: 1;
+  @media (max-width: 1200px) {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
 `;
 
 interface StatProps {

@@ -29,6 +29,11 @@ const StyledHeader = styled(CommonRow)`
   letter-spacing: 0.4px;
   font-weight: 600;
   color: var(--color-grey-600);
+
+  /* Hide header on small screens */
+  @media (max-width: 800px) {
+    display: none;
+  }
 `;
 
 const StyledRow = styled(CommonRow)`
@@ -36,6 +41,36 @@ const StyledRow = styled(CommonRow)`
 
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-grey-100);
+  }
+
+  /* Responsive stacking on small screens */
+  @media (max-width: 800px) {
+    display: block;
+    padding: 1.2rem;
+
+    > div {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-grey-100);
+      padding: 0.8rem 0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      /* Display the label from data-label attribute */
+      &::before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 1rem;
+        color: var(--color-grey-600);
+        text-transform: uppercase;
+        /* Show labels only on small screens */
+        @media (min-width: 801px) {
+          content: "";
+        }
+      }
+    }
   }
 `;
 
@@ -49,7 +84,6 @@ const Footer = styled.footer`
   justify-content: center;
   padding: 1.2rem;
 
-  /* Hide footer when no child elements are present */
   &:not(:has(*)) {
     display: none;
   }

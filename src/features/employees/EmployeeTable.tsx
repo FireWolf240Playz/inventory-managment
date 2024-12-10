@@ -1,6 +1,10 @@
-import EmployeeTableRow from "./EmployeeTableRow.tsx";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
+
+import Modal from "../../ui/Modal.tsx";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
+import CreateEmployeeForm from "./CreateEmployee.tsx";
 
 interface Employee {
   employeeId: string;
@@ -43,7 +47,51 @@ function EmployeesTable() {
         <Table.Body
           data={employees}
           render={(employee) => (
-            <EmployeeTableRow employee={employee} key={employee.employeeId} />
+            <Table.Row key={employee.employeeId}>
+              <div data-label="ID:">{employee.employeeId}</div>
+              <div data-label="Employee Name:">{employee.employeeName}</div>
+              <div data-label="Location:">
+                <span>{employee.location}</span>
+              </div>
+              <div data-label="Assigned devices:">
+                {employee.assignedDevices ?? "Unassigned"}
+              </div>
+
+              <div data-label="Actions:">
+                <Modal>
+                  <Menus.Menu>
+                    <Menus.Toggle id={employee.employeeId} />
+
+                    <Menus.List id={employee.employeeId}>
+                      <Menus.Button icon={<HiSquare2Stack />}>
+                        Duplicate
+                      </Menus.Button>
+
+                      <Modal.Open opens="edit">
+                        <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+                      </Modal.Open>
+
+                      <Modal.Open opens="delete">
+                        <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
+                      </Modal.Open>
+                    </Menus.List>
+
+                    <Modal.Window name="edit">
+                      <CreateEmployeeForm employeeToEdit={employee} />
+                    </Modal.Window>
+
+                    <Modal.Window name="delete">
+                      <ConfirmDelete
+                        resourceName="employees"
+                        disabled={false}
+                        onConfirm={() => console.log("delete")}
+                        onCloseModal={() => console.log("delete")}
+                      />
+                    </Modal.Window>
+                  </Menus.Menu>
+                </Modal>
+              </div>
+            </Table.Row>
           )}
         />
       </Table>
