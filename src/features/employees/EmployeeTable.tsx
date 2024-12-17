@@ -54,7 +54,7 @@ function EmployeesTable() {
                 <span>{employee.location}</span>
               </div>
               <div data-label="Assigned devices:">
-                {employee.assignedDevices ?? "Unassigned"}
+                {employee.assignedDevices ?? "No devices"}
               </div>
 
               <div data-label="Actions:">
