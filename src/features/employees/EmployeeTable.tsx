@@ -21,13 +21,10 @@ interface Employee {
 }
 
 function EmployeesTable() {
-  // Redux state for advanced sidebar
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebar,
   );
   const dispatch = useDispatch();
-
-  // For URL-based filtering
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Simulated data
@@ -50,15 +47,7 @@ function EmployeesTable() {
     },
   ];
 
-  // Build unique filter options
-  const departments = Array.from(new Set(employees.map((e) => e.department)));
-  const roles = Array.from(new Set(employees.map((e) => e.role)));
-  const employeeNames = Array.from(
-    new Set(employees.map((e) => e.employeeName)),
-  );
-  const employeeIds = Array.from(new Set(employees.map((e) => e.employeeId)));
-
-  // Current filters from the URL (or undefined if not present)
+  // Extract filters from URL
   const getCurrentFilters = (): Partial<Employee> => {
     const department = searchParams.get("department") || undefined;
     const employeeName = searchParams.get("employeeName") || undefined;
@@ -67,11 +56,33 @@ function EmployeesTable() {
     return { department, employeeName, employeeId, role };
   };
 
-  // Handler: apply new filters (update URL parameters)
+  const currentFilters = getCurrentFilters();
+
+  // Filter employees
+  const filteredEmployees = employees.filter((emp) => {
+    if (
+      currentFilters.department &&
+      emp.department !== currentFilters.department
+    )
+      return false;
+    if (
+      currentFilters.employeeName &&
+      emp.employeeName !== currentFilters.employeeName
+    )
+      return false;
+    if (
+      currentFilters.employeeId &&
+      emp.employeeId !== currentFilters.employeeId
+    )
+      return false;
+    if (currentFilters.role && emp.role !== currentFilters.role) return false;
+
+    return true;
+  });
+
+  // Handlers to apply or clear filters
   const handleApplyFilters = (filters: Partial<Employee>) => {
     const params: Record<string, string> = {};
-
-    // Add to params if not "all" or undefined
     if (filters.department && filters.department !== "all") {
       params.department = filters.department;
     }
@@ -84,46 +95,14 @@ function EmployeesTable() {
     if (filters.role && filters.role !== "all") {
       params.role = filters.role;
     }
-
     setSearchParams(params);
-    // Optionally close the sidebar after applying
     dispatch(setAdvancedFilterSidebarState(false));
   };
 
-  // Handler: clear filters (remove from URL parameters)
   const handleClearFilters = () => {
     setSearchParams({});
-    // Optionally close the sidebar after clearing
     dispatch(setAdvancedFilterSidebarState(false));
   };
-
-  const currentFilters = getCurrentFilters();
-
-  const filteredEmployees = employees.filter((emp) => {
-    if (
-      currentFilters.department &&
-      emp.department !== currentFilters.department
-    ) {
-      return false;
-    }
-    if (
-      currentFilters.employeeName &&
-      emp.employeeName !== currentFilters.employeeName
-    ) {
-      return false;
-    }
-    if (
-      currentFilters.employeeId &&
-      emp.employeeId !== currentFilters.employeeId
-    ) {
-      return false;
-    }
-    if (currentFilters.role && emp.role !== currentFilters.role) {
-      return false;
-    }
-
-    return true; // If all checks passed, this employee remains in the array
-  });
 
   return (
     <>
@@ -133,48 +112,52 @@ function EmployeesTable() {
           isOpen={isCollapsedAdvancedSidebar}
           onClose={() => dispatch(setAdvancedFilterSidebarState(false))}
         >
-          {/* Pass the relevant props to the form */}
           <AdvancedFilterForm
             onApply={handleApplyFilters}
             onClear={handleClearFilters}
-            departments={departments}
-            roles={roles}
-            employeeNames={employeeNames}
-            employeeIds={employeeIds}
+            // Hardcoded options for demo. In real app, generate them dynamically
+            departments={["IT", "HR"]}
+            roles={["Developer", "Manager"]}
+            employeeNames={["John Doe", "Jane Smith"]}
+            employeeIds={["1", "2"]}
           />
         </AdvancedFilterSidebar>
       )}
 
       <Menus>
-        <Table columns="0.6fr 1fr 1fr 2.5fr 1.5fr 1.5fr 0.5fr">
+        {/*
+          columns defines your desktop layout
+          (e.g. ID | Name | Dept | Assign. Devices | Location | Role | Actions).
+          On small screens, the table will stack because of the @media rules.
+        */}
+        <Table columns="0.6fr 1fr 1fr 1.8fr 1.2fr 1fr 0.6fr">
           <Table.Header>
             <div>ID</div>
             <div>Name</div>
-            <div>Location</div>
-            <div>Assigned Devices</div>
             <div>Department</div>
+            <div>Assigned Devices</div>
+            <div>Location</div>
             <div>Role</div>
+            <div>Actions</div>
           </Table.Header>
 
           <Table.Body
-            // For demonstration, we're ignoring the filters in the actual data logic
-            // In a real app, you'd filter or re-fetch data based on these filters
             data={filteredEmployees}
             render={(employee) => (
+              // Each <Table.Row> will become block on small screens
               <Table.Row key={employee.employeeId}>
-                <span data-label="ID:">{employee.employeeId}</span>
-                <span data-label="Employee Name:">{employee.employeeName}</span>
-                <span data-label="Location:">
-                  <span>{employee.location}</span>
-                </span>
-                <span data-label="Assigned devices:">
-                  {(employee.assignedDevices !== null &&
-                    employee.assignedDevices.join(", ")) ||
-                    "No devices"}
-                </span>
-                <span>{employee.department}</span>
-                <span>{employee.role}</span>
-
+                {/*
+                  Use data-label so that on small screens, the pseudo-element
+                  can show "ID:" as a label.
+                */}
+                <div data-label="ID:">{employee.employeeId}</div>
+                <div data-label="Name:">{employee.employeeName}</div>
+                <div data-label="Department:">{employee.department}</div>
+                <div data-label="Assigned Devices:">
+                  {employee.assignedDevices?.join(", ") || "No devices"}
+                </div>
+                <div data-label="Location:">{employee.location}</div>
+                <div data-label="Role:">{employee.role}</div>
                 <div data-label="Actions:">
                   <Modal>
                     <Menus.Menu>

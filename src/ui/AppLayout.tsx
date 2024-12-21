@@ -32,7 +32,9 @@ const Container = styled.div`
 `;
 
 function AppLayout() {
-  const isCollapsed = useSelector((state: RootState) => state.app.isCollapsed);
+  const isCollapsed = useSelector(
+    (state: RootState) => state.app.isCollapsedSidebar,
+  );
   return (
     <StyledAppLayout isCollapsed={isCollapsed}>
       <Header />
