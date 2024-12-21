@@ -36,7 +36,9 @@ const StyledToggleButton = styled.button<{ isCollapsed: boolean }>`
 
 function ToggleButton() {
   const dispatch = useDispatch();
-  const isCollapsed = useSelector((state: RootState) => state.app.isCollapsed);
+  const isCollapsed = useSelector(
+    (state: RootState) => state.app.isCollapsedSidebar,
+  );
   return (
     <StyledToggleButton
       isCollapsed={isCollapsed}

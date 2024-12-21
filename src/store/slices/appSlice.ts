@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AppState {
-  isCollapsed: boolean;
+  isCollapsedSidebar: boolean;
+  isCollapsedAdvancedSidebar: boolean;
 }
 
 const initialState: AppState = {
-  isCollapsed: false,
+  isCollapsedSidebar: false,
+  isCollapsedAdvancedSidebar: false,
 };
 
 const appSlice = createSlice({
@@ -13,14 +15,24 @@ const appSlice = createSlice({
   initialState,
   reducers: {
     toggleSidebar(state) {
-      state.isCollapsed = !state.isCollapsed;
+      state.isCollapsedSidebar = !state.isCollapsedSidebar;
     },
     setSidebarState(state, action: PayloadAction<boolean>) {
-      state.isCollapsed = action.payload;
+      state.isCollapsedAdvancedSidebar = action.payload;
+    },
+    toggleAdvancedFilterSidebar(state) {
+      state.isCollapsedAdvancedSidebar = !state.isCollapsedAdvancedSidebar;
+    },
+    setAdvancedFilterSidebarState(state, action: PayloadAction<boolean>) {
+      state.isCollapsedAdvancedSidebar = action.payload;
     },
   },
 });
 
-export const { toggleSidebar } = appSlice.actions;
+export const {
+  toggleSidebar,
+  toggleAdvancedFilterSidebar,
+  setAdvancedFilterSidebarState,
+} = appSlice.actions;
 
 export default appSlice.reducer;

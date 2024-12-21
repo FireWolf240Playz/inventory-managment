@@ -75,7 +75,9 @@ const StyledNavLink = styled(NavLink)<NavProps>`
 `;
 
 function MainNav() {
-  const isCollapsed = useSelector((state: RootState) => state.app.isCollapsed);
+  const isCollapsed = useSelector(
+    (state: RootState) => state.app.isCollapsedSidebar,
+  );
 
   return (
     <StyledNav isCollapsed={isCollapsed}>

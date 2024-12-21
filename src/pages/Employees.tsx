@@ -5,17 +5,20 @@ import Modal from "../ui/Modal.tsx";
 import Button from "../ui/Button.tsx";
 import CreateEmployee from "../features/employees/CreateEmployee.tsx";
 import { useWindowSize } from "@uidotdev/usehooks";
+import { useDispatch } from "react-redux";
+import { toggleAdvancedFilterSidebar } from "../store/slices/appSlice.ts";
 
 function Employees() {
   const { width } = useWindowSize();
+  const dispatch = useDispatch();
+
   return (
     <Modal>
       <Row>
         <Heading as="h1">All Employees</Heading>
       </Row>
-
-      <Modal.Open opens="createEmployee">
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <Row type={"horizontal"} style={{ justifyContent: "end", gap: "2rem" }}>
+        <Modal.Open opens="createEmployee">
           <Button
             style={{
               width: width !== null && width < 800 ? "100%" : "fit-content",
@@ -23,9 +26,16 @@ function Employees() {
           >
             Add employee
           </Button>
-        </div>
-      </Modal.Open>
-
+        </Modal.Open>
+        <Button
+          style={{
+            width: width !== null && width < 800 ? "100%" : "fit-content",
+          }}
+          onClick={() => dispatch(toggleAdvancedFilterSidebar())}
+        >
+          Advanced filter
+        </Button>
+      </Row>
       <Row>
         <EmployeesTable />
       </Row>
