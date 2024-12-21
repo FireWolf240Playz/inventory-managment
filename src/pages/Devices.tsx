@@ -6,9 +6,12 @@ import Modal from "../ui/Modal.tsx";
 import Button from "../ui/Button.tsx";
 import CreateDevice from "../features/devices/CreateDevice.tsx";
 import { useWindowSize } from "@uidotdev/usehooks";
+import { toggleAdvancedFilterSidebarDevices } from "../store/slices/appSlice.ts";
+import { useDispatch } from "react-redux";
 
 function Devices() {
   const { width } = useWindowSize();
+  const dispatch = useDispatch();
 
   return (
     <Modal>
@@ -25,8 +28,8 @@ function Devices() {
           ]}
         />
       </Row>
-      <Modal.Open opens="createDevice">
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <Row type={"horizontal"} style={{ justifyContent: "end", gap: "2rem" }}>
+        <Modal.Open opens="createDevice">
           <Button
             style={{
               width: width !== null && width < 800 ? "100%" : "fit-content",
@@ -34,8 +37,16 @@ function Devices() {
           >
             Add device
           </Button>
-        </div>
-      </Modal.Open>
+        </Modal.Open>
+        <Button
+          style={{
+            width: width !== null && width < 800 ? "100%" : "fit-content",
+          }}
+          onClick={() => dispatch(toggleAdvancedFilterSidebarDevices())}
+        >
+          Advanced filter
+        </Button>
+      </Row>
       <Row>
         <DevicesTable />
       </Row>

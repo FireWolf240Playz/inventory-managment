@@ -43,7 +43,7 @@ const FilterButton = styled.button<FilterButtonProps>`
   }
 `;
 
-interface Option {
+export interface Option {
   label: string;
   value: string;
 }

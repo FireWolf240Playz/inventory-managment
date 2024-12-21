@@ -1,6 +1,6 @@
-import Form from "./Form";
-import FormRow from "./FormRow";
-import Button from "./Button";
+import Form from "../../ui/Form.tsx";
+import FormRow from "../../ui/FormRow.tsx";
+import Button from "../../ui/Button.tsx";
 import { useState, FormEvent } from "react";
 
 interface Filters {
@@ -19,7 +19,7 @@ interface AdvancedFilterFormProps {
   employeeIds: string[];
 }
 
-const AdvancedFilterForm: React.FC<AdvancedFilterFormProps> = ({
+const AdvancedFilterFormEmployees: React.FC<AdvancedFilterFormProps> = ({
   onApply,
   onClear,
   departments,
@@ -121,4 +121,4 @@ const AdvancedFilterForm: React.FC<AdvancedFilterFormProps> = ({
   );
 };
 
-export default AdvancedFilterForm;
+export default AdvancedFilterFormEmployees;

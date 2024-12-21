@@ -2,37 +2,61 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AppState {
   isCollapsedSidebar: boolean;
-  isCollapsedAdvancedSidebar: boolean;
+  isCollapsedAdvancedSidebarEmployees: boolean;
+  isCollapsedAdvancedSidebarDevices: boolean;
 }
 
 const initialState: AppState = {
   isCollapsedSidebar: false,
-  isCollapsedAdvancedSidebar: false,
+  isCollapsedAdvancedSidebarEmployees: false,
+  isCollapsedAdvancedSidebarDevices: false,
 };
 
 const appSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    // General Sidebar Toggling
     toggleSidebar(state) {
       state.isCollapsedSidebar = !state.isCollapsedSidebar;
     },
     setSidebarState(state, action: PayloadAction<boolean>) {
-      state.isCollapsedAdvancedSidebar = action.payload;
+      state.isCollapsedSidebar = action.payload;
     },
-    toggleAdvancedFilterSidebar(state) {
-      state.isCollapsedAdvancedSidebar = !state.isCollapsedAdvancedSidebar;
+
+    // Employees Advanced Filter Sidebar
+    toggleAdvancedFilterSidebarEmployees(state) {
+      state.isCollapsedAdvancedSidebarEmployees =
+        !state.isCollapsedAdvancedSidebarEmployees;
     },
-    setAdvancedFilterSidebarState(state, action: PayloadAction<boolean>) {
-      state.isCollapsedAdvancedSidebar = action.payload;
+    setAdvancedFilterSidebarStateEmployees(
+      state,
+      action: PayloadAction<boolean>,
+    ) {
+      state.isCollapsedAdvancedSidebarEmployees = action.payload;
+    },
+
+    // Devices Advanced Filter Sidebar
+    toggleAdvancedFilterSidebarDevices(state) {
+      state.isCollapsedAdvancedSidebarDevices =
+        !state.isCollapsedAdvancedSidebarDevices;
+    },
+    setAdvancedFilterSidebarStateDevices(
+      state,
+      action: PayloadAction<boolean>,
+    ) {
+      state.isCollapsedAdvancedSidebarDevices = action.payload;
     },
   },
 });
 
 export const {
   toggleSidebar,
-  toggleAdvancedFilterSidebar,
-  setAdvancedFilterSidebarState,
+  setSidebarState,
+  toggleAdvancedFilterSidebarEmployees,
+  setAdvancedFilterSidebarStateEmployees,
+  toggleAdvancedFilterSidebarDevices,
+  setAdvancedFilterSidebarStateDevices,
 } = appSlice.actions;
 
 export default appSlice.reducer;

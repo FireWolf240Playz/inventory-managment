@@ -8,8 +8,8 @@ import { useSearchParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store.ts";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
-import AdvancedFilterForm from "../../ui/AdvancedFilterForm.tsx";
-import { setAdvancedFilterSidebarState } from "../../store/slices/appSlice.ts";
+import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees.tsx";
+import { setAdvancedFilterSidebarStateEmployees } from "../../store/slices/appSlice.ts";
 
 interface Employee {
   employeeId: string;
@@ -22,7 +22,7 @@ interface Employee {
 
 function EmployeesTable() {
   const isCollapsedAdvancedSidebar = useSelector(
-    (state: RootState) => state.app.isCollapsedAdvancedSidebar,
+    (state: RootState) => state.app.isCollapsedAdvancedSidebarEmployees,
   );
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -96,26 +96,27 @@ function EmployeesTable() {
       params.role = filters.role;
     }
     setSearchParams(params);
-    dispatch(setAdvancedFilterSidebarState(false));
+    dispatch(setAdvancedFilterSidebarStateEmployees(false));
   };
 
   const handleClearFilters = () => {
     setSearchParams({});
-    dispatch(setAdvancedFilterSidebarState(false));
+    dispatch(setAdvancedFilterSidebarStateEmployees(false));
   };
 
   return (
     <>
-      {/* Conditionally render the advanced filter sidebar */}
       {isCollapsedAdvancedSidebar && (
         <AdvancedFilterSidebar
           isOpen={isCollapsedAdvancedSidebar}
-          onClose={() => dispatch(setAdvancedFilterSidebarState(false))}
+          onClose={() =>
+            dispatch(setAdvancedFilterSidebarStateEmployees(false))
+          }
         >
-          <AdvancedFilterForm
+          <AdvancedFilterFormEmployees
             onApply={handleApplyFilters}
             onClear={handleClearFilters}
-            // Hardcoded options for demo. In real app, generate them dynamically
+            //Todo: Will generate them dynamically once the backend is ready
             departments={["IT", "HR"]}
             roles={["Developer", "Manager"]}
             employeeNames={["John Doe", "Jane Smith"]}
@@ -125,11 +126,6 @@ function EmployeesTable() {
       )}
 
       <Menus>
-        {/*
-          columns defines your desktop layout
-          (e.g. ID | Name | Dept | Assign. Devices | Location | Role | Actions).
-          On small screens, the table will stack because of the @media rules.
-        */}
         <Table columns="0.6fr 1fr 1fr 1.8fr 1.2fr 1fr 0.6fr">
           <Table.Header>
             <div>ID</div>
@@ -144,12 +140,7 @@ function EmployeesTable() {
           <Table.Body
             data={filteredEmployees}
             render={(employee) => (
-              // Each <Table.Row> will become block on small screens
               <Table.Row key={employee.employeeId}>
-                {/*
-                  Use data-label so that on small screens, the pseudo-element
-                  can show "ID:" as a label.
-                */}
                 <div data-label="ID:">{employee.employeeId}</div>
                 <div data-label="Name:">{employee.employeeName}</div>
                 <div data-label="Department:">{employee.department}</div>

@@ -6,7 +6,7 @@ import Button from "../ui/Button.tsx";
 import CreateEmployee from "../features/employees/CreateEmployee.tsx";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { useDispatch } from "react-redux";
-import { toggleAdvancedFilterSidebar } from "../store/slices/appSlice.ts";
+import { toggleAdvancedFilterSidebarEmployees } from "../store/slices/appSlice.ts";
 
 function Employees() {
   const { width } = useWindowSize();
@@ -31,7 +31,7 @@ function Employees() {
           style={{
             width: width !== null && width < 800 ? "100%" : "fit-content",
           }}
-          onClick={() => dispatch(toggleAdvancedFilterSidebar())}
+          onClick={() => dispatch(toggleAdvancedFilterSidebarEmployees())}
         >
           Advanced filter
         </Button>
