@@ -29,6 +29,9 @@ function Devices() {
         />
       </Row>
       <Row type={"horizontal"} style={{ justifyContent: "end", gap: "2rem" }}>
+        <div style={{ marginRight: "auto" }}>
+          <Heading as="h2"> Quick actions</Heading>
+        </div>
         <Modal.Open opens="createDevice">
           <Button
             style={{

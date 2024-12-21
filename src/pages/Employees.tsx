@@ -18,6 +18,9 @@ function Employees() {
         <Heading as="h1">All Employees</Heading>
       </Row>
       <Row type={"horizontal"} style={{ justifyContent: "end", gap: "2rem" }}>
+        <div style={{ marginRight: "auto" }}>
+          <Heading as="h2"> Quick actions</Heading>
+        </div>
         <Modal.Open opens="createEmployee">
           <Button
             style={{
