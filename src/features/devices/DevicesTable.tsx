@@ -215,15 +215,15 @@ function DeviceTable() {
             data={filteredDevices}
             render={(device) => (
               <Table.Row key={device.deviceId}>
-                <span data-label="ID:">{device.deviceId}</span>
-                <span data-label="Model:">{device.model}</span>
-                <span data-label="Status:">
+                <div data-label="ID:">{device.deviceId}</div>
+                <div data-label="Model:">{device.model}</div>
+                <div data-label="Status:">
                   <Tag status={device.status} />
-                </span>
-                <span data-label="Assigned To:">
+                </div>
+                <div data-label="Assigned To:">
                   {device.assignedTo || "Unassigned"}
-                </span>
-                <span data-label="Department:">{device.department}</span>
+                </div>
+                <div data-label="Department:">{device.department}</div>
 
                 <div data-label="Actions:">
                   <Modal>
@@ -265,7 +265,7 @@ function DeviceTable() {
                           details={{
                             "Device ID": device.deviceId,
                             Model: device.model,
-                            Status: device.status.toString(), //Will change later
+                            Status: device.status.toString(),
                             "Assigned to": device.assignedTo,
                             Department: device.department,
                           }}

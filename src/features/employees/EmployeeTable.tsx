@@ -150,15 +150,15 @@ function EmployeesTable() {
             data={filteredEmployees}
             render={(employee) => (
               <Table.Row key={employee.employeeId}>
-                <span data-label="ID:">{employee.employeeId}</span>
-                <span data-label="Name:">{employee.employeeName}</span>
-                <span data-label="Department:">{employee.department}</span>
-                <span data-label="Assigned Devices:">
+                <div data-label="ID:">{employee.employeeId}</div>
+                <div data-label="Name:">{employee.employeeName}</div>
+                <div data-label="Department:">{employee.department}</div>
+                <div data-label="Assigned Devices:">
                   {employee.assignedDevices?.join(", ") || "No devices"}
-                </span>
-                <span data-label="Location:">{employee.location}</span>
-                <span data-label="Role:">{employee.role}</span>
-                <span data-label="Actions:">
+                </div>
+                <div data-label="Location:">{employee.location}</div>
+                <div data-label="Role:">{employee.role}</div>
+                <div data-label="Actions:">
                   <Modal>
                     <Menus.Menu>
                       <Menus.Toggle id={employee.employeeId} />
@@ -209,7 +209,7 @@ function EmployeesTable() {
                       </Modal.Window>
                     </Menus.Menu>
                   </Modal>
-                </span>
+                </div>
               </Table.Row>
             )}
           />
