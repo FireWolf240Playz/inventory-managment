@@ -1,6 +1,6 @@
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
-import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
 import AdvancedFilterDevices from "./AdvancedFilterDevices.tsx";
 import { useSearchParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
 import CreateDeviceForm from "./CreateDevice.tsx";
 import { Option } from "../../ui/Filter.tsx";
 import Tag from "../../ui/Tag.tsx";
+import ViewWindow from "../../ui/ViewWindow.tsx";
 
 interface Device {
   deviceId: string;
@@ -214,15 +215,15 @@ function DeviceTable() {
             data={filteredDevices}
             render={(device) => (
               <Table.Row key={device.deviceId}>
-                <div data-label="ID:">{device.deviceId}</div>
-                <div data-label="Model:">{device.model}</div>
-                <div data-label="Status:">
+                <span data-label="ID:">{device.deviceId}</span>
+                <span data-label="Model:">{device.model}</span>
+                <span data-label="Status:">
                   <Tag status={device.status} />
-                </div>
-                <div data-label="Assigned To:">
+                </span>
+                <span data-label="Assigned To:">
                   {device.assignedTo || "Unassigned"}
-                </div>
-                <div data-label="Department:">{device.department}</div>
+                </span>
+                <span data-label="Department:">{device.department}</span>
 
                 <div data-label="Actions:">
                   <Modal>
@@ -241,6 +242,10 @@ function DeviceTable() {
                         <Modal.Open opens="delete">
                           <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
                         </Modal.Open>
+
+                        <Modal.Open opens="view">
+                          <Menus.Button icon={<HiEye />}>View</Menus.Button>
+                        </Modal.Open>
                       </Menus.List>
 
                       <Modal.Window name="edit">
@@ -252,7 +257,18 @@ function DeviceTable() {
                           resourceName="devices"
                           disabled={false}
                           onConfirm={() => console.log("delete")}
-                          onCloseModal={() => console.log("delete")}
+                        />
+                      </Modal.Window>
+
+                      <Modal.Window name="view">
+                        <ViewWindow
+                          details={{
+                            "Device ID": device.deviceId,
+                            Model: device.model,
+                            Status: device.status.toString(), //Will change later
+                            "Assigned to": device.assignedTo,
+                            Department: device.department,
+                          }}
                         />
                       </Modal.Window>
                     </Menus.Menu>

@@ -1,12 +1,13 @@
 import Row from "../ui/Row.tsx";
 import Heading from "../ui/Heading.tsx";
+import Button from "../ui/Button.tsx";
+import { toggleAdvancedFilterSidebarDevices } from "../store/slices/appSlice.ts";
+
 import DevicesTable from "../features/devices/DevicesTable.tsx";
 import Filter from "../ui/Filter.tsx";
 import Modal from "../ui/Modal.tsx";
-import Button from "../ui/Button.tsx";
 import CreateDevice from "../features/devices/CreateDevice.tsx";
 import { useWindowSize } from "@uidotdev/usehooks";
-import { toggleAdvancedFilterSidebarDevices } from "../store/slices/appSlice.ts";
 import { useDispatch } from "react-redux";
 
 function Devices() {

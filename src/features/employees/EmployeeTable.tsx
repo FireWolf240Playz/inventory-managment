@@ -1,7 +1,7 @@
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal.tsx";
-import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { HiPencil, HiSquare2Stack, HiTrash, HiEye } from "react-icons/hi2";
 import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
 import CreateEmployeeForm from "./CreateEmployee.tsx";
 import { useSearchParams } from "react-router-dom";
@@ -11,6 +11,7 @@ import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
 import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees.tsx";
 import { setAdvancedFilterSidebarStateEmployees } from "../../store/slices/appSlice.ts";
 import { Option } from "../../ui/Filter.tsx";
+import ViewWindow from "../../ui/ViewWindow.tsx";
 
 interface Employee {
   employeeId: string;
@@ -149,15 +150,15 @@ function EmployeesTable() {
             data={filteredEmployees}
             render={(employee) => (
               <Table.Row key={employee.employeeId}>
-                <div data-label="ID:">{employee.employeeId}</div>
-                <div data-label="Name:">{employee.employeeName}</div>
-                <div data-label="Department:">{employee.department}</div>
-                <div data-label="Assigned Devices:">
+                <span data-label="ID:">{employee.employeeId}</span>
+                <span data-label="Name:">{employee.employeeName}</span>
+                <span data-label="Department:">{employee.department}</span>
+                <span data-label="Assigned Devices:">
                   {employee.assignedDevices?.join(", ") || "No devices"}
-                </div>
-                <div data-label="Location:">{employee.location}</div>
-                <div data-label="Role:">{employee.role}</div>
-                <div data-label="Actions:">
+                </span>
+                <span data-label="Location:">{employee.location}</span>
+                <span data-label="Role:">{employee.role}</span>
+                <span data-label="Actions:">
                   <Modal>
                     <Menus.Menu>
                       <Menus.Toggle id={employee.employeeId} />
@@ -174,6 +175,10 @@ function EmployeesTable() {
                         <Modal.Open opens="delete">
                           <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
                         </Modal.Open>
+
+                        <Modal.Open opens="view">
+                          <Menus.Button icon={<HiEye />}>View</Menus.Button>
+                        </Modal.Open>
                       </Menus.List>
 
                       <Modal.Window name="edit">
@@ -185,12 +190,26 @@ function EmployeesTable() {
                           resourceName="employees"
                           disabled={false}
                           onConfirm={() => console.log("delete")}
-                          onCloseModal={() => console.log("delete")}
+                        />
+                      </Modal.Window>
+
+                      <Modal.Window name="view">
+                        <ViewWindow
+                          details={{
+                            "Employee ID": employee.employeeId,
+                            Name: employee.employeeName,
+                            Department: employee.department,
+                            Role: employee.role,
+                            Location: employee.location,
+                            Assigned: employee.assignedDevices
+                              ? employee.assignedDevices.join(", ")
+                              : "None",
+                          }}
                         />
                       </Modal.Window>
                     </Menus.Menu>
                   </Modal>
-                </div>
+                </span>
               </Table.Row>
             )}
           />

@@ -64,10 +64,6 @@ function Filter({ filterField, options }: FilterProps) {
     setSearchParams(searchParams);
   }
 
-  const paramsObject = Object.fromEntries(searchParams.entries());
-
-  console.log("Search Params Object:", paramsObject);
-
   return (
     <StyledFilter>
       {options.map((option) => (
