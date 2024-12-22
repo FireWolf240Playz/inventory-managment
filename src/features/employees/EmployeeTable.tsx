@@ -1,116 +1,27 @@
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store/store";
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
-import Modal from "../../ui/Modal.tsx";
+import Modal from "../../ui/Modal";
 import { HiPencil, HiSquare2Stack, HiTrash, HiEye } from "react-icons/hi2";
-import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
-import CreateEmployeeForm from "./CreateEmployee.tsx";
-import { useSearchParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/store.ts";
-import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
-import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees.tsx";
-import { setAdvancedFilterSidebarStateEmployees } from "../../store/slices/appSlice.ts";
-import { Option } from "../../ui/Filter.tsx";
-import ViewWindow from "../../ui/ViewWindow.tsx";
-
-interface Employee {
-  employeeId: string;
-  employeeName: string;
-  department: string;
-  assignedDevices: string[] | null;
-  location: string;
-  role: string;
-}
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import CreateEmployeeForm from "./CreateEmployee";
+import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar";
+import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees";
+import ViewWindow from "../../ui/ViewWindow";
+import { selectFilteredEmployees } from "../../store/slices/employees/selectors";
+import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlice";
 
 function EmployeesTable() {
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarEmployees,
   );
   const dispatch = useDispatch();
-  const [searchParams, setSearchParams] = useSearchParams();
 
-  // Simulated data
-  const employees: Employee[] = [
-    {
-      employeeId: "1",
-      employeeName: "John Doe",
-      department: "IT",
-      assignedDevices: ["Laptop-123", "Monitor-456"],
-      location: "New York",
-      role: "Developer",
-    },
-    {
-      employeeId: "2",
-      employeeName: "Jane Smith",
-      department: "HR",
-      assignedDevices: null,
-      location: "Los Angeles",
-      role: "Manager",
-    },
-  ];
+  const employees = useSelector(selectFilteredEmployees);
 
-  const departmentsOptions: Option[] = Array.from(
-    new Set(employees.map((d) => d.department)),
-  ).map((dept) => ({
-    value: dept,
-    label: dept,
-  }));
-
-  // Extract filters from URL
-  const getCurrentFilters = (): Partial<Employee> => {
-    const department = searchParams.get("department") || undefined;
-    const employeeName = searchParams.get("employeeName") || undefined;
-    const employeeId = searchParams.get("employeeId") || undefined;
-    const role = searchParams.get("role") || undefined;
-    return { department, employeeName, employeeId, role };
-  };
-
-  const currentFilters = getCurrentFilters();
-
-  // Filter employees
-  const filteredEmployees = employees.filter((emp) => {
-    if (
-      currentFilters.department &&
-      emp.department !== currentFilters.department
-    )
-      return false;
-    if (
-      currentFilters.employeeName &&
-      emp.employeeName !== currentFilters.employeeName
-    )
-      return false;
-    if (
-      currentFilters.employeeId &&
-      emp.employeeId !== currentFilters.employeeId
-    )
-      return false;
-    if (currentFilters.role && emp.role !== currentFilters.role) return false;
-
-    return true;
-  });
-
-  // Handlers to apply or clear filters
-  const handleApplyFilters = (filters: Partial<Employee>) => {
-    const params: Record<string, string> = {};
-    if (filters.department && filters.department !== "all") {
-      params.department = filters.department;
-    }
-    if (filters.employeeName && filters.employeeName !== "all") {
-      params.employeeName = filters.employeeName;
-    }
-    if (filters.employeeId && filters.employeeId !== "all") {
-      params.employeeId = filters.employeeId;
-    }
-    if (filters.role && filters.role !== "all") {
-      params.role = filters.role;
-    }
-    setSearchParams(params);
-    dispatch(setAdvancedFilterSidebarStateEmployees(false));
-  };
-
-  const handleClearFilters = () => {
-    setSearchParams({});
-    dispatch(setAdvancedFilterSidebarStateEmployees(false));
+  const handleCloseFilterSidebar = () => {
+    dispatch(toggleAdvancedFilterSidebarEmployees());
   };
 
   return (
@@ -118,19 +29,9 @@ function EmployeesTable() {
       {isCollapsedAdvancedSidebar && (
         <AdvancedFilterSidebar
           isOpen={isCollapsedAdvancedSidebar}
-          onClose={() =>
-            dispatch(setAdvancedFilterSidebarStateEmployees(false))
-          }
+          onClose={handleCloseFilterSidebar}
         >
-          <AdvancedFilterFormEmployees
-            onApply={handleApplyFilters}
-            onClear={handleClearFilters}
-            //Todo: Will generate them dynamically once the backend is ready
-            departments={departmentsOptions}
-            roles={["Developer", "Manager"]}
-            employeeNames={["John Doe", "Jane Smith"]}
-            employeeIds={["1", "2"]}
-          />
+          <AdvancedFilterFormEmployees />
         </AdvancedFilterSidebar>
       )}
 
@@ -147,7 +48,7 @@ function EmployeesTable() {
           </Table.Header>
 
           <Table.Body
-            data={filteredEmployees}
+            data={employees}
             render={(employee) => (
               <Table.Row key={employee.employeeId}>
                 <div data-label="ID:">{employee.employeeId}</div>

@@ -1,205 +1,70 @@
-import Table from "../../ui/Table";
-import Menus from "../../ui/Menus";
-import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
-import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
-import AdvancedFilterDevices from "./AdvancedFilterDevices.tsx";
-import { useSearchParams } from "react-router-dom";
+import React from "react";
+import { useEffect } from "react";
+import { setDevices } from "../../store/slices/devices/deviceSlice.ts";
+
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store/store";
 import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice";
+import { selectFilteredDevices } from "../../store/slices/devices/selectors";
+import Table from "../../ui/Table";
+import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal.tsx";
+import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
+import AdvancedFilterDevices from "./AdvancedFilterDevices.tsx";
 import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
 import CreateDeviceForm from "./CreateDevice.tsx";
-import { Option } from "../../ui/Filter.tsx";
-import Tag from "../../ui/Tag.tsx";
 import ViewWindow from "../../ui/ViewWindow.tsx";
+import Tag from "../../ui/Tag.tsx";
 
-interface Device {
-  deviceId: string;
-  model: string;
-  assignedTo: string | null;
-  status: 0 | 1 | 2;
-  department: string;
-}
+const DeviceTable: React.FC = () => {
+  const dispatch = useDispatch();
 
-function DeviceTable() {
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
-  const dispatch = useDispatch();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const devices = useSelector(selectFilteredDevices); // Get filtered devices from Redux
 
-  // Simulated data
-  const devices: Device[] = [
-    {
-      deviceId: "1",
-      model: "Laptop-123",
-      assignedTo: "John Doe",
-      status: 1,
-      department: "IT",
-    },
-    {
-      deviceId: "2",
-      model: "Monitor-456",
-      assignedTo: null,
-      status: 2,
-      department: "HR",
-    },
-    {
-      deviceId: "3",
-      model: "Keyboard-789",
-      assignedTo: null,
-      status: 0,
-      department: "IT",
-    },
-  ];
-
-  function statusToString(statusNum: 0 | 1 | 2): string {
-    switch (statusNum) {
-      case 0:
-        return "available";
-      case 1:
-        return "in-use";
-      case 2:
-        return "under-maintenance";
-      default:
-        return "all";
-    }
-  }
-
-  // Convert data -> Option[]
-  const departmentOptions: Option[] = Array.from(
-    new Set(devices.map((d) => d.department)),
-  ).map((dept) => ({
-    value: dept,
-    label: dept,
-  }));
-
-  const idOptions: Option[] = devices.map((d) => ({
-    value: d.deviceId,
-    label: d.deviceId,
-  }));
-
-  const assignedToOptions: Option[] = Array.from(
-    new Set(devices.map((d) => d.assignedTo || "Unassigned")),
-  )
-    .filter(Boolean)
-    .map((user) => ({
-      value: user,
-      label: user,
-    }));
-
-  const modelOptions: Option[] = Array.from(
-    new Set(devices.map((d) => d.model)),
-  ).map((model) => ({
-    value: model,
-    label: model,
-  }));
-
-  const statusOptions: Option[] = [
-    { value: "all", label: "All" },
-    { value: "available", label: "Available" },
-    { value: "in-use", label: "In Use" },
-    { value: "under-maintenance", label: "Under Maintenance" },
-  ];
-
-  // Get filters from URL
-  const filterStatus = searchParams.get("status") || "all";
-  const filterDept = searchParams.get("department") || "all";
-  const filterModel = searchParams.get("model") || "all";
-  const filterAssigned = searchParams.get("assignedTo") || "all";
-  const filterId = searchParams.get("deviceId") || "all";
-
-  // Filter logic
-  let filteredDevices = devices;
-
-  if (filterStatus !== "all") {
-    filteredDevices = filteredDevices.filter(
-      (d) => statusToString(d.status) === filterStatus,
-    );
-  }
-  if (filterDept !== "all") {
-    filteredDevices = filteredDevices.filter(
-      (d) => d.department === filterDept,
-    );
-  }
-  if (filterModel !== "all") {
-    filteredDevices = filteredDevices.filter((d) => d.model === filterModel);
-  }
-  if (filterAssigned !== "all") {
-    filteredDevices = filteredDevices.filter(
-      (d) => (d.assignedTo || "Unassigned") === filterAssigned,
-    );
-  }
-  if (filterId !== "all") {
-    filteredDevices = filteredDevices.filter((d) => d.deviceId === filterId);
-  }
-
-  // Handlers for apply/clear from the advanced filter form
-  const handleApplyFilters = (filters: {
-    deviceId?: string;
-    model?: string;
-    status?: string;
-    department?: string;
-    assignedTo?: string | null;
-  }) => {
-    const params: Record<string, string> = {};
-
-    if (filters.status && filters.status !== "all") {
-      params.status = filters.status;
-    }
-    if (filters.department && filters.department !== "all") {
-      params.department = filters.department;
-    }
-    if (filters.model && filters.model !== "all") {
-      params.model = filters.model;
-    }
-    if (filters.assignedTo && filters.assignedTo !== "all") {
-      params.assignedTo = filters.assignedTo;
-    }
-    if (filters.deviceId && filters.deviceId !== "all") {
-      params.deviceId = filters.deviceId;
-    }
-
-    setSearchParams(params);
+  // Handlers for advanced filter sidebar
+  const handleCloseSidebar = () =>
     dispatch(setAdvancedFilterSidebarStateDevices(false));
-  };
 
-  const handleClearFilters = () => {
-    setSearchParams({});
-    dispatch(setAdvancedFilterSidebarStateDevices(false));
-  };
-
-  // Get initial filters from URL
-  const initialFilters = {
-    deviceId: searchParams.get("deviceId") || undefined,
-    model: searchParams.get("model") || undefined,
-    status: searchParams.get("status") || undefined,
-    department: searchParams.get("department") || undefined,
-    assignedTo: searchParams.get("assignedTo") || undefined,
-  };
+  useEffect(() => {
+    // Simulate fetching devices from API
+    dispatch(
+      setDevices([
+        {
+          deviceId: "1",
+          model: "Laptop-123",
+          assignedTo: "John Doe",
+          status: 1,
+          department: "IT",
+        },
+        {
+          deviceId: "2",
+          model: "Monitor-456",
+          assignedTo: null,
+          status: 2,
+          department: "HR",
+        },
+      ]),
+    );
+  }, [dispatch]);
 
   return (
     <>
+      {/* Advanced Filter Sidebar */}
       {isCollapsedAdvancedSidebar && (
         <AdvancedFilterSidebar
           isOpen={isCollapsedAdvancedSidebar}
-          onClose={() => dispatch(setAdvancedFilterSidebarStateDevices(false))}
+          onClose={handleCloseSidebar}
         >
-          <AdvancedFilterDevices
-            onApply={handleApplyFilters}
-            onClear={handleClearFilters}
-            idOptions={idOptions}
-            departmentOptions={departmentOptions}
-            modelOptions={modelOptions}
-            assignedToOptions={assignedToOptions}
-            statusOptions={statusOptions}
-            initialFilters={initialFilters}
-          />
+          <AdvancedFilterDevices />
         </AdvancedFilterSidebar>
       )}
 
+      {/* Devices Table */}
       <Menus>
         <Table columns="0.5fr 1fr 1fr 1fr 1fr 0.5fr">
           <Table.Header>
@@ -212,7 +77,7 @@ function DeviceTable() {
           </Table.Header>
 
           <Table.Body
-            data={filteredDevices}
+            data={devices}
             render={(device) => (
               <Table.Row key={device.deviceId}>
                 <div data-label="ID:">{device.deviceId}</div>
@@ -255,7 +120,6 @@ function DeviceTable() {
                       <Modal.Window name="delete">
                         <ConfirmDelete
                           resourceName="devices"
-                          disabled={false}
                           onConfirm={() => console.log("delete")}
                         />
                       </Modal.Window>
@@ -281,6 +145,6 @@ function DeviceTable() {
       </Menus>
     </>
   );
-}
+};
 
 export default DeviceTable;

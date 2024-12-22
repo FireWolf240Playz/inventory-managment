@@ -4,7 +4,7 @@ import Heading from "./Heading.tsx";
 import Modal from "./Modal.tsx";
 
 interface ViewWindowProps {
-  details: Record<string, string | null | undefined>;
+  details: Record<string, string | string[] | null | undefined>;
 }
 
 const Header = styled.div`

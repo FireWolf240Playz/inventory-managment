@@ -1,67 +1,76 @@
-import React, { FormEvent, useEffect } from "react";
+import React, { FormEvent, useState, useEffect } from "react";
 import Select from "react-select";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Button from "../../ui/Button";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setFilter,
+  clearFilters,
+} from "../../store/slices/devices/deviceSlice";
+import {
+  selectDeviceFilters,
+  selectDepartmentOptions,
+  selectIdOptions,
+  selectStatusOptions,
+  selectModelOptions,
+  selectAssignedToOptions,
+} from "../../store/slices/devices/selectors";
 
-interface DeviceFilters {
-  deviceId?: string;
-  model?: string;
-  status?: string;
-  department?: string;
-  assignedTo?: string | null;
-}
+import { toggleAdvancedFilterSidebarDevices } from "../../store/slices/appSlice.ts";
 
-interface Option {
-  value: string;
-  label: string;
-}
+import { DeviceState } from "../../store/slices/devices/deviceSlice";
 
-interface AdvancedDeviceFilterFormProps {
-  onApply: (filters: DeviceFilters) => void;
-  onClear: () => void;
-  departmentOptions: Option[];
-  idOptions: Option[];
-  statusOptions: Option[];
-  modelOptions: Option[];
-  assignedToOptions: Option[];
-  initialFilters?: DeviceFilters;
-}
+const AdvancedDeviceFilterForm: React.FC = () => {
+  const dispatch = useDispatch();
 
-const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
-  onApply,
-  onClear,
-  departmentOptions,
-  statusOptions,
-  modelOptions,
-  idOptions,
-  assignedToOptions,
-  initialFilters = {},
-}) => {
-  const [filters, setFilters] = React.useState<DeviceFilters>({});
+  // Redux filters and options
+  const filters = useSelector(selectDeviceFilters);
+  const departmentOptions = useSelector(selectDepartmentOptions);
+  const idOptions = useSelector(selectIdOptions);
+  const statusOptions = useSelector(selectStatusOptions);
+  const modelOptions = useSelector(selectModelOptions);
+  const assignedToOptions = useSelector(selectAssignedToOptions);
 
+  // Local state to manage form values before submission
+  const [localFilters, setLocalFilters] =
+    useState<DeviceState["filters"]>(filters);
+
+  // Sync local state with Redux when filters change
   useEffect(() => {
-    setFilters(initialFilters);
-  }, [initialFilters]);
+    setLocalFilters(filters);
+  }, [filters]);
 
+  // Update local state on selection change
   const handleChange = (
-    selectedOption: Option | null,
-    name: keyof DeviceFilters,
+    selectedOption: { value: string } | null,
+    name: keyof DeviceState["filters"],
   ) => {
-    setFilters((prev) => ({
+    setLocalFilters((prev) => ({
       ...prev,
       [name]: selectedOption?.value || undefined,
     }));
   };
 
+  // Apply filters on form submission
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onApply(filters);
+
+    Object.entries(localFilters).forEach(([key, value]) => {
+      dispatch(
+        setFilter({
+          key: key as keyof DeviceState["filters"],
+          value: value || "all",
+        }),
+      );
+    });
+
+    dispatch(toggleAdvancedFilterSidebarDevices());
   };
 
   const handleClear = () => {
-    setFilters({});
-    onClear();
+    setLocalFilters({});
+    dispatch(clearFilters());
   };
 
   return (
@@ -69,7 +78,7 @@ const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
       <FormRow label="Device ID">
         <Select
           options={idOptions}
-          value={idOptions.find((opt) => opt.value === filters.deviceId)}
+          value={idOptions.find((opt) => opt.value === localFilters.deviceId)}
           onChange={(selected) => handleChange(selected, "deviceId")}
           isClearable
           placeholder="Select Device ID"
@@ -79,7 +88,7 @@ const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
       <FormRow label="Model">
         <Select
           options={modelOptions}
-          value={modelOptions.find((opt) => opt.value === filters.model)}
+          value={modelOptions.find((opt) => opt.value === localFilters.model)}
           onChange={(selected) => handleChange(selected, "model")}
           isClearable
           placeholder="Select Model"
@@ -89,7 +98,7 @@ const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
       <FormRow label="Status">
         <Select
           options={statusOptions}
-          value={statusOptions.find((opt) => opt.value === filters.status)}
+          value={statusOptions.find((opt) => opt.value === localFilters.status)}
           onChange={(selected) => handleChange(selected, "status")}
           isClearable
           placeholder="Select Status"
@@ -100,7 +109,7 @@ const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
         <Select
           options={departmentOptions}
           value={departmentOptions.find(
-            (opt) => opt.value === filters.department,
+            (opt) => opt.value === localFilters.department,
           )}
           onChange={(selected) => handleChange(selected, "department")}
           isClearable
@@ -112,7 +121,7 @@ const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
         <Select
           options={assignedToOptions}
           value={assignedToOptions.find(
-            (opt) => opt.value === filters.assignedTo,
+            (opt) => opt.value === localFilters.assignedTo,
           )}
           onChange={(selected) => handleChange(selected, "assignedTo")}
           isClearable

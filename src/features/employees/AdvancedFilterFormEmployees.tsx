@@ -1,119 +1,123 @@
-import Form from "../../ui/Form.tsx";
-import FormRow from "../../ui/FormRow.tsx";
-import Button from "../../ui/Button.tsx";
-import { useState, FormEvent } from "react";
-import { Option } from "../../ui/Filter.tsx";
+import React, { FormEvent, useState, useEffect } from "react";
+import Select from "react-select";
+import Form from "../../ui/Form";
+import FormRow from "../../ui/FormRow";
+import Button from "../../ui/Button";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setFilter,
+  clearFilters,
+} from "../../store/slices/employees/employeeSlice";
+import {
+  selectEmployeesFilter,
+  selectDepartmentOptions,
+  selectEmployeeRoleOptions,
+  selectEmployeeNameOptions,
+  selectEmployeeIdOptions,
+} from "../../store/slices/employees/selectors";
+import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlice";
 
-interface Filters {
-  department?: string;
-  employeeName?: string;
-  employeeId?: string;
-  role?: string;
-}
+const AdvancedFilterFormEmployees: React.FC = () => {
+  const dispatch = useDispatch();
 
-interface AdvancedFilterFormProps {
-  onApply: (filters: Filters) => void;
-  onClear: () => void;
-  departments: Option[];
-  roles: string[];
-  employeeNames: string[];
-  employeeIds: string[];
-}
+  const filters = useSelector(selectEmployeesFilter);
+  const departmentOptions = useSelector(selectDepartmentOptions);
+  const roleOptions = useSelector(selectEmployeeRoleOptions);
+  const employeeNameOptions = useSelector(selectEmployeeNameOptions);
+  const employeeIdOptions = useSelector(selectEmployeeIdOptions);
 
-const AdvancedFilterFormEmployees: React.FC<AdvancedFilterFormProps> = ({
-  onApply,
-  onClear,
-  departments,
-  roles,
-  employeeNames,
-  employeeIds,
-}) => {
-  const [filters, setFilters] = useState<Filters>({});
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  // Sync local filters with Redux state
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>,
+    selectedOption: { value: string } | null,
+    name: keyof typeof filters,
   ) => {
-    const { name, value } = e.target;
-    setFilters((prev) => ({
+    setLocalFilters((prev) => ({
       ...prev,
-      [name]: value === "all" ? undefined : value,
+      [name]: selectedOption?.value || undefined,
     }));
   };
-
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onApply(filters);
+    Object.entries(localFilters).forEach(([key, value]) => {
+      dispatch(
+        setFilter({
+          key: key as keyof typeof filters,
+          value: value || "all",
+        }),
+      );
+    });
+    dispatch(toggleAdvancedFilterSidebarEmployees());
   };
 
   const handleClear = () => {
-    setFilters({});
-    onClear();
+    setLocalFilters({});
+    dispatch(clearFilters());
   };
 
   return (
     <Form type="modal" onSubmit={handleSubmit}>
-      <FormRow label="Department">
-        <select
-          name="department"
-          value={filters.department || "all"}
-          onChange={handleChange}
-        >
-          <option value="all">All Departments</option>
-          {departments.map((dept) => (
-            <option value={dept.value} key={dept.label}>
-              {dept.value}
-            </option>
-          ))}
-        </select>
-      </FormRow>
-
-      <FormRow label="Employee Name">
-        <select
-          name="employeeName"
-          value={filters.employeeName || "all"}
-          onChange={handleChange}
-        >
-          <option value="all">All Names</option>
-          {employeeNames.map((name) => (
-            <option value={name} key={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-      </FormRow>
-
       <FormRow label="Employee ID">
-        <select
-          name="employeeId"
-          value={filters.employeeId || "all"}
-          onChange={handleChange}
-        >
-          <option value="all">All IDs</option>
-          {employeeIds.map((id) => (
-            <option value={id} key={id}>
-              {id}
-            </option>
-          ))}
-        </select>
+        <Select
+          options={employeeIdOptions}
+          value={employeeIdOptions.find(
+            (opt) => opt.value === localFilters.employeeId,
+          )}
+          onChange={(selected) => handleChange(selected, "employeeId")}
+          isClearable
+          placeholder="Select Employee ID"
+        />
+      </FormRow>
+
+      <FormRow label="Name">
+        <Select
+          options={employeeNameOptions}
+          value={employeeNameOptions.find(
+            (opt) => opt.value === localFilters.employeeName,
+          )}
+          onChange={(selected) => handleChange(selected, "employeeName")}
+          isClearable
+          placeholder="Select Employee Name"
+        />
+      </FormRow>
+
+      <FormRow label="Department">
+        <Select
+          options={departmentOptions}
+          value={departmentOptions.find(
+            (opt) => opt.value === localFilters.department,
+          )}
+          onChange={(selected) => handleChange(selected, "department")}
+          isClearable
+          placeholder="Select Department"
+        />
       </FormRow>
 
       <FormRow label="Role">
-        <select
-          name="role"
-          value={filters.role || "all"}
-          onChange={handleChange}
-        >
-          <option value="all">All Roles</option>
-          {roles.map((role) => (
-            <option value={role} key={role}>
-              {role}
-            </option>
-          ))}
-        </select>
+        <Select
+          options={roleOptions}
+          value={
+            localFilters.role && localFilters.role.length > 0
+              ? roleOptions.find((opt) => opt.value === localFilters.role![0])
+              : null
+          }
+          onChange={(selected) => {
+            setLocalFilters((prev) => ({
+              ...prev,
+              role: selected ? [selected.value] : [],
+            }));
+          }}
+          isClearable
+          placeholder="Select Role"
+        />
       </FormRow>
-
       <FormRow>
-        <Button variation="secondary" onClick={handleClear} type="button">
+        <Button variation="secondary" type="button" onClick={handleClear}>
           Clear
         </Button>
         <Button type="submit">Apply</Button>
