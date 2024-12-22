@@ -10,6 +10,7 @@ import { RootState } from "../../store/store.ts";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
 import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees.tsx";
 import { setAdvancedFilterSidebarStateEmployees } from "../../store/slices/appSlice.ts";
+import { Option } from "../../ui/Filter.tsx";
 
 interface Employee {
   employeeId: string;
@@ -46,6 +47,13 @@ function EmployeesTable() {
       role: "Manager",
     },
   ];
+
+  const departmentsOptions: Option[] = Array.from(
+    new Set(employees.map((d) => d.department)),
+  ).map((dept) => ({
+    value: dept,
+    label: dept,
+  }));
 
   // Extract filters from URL
   const getCurrentFilters = (): Partial<Employee> => {
@@ -117,7 +125,7 @@ function EmployeesTable() {
             onApply={handleApplyFilters}
             onClear={handleClearFilters}
             //Todo: Will generate them dynamically once the backend is ready
-            departments={["IT", "HR"]}
+            departments={departmentsOptions}
             roles={["Developer", "Manager"]}
             employeeNames={["John Doe", "Jane Smith"]}
             employeeIds={["1", "2"]}

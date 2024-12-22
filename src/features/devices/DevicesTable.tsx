@@ -170,6 +170,15 @@ function DeviceTable() {
     dispatch(setAdvancedFilterSidebarStateDevices(false));
   };
 
+  // Get initial filters from URL
+  const initialFilters = {
+    deviceId: searchParams.get("deviceId") || undefined,
+    model: searchParams.get("model") || undefined,
+    status: searchParams.get("status") || undefined,
+    department: searchParams.get("department") || undefined,
+    assignedTo: searchParams.get("assignedTo") || undefined,
+  };
+
   return (
     <>
       {isCollapsedAdvancedSidebar && (
@@ -185,6 +194,7 @@ function DeviceTable() {
             modelOptions={modelOptions}
             assignedToOptions={assignedToOptions}
             statusOptions={statusOptions}
+            initialFilters={initialFilters}
           />
         </AdvancedFilterSidebar>
       )}

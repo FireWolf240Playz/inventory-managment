@@ -1,4 +1,4 @@
-import React, { FormEvent } from "react";
+import React, { FormEvent, useEffect } from "react";
 import Select from "react-select";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
@@ -25,6 +25,7 @@ interface AdvancedDeviceFilterFormProps {
   statusOptions: Option[];
   modelOptions: Option[];
   assignedToOptions: Option[];
+  initialFilters?: DeviceFilters;
 }
 
 const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
@@ -35,8 +36,13 @@ const AdvancedDeviceFilterForm: React.FC<AdvancedDeviceFilterFormProps> = ({
   modelOptions,
   idOptions,
   assignedToOptions,
+  initialFilters = {},
 }) => {
   const [filters, setFilters] = React.useState<DeviceFilters>({});
+
+  useEffect(() => {
+    setFilters(initialFilters);
+  }, [initialFilters]);
 
   const handleChange = (
     selectedOption: Option | null,

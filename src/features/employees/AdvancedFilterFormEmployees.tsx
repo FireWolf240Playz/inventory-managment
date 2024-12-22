@@ -2,6 +2,7 @@ import Form from "../../ui/Form.tsx";
 import FormRow from "../../ui/FormRow.tsx";
 import Button from "../../ui/Button.tsx";
 import { useState, FormEvent } from "react";
+import { Option } from "../../ui/Filter.tsx";
 
 interface Filters {
   department?: string;
@@ -13,7 +14,7 @@ interface Filters {
 interface AdvancedFilterFormProps {
   onApply: (filters: Filters) => void;
   onClear: () => void;
-  departments: string[];
+  departments: Option[];
   roles: string[];
   employeeNames: string[];
   employeeIds: string[];
@@ -59,8 +60,8 @@ const AdvancedFilterFormEmployees: React.FC<AdvancedFilterFormProps> = ({
         >
           <option value="all">All Departments</option>
           {departments.map((dept) => (
-            <option value={dept} key={dept}>
-              {dept}
+            <option value={dept.value} key={dept.label}>
+              {dept.value}
             </option>
           ))}
         </select>
