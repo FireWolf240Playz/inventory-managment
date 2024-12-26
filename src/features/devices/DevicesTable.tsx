@@ -2,12 +2,16 @@ import React from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
-import { selectFilteredDevices } from "../../store/slices/devices/selectors";
+import {
+  selectFilteredDevices,
+  selectStatusOptions,
+} from "../../store/slices/devices/selectors";
 import { RootState } from "../../store/store";
 
 import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice";
 import { duplicateDevice } from "../../store/slices/devices/deviceSlice.ts";
 import { deleteDevice } from "../../store/slices/devices/deviceSlice.ts";
+import { useSearchParams } from "react-router-dom";
 
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
@@ -21,12 +25,24 @@ import Tag from "../../ui/Tag.tsx";
 
 const DeviceTable: React.FC = () => {
   const dispatch = useDispatch();
-
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
+  const [searchParams] = useSearchParams();
+  const currentFilter = searchParams.get("status") || "all";
+
+  const statusOptions = selectStatusOptions();
+  const statusOption = statusOptions.find(
+    (option) => option.value === currentFilter,
+  );
+  const statusCode = statusOption?.statusCode;
 
   const devices = useSelector(selectFilteredDevices);
+
+  const filteredDevices =
+    statusCode === null
+      ? devices
+      : devices.filter((device) => device.status === statusCode);
 
   // Handlers for advanced filter sidebar
   const handleCloseSidebar = () =>
@@ -57,7 +73,7 @@ const DeviceTable: React.FC = () => {
           </Table.Header>
 
           <Table.Body
-            data={devices}
+            data={filteredDevices}
             render={(device) => (
               <Table.Row key={device.deviceId}>
                 <div data-label="ID:">{device.deviceId}</div>

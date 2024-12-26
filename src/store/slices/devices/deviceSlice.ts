@@ -23,6 +23,12 @@ interface UpdateDeviceStatusPayload {
   status: 0 | 1 | 2;
 }
 
+export const statusMap: Record<string, number> = {
+  available: 0,
+  "in-use": 1,
+  "under-maintenance": 2,
+};
+
 const initialState: DeviceState = {
   devices: [
     {
@@ -102,7 +108,7 @@ const deviceSlice = createSlice({
     ) => {
       const { deviceIds, status } = action.payload;
       state.devices.forEach((device) => {
-        if (deviceIds.includes(device.deviceId)) {
+        if (deviceIds !== null && deviceIds.includes(device.deviceId)) {
           device.status = status;
         }
       });

@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import { selectStatusOptions } from "../store/slices/devices/selectors";
 import styled, { css } from "styled-components";
 
 const StyledFilter = styled.div`
@@ -55,6 +56,7 @@ interface FilterProps {
 
 function Filter({ filterField, options }: FilterProps) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const statusOptions = selectStatusOptions();
   const currentFilter = searchParams.get(filterField) || options[0]?.value;
 
   function handleClick(value: string) {
@@ -66,7 +68,7 @@ function Filter({ filterField, options }: FilterProps) {
 
   return (
     <StyledFilter>
-      {options.map((option) => (
+      {statusOptions.map((option) => (
         <FilterButton
           key={option.value}
           onClick={() => handleClick(option.value)}
