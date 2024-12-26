@@ -12,7 +12,7 @@ export function duplicateEntity(entity: Entity): Entity {
     };
   }
 
-  if ("name" in entity) {
+  if ("employeeName" in entity) {
     return {
       ...entity,
       employeeId: generateUniqueId(), //Todo: Will come up with something better later
@@ -23,6 +23,6 @@ export function duplicateEntity(entity: Entity): Entity {
   throw new Error("Unsupported entity type");
 }
 
-function generateUniqueId(): string {
+export function generateUniqueId(): string {
   return Math.random().toString(36).slice(2, 9);
 }

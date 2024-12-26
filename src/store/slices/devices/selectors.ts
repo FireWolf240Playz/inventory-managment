@@ -70,3 +70,14 @@ export const selectAssignedToOptions = createSelector(
       }),
     ),
 );
+
+export const selectAvailableDevices = createSelector(
+  [selectDevices],
+  (devices) =>
+    devices
+      .filter((device) => device.status === 0)
+      .map((device) => ({
+        value: device.deviceId,
+        label: `${device.model} (${device.deviceId})`,
+      })),
+);

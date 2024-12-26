@@ -1,15 +1,35 @@
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
+import {
+  useForm,
+  SubmitHandler,
+  SubmitErrorHandler,
+  Controller,
+} from "react-hook-form";
+import FormRow from "../../ui/FormRow";
+import { useDispatch, useSelector } from "react-redux";
+
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
-import Textarea from "../../ui/Textarea";
-import FormRow from "../../ui/FormRow";
+
+import { addEmployee } from "../../store/slices/employees/employeeSlice.ts";
+import {
+  LOCATION_OPTIONS_OFFICE_AND_REMOTE,
+  ROLE_OPTIONS,
+  DEPARTMENT_OPTIONS,
+} from "../../utils/constants.ts";
+import Select from "react-select";
+
+import { selectAvailableDevices } from "../../store/slices/devices/selectors.ts";
+import { generateUniqueId } from "../../store/slices/entityUtils.ts";
+import { updateDeviceStatus } from "../../store/slices/devices/deviceSlice.ts";
 
 interface EmployeeData {
   employeeId: string;
   employeeName: string;
   assignedDevices: string[] | null;
   department: string;
+  location: string;
+  role: string[];
 }
 
 interface EmployeeToEdit {
@@ -17,6 +37,8 @@ interface EmployeeToEdit {
   employeeName?: string;
   assignedDevices?: string[] | null;
   department?: string;
+  location?: string;
+  role?: string[];
 }
 
 interface CreateEmployeeProps {
@@ -28,21 +50,47 @@ function CreateEmployeeForm({
   employeeToEdit = {},
   onCloseModal,
 }: CreateEmployeeProps) {
-  const { employeeId = "", ...editValues } = employeeToEdit;
+  const {
+    employeeId = "",
+    employeeName,
+    location,
+    role,
+    department,
+    assignedDevices,
+  } = employeeToEdit;
   const isEditSession = Boolean(employeeId);
+  const dispatch = useDispatch();
 
-  const { register, handleSubmit, reset, formState } = useForm<EmployeeData>({
-    defaultValues: {
-      employeeId: employeeId || "",
-      employeeName: editValues.employeeName || "",
-      assignedDevices: editValues.assignedDevices || [],
-      department: editValues.department || "",
-    },
-  });
+  const availableDevices = useSelector(selectAvailableDevices);
+
+  const { control, register, handleSubmit, reset, formState } =
+    useForm<EmployeeData>({
+      defaultValues: {
+        employeeId: employeeId || "",
+        employeeName: employeeName || "",
+        assignedDevices: assignedDevices || [],
+        department: department || "",
+        location: location || "",
+        role: role || [],
+      },
+    });
   const { errors } = formState;
 
   const onSubmit: SubmitHandler<EmployeeData> = (data) => {
-    console.log("Form submitted:", data);
+    const transformedData = {
+      ...data,
+      employeeId: generateUniqueId(),
+    };
+
+    dispatch(
+      updateDeviceStatus({
+        deviceIds: data.assignedDevices,
+        status: 1,
+      }),
+    );
+
+    dispatch(addEmployee(transformedData));
+
     if (onCloseModal) onCloseModal();
   };
 
@@ -55,16 +103,6 @@ function CreateEmployeeForm({
       onSubmit={handleSubmit(onSubmit, onError)}
       type={onCloseModal ? "modal" : "regular"}
     >
-      <FormRow label="Employee ID" error={errors?.employeeId?.message}>
-        <Input
-          type="text"
-          id="employeeId"
-          {...register("employeeId", {
-            required: "This field is required",
-          })}
-        />
-      </FormRow>
-
       <FormRow label="Employee Name" error={errors?.employeeName?.message}>
         <Input
           type="text"
@@ -79,21 +117,89 @@ function CreateEmployeeForm({
         label="Assigned Devices"
         error={errors?.assignedDevices?.message}
       >
-        <Textarea
-          id="assignedDevices"
-          {...register("assignedDevices", {
-            required: "This field is required",
-          })}
+        <Controller
+          name="assignedDevices"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              options={availableDevices} // array of { value: deviceId, label: displayString }
+              isMulti
+              // Now we compare each option's .value (the deviceId) to the array in `value`
+              value={availableDevices.filter((opt) =>
+                value?.includes(opt.value),
+              )}
+              onChange={(selectedOptions) =>
+                onChange(
+                  Array.isArray(selectedOptions)
+                    ? selectedOptions.map((opt) => opt.value)
+                    : [],
+                )
+              }
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select devices"
+            />
+          )}
         />
       </FormRow>
 
       <FormRow label="Department" error={errors?.department?.message}>
-        <Input
-          type="text"
-          id="department"
-          {...register("department", {
-            required: "This field is required",
-          })}
+        <Controller
+          name="department"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              options={[...DEPARTMENT_OPTIONS]}
+              value={[...DEPARTMENT_OPTIONS].find((opt) => opt.value === value)}
+              onChange={(selectedOption) => onChange(selectedOption?.label)}
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select department"
+            />
+          )}
+        />
+      </FormRow>
+
+      <FormRow label="Location" error={errors?.location?.message}>
+        <Controller
+          name="location"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              // The array of location options, including remote
+              options={[...LOCATION_OPTIONS_OFFICE_AND_REMOTE]}
+              // Convert the string from the form state back into a proper { value, label } object
+              value={[...LOCATION_OPTIONS_OFFICE_AND_REMOTE].find(
+                (opt) => opt.value === value,
+              )}
+              // Only store .label (a string) in the form
+              onChange={(selectedOption) => onChange(selectedOption?.label)}
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select location"
+            />
+          )}
+        />
+      </FormRow>
+
+      <FormRow label="Role" error={errors?.role?.message}>
+        <Controller
+          name="role"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              options={[...ROLE_OPTIONS]}
+              value={ROLE_OPTIONS.filter((opt) => value.includes(opt.label))}
+              onChange={(selectedOption) => onChange(selectedOption?.label)}
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select role"
+            />
+          )}
         />
       </FormRow>
 

@@ -11,6 +11,11 @@ import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees";
 import ViewWindow from "../../ui/ViewWindow";
 import { selectFilteredEmployees } from "../../store/slices/employees/selectors";
 import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlice";
+import {
+  duplicateEmployee,
+  editEmployee,
+} from "../../store/slices/employees/employeeSlice.ts";
+import { deleteEmployee } from "../../store/slices/employees/employeeSlice.ts";
 
 function EmployeesTable() {
   const isCollapsedAdvancedSidebar = useSelector(
@@ -65,12 +70,20 @@ function EmployeesTable() {
                       <Menus.Toggle id={employee.employeeId} />
 
                       <Menus.List id={employee.employeeId}>
-                        <Menus.Button icon={<HiSquare2Stack />}>
+                        <Menus.Button
+                          icon={<HiSquare2Stack />}
+                          onClick={() => dispatch(duplicateEmployee(employee))}
+                        >
                           Duplicate
                         </Menus.Button>
 
                         <Modal.Open opens="edit">
-                          <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
+                          <Menus.Button
+                            icon={<HiPencil />}
+                            onClick={() => dispatch(editEmployee(employee))}
+                          >
+                            Edit
+                          </Menus.Button>
                         </Modal.Open>
 
                         <Modal.Open opens="delete">
@@ -90,7 +103,9 @@ function EmployeesTable() {
                         <ConfirmDelete
                           resourceName="employees"
                           disabled={false}
-                          onConfirm={() => console.log("delete")}
+                          onConfirm={() =>
+                            dispatch(deleteEmployee(employee.employeeId))
+                          }
                         />
                       </Modal.Window>
 

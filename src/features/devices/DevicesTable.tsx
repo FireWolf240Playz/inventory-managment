@@ -1,15 +1,12 @@
 import React from "react";
-import { useEffect } from "react";
+
 import { useSelector, useDispatch } from "react-redux";
 import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { selectFilteredDevices } from "../../store/slices/devices/selectors";
 import { RootState } from "../../store/store";
 
 import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice";
-import {
-  duplicateDevice,
-  setDevices,
-} from "../../store/slices/devices/deviceSlice.ts";
+import { duplicateDevice } from "../../store/slices/devices/deviceSlice.ts";
 import { deleteDevice } from "../../store/slices/devices/deviceSlice.ts";
 
 import Table from "../../ui/Table";
@@ -34,28 +31,6 @@ const DeviceTable: React.FC = () => {
   // Handlers for advanced filter sidebar
   const handleCloseSidebar = () =>
     dispatch(setAdvancedFilterSidebarStateDevices(false));
-
-  useEffect(() => {
-    // Simulate fetching devices from API
-    dispatch(
-      setDevices([
-        {
-          deviceId: "1",
-          model: "Laptop-123",
-          assignedTo: "John Doe",
-          status: 1,
-          department: "IT",
-        },
-        {
-          deviceId: "2",
-          model: "Monitor-456",
-          assignedTo: null,
-          status: 2,
-          department: "HR",
-        },
-      ]),
-    );
-  }, [dispatch]);
 
   return (
     <>

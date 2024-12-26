@@ -18,9 +18,49 @@ export interface DeviceState {
     assignedTo?: string;
   };
 }
+interface UpdateDeviceStatusPayload {
+  deviceIds: string[] | null;
+  status: 0 | 1 | 2;
+}
 
 const initialState: DeviceState = {
-  devices: [],
+  devices: [
+    {
+      deviceId: "1",
+      model: "Laptop-123",
+      assignedTo: "John Doe",
+      status: 1,
+      department: "IT",
+    },
+    {
+      deviceId: "2",
+      model: "Monitor-456",
+      assignedTo: null,
+      status: 0,
+      department: "HR",
+    },
+    {
+      deviceId: "3",
+      model: "Monitor-46",
+      assignedTo: null,
+      status: 0,
+      department: "HR",
+    },
+    {
+      deviceId: "4",
+      model: "Monitor-416",
+      assignedTo: null,
+      status: 0,
+      department: "HR",
+    },
+    {
+      deviceId: "5",
+      model: "Monitor-346",
+      assignedTo: null,
+      status: 0,
+      department: "HR",
+    },
+  ],
   filters: {},
 };
 
@@ -55,6 +95,18 @@ const deviceSlice = createSlice({
       const duplicatedDevice = duplicateEntity(action.payload) as Device;
       state.devices.push(duplicatedDevice);
     },
+
+    updateDeviceStatus: (
+      state,
+      action: PayloadAction<UpdateDeviceStatusPayload>,
+    ) => {
+      const { deviceIds, status } = action.payload;
+      state.devices.forEach((device) => {
+        if (deviceIds.includes(device.deviceId)) {
+          device.status = status;
+        }
+      });
+    },
   },
 });
 export const {
@@ -63,5 +115,6 @@ export const {
   clearFilters,
   deleteDevice,
   duplicateDevice,
+  updateDeviceStatus,
 } = deviceSlice.actions;
 export default deviceSlice.reducer;
