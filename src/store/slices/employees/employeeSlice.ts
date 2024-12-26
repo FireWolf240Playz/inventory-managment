@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Employee {
+import { duplicateEntity } from "../entityUtils.ts";
+
+export interface Employee {
   employeeId: string;
   employeeName: string;
   department: string;
@@ -91,6 +93,10 @@ const employeeSlice = createSlice({
         (emp) => emp.employeeId !== action.payload,
       );
     },
+    duplicateEmployee(state, action: PayloadAction<Employee>) {
+      const duplicatedEmployee = duplicateEntity(action.payload) as Employee;
+      state.employees.push(duplicatedEmployee);
+    },
   },
 });
 
@@ -100,6 +106,7 @@ export const {
   addEmployee,
   editEmployee,
   deleteEmployee,
+  duplicateEmployee,
 } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

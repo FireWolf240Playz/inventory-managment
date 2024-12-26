@@ -1,15 +1,20 @@
 import React from "react";
 import { useEffect } from "react";
-import { setDevices } from "../../store/slices/devices/deviceSlice.ts";
-
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../../store/store";
-import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice";
+import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import { selectFilteredDevices } from "../../store/slices/devices/selectors";
+import { RootState } from "../../store/store";
+
+import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice";
+import {
+  duplicateDevice,
+  setDevices,
+} from "../../store/slices/devices/deviceSlice.ts";
+import { deleteDevice } from "../../store/slices/devices/deviceSlice.ts";
+
 import Table from "../../ui/Table";
 import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal.tsx";
-import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
 import AdvancedFilterDevices from "./AdvancedFilterDevices.tsx";
 import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
@@ -24,7 +29,7 @@ const DeviceTable: React.FC = () => {
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
 
-  const devices = useSelector(selectFilteredDevices); // Get filtered devices from Redux
+  const devices = useSelector(selectFilteredDevices);
 
   // Handlers for advanced filter sidebar
   const handleCloseSidebar = () =>
@@ -96,7 +101,10 @@ const DeviceTable: React.FC = () => {
                       <Menus.Toggle id={device.deviceId} />
 
                       <Menus.List id={device.deviceId}>
-                        <Menus.Button icon={<HiSquare2Stack />}>
+                        <Menus.Button
+                          icon={<HiSquare2Stack />}
+                          onClick={() => dispatch(duplicateDevice(device))}
+                        >
                           Duplicate
                         </Menus.Button>
 
@@ -120,7 +128,9 @@ const DeviceTable: React.FC = () => {
                       <Modal.Window name="delete">
                         <ConfirmDelete
                           resourceName="devices"
-                          onConfirm={() => console.log("delete")}
+                          onConfirm={() =>
+                            dispatch(deleteDevice(device.deviceId))
+                          }
                         />
                       </Modal.Window>
 

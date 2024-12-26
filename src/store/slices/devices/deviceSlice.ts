@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { duplicateEntity } from "../entityUtils.ts";
 
-interface Device {
+export interface Device {
   deviceId: string;
   model: string;
   assignedTo: string | null;
@@ -9,7 +10,6 @@ interface Device {
 }
 export interface DeviceState {
   devices: Device[];
-
   filters: {
     deviceId?: string;
     model?: string;
@@ -45,7 +45,23 @@ const deviceSlice = createSlice({
     clearFilters(state) {
       state.filters = {};
     },
+
+    deleteDevice(state, action: PayloadAction<string>) {
+      state.devices = state.devices.filter(
+        (device) => device.deviceId !== action.payload,
+      );
+    },
+    duplicateDevice(state, action: PayloadAction<Device>) {
+      const duplicatedDevice = duplicateEntity(action.payload) as Device;
+      state.devices.push(duplicatedDevice);
+    },
   },
 });
-export const { setDevices, setFilter, clearFilters } = deviceSlice.actions;
+export const {
+  setDevices,
+  setFilter,
+  clearFilters,
+  deleteDevice,
+  duplicateDevice,
+} = deviceSlice.actions;
 export default deviceSlice.reducer;
