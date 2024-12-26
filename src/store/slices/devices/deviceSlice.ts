@@ -92,6 +92,10 @@ const deviceSlice = createSlice({
       state.filters = {};
     },
 
+    addDevice(state, action: PayloadAction<Device>) {
+      state.devices.push(action.payload);
+    },
+
     deleteDevice(state, action: PayloadAction<string>) {
       state.devices = state.devices.filter(
         (device) => device.deviceId !== action.payload,
@@ -119,6 +123,7 @@ export const {
   setDevices,
   setFilter,
   clearFilters,
+  addDevice,
   deleteDevice,
   duplicateDevice,
   updateDeviceStatus,

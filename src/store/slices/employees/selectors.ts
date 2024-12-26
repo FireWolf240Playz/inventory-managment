@@ -65,3 +65,18 @@ export const selectEmployeeRoleOptions = createSelector(
     }));
   },
 );
+
+export const selectAllEmployees = createSelector(
+  [selectEmployees],
+  (employees) => {
+    return employees.map((emp) => ({
+      value: emp.employeeId,
+      label: emp.employeeName,
+    }));
+  },
+);
+
+export const findEmployeeById = (id: string) =>
+  createSelector([selectEmployees], (employees) =>
+    employees.find((employee) => employee.employeeId === id),
+  );

@@ -19,9 +19,13 @@ import {
 } from "../../utils/constants.ts";
 import Select from "react-select";
 
-import { selectAvailableDevices } from "../../store/slices/devices/selectors.ts";
+import {
+  findDeviceById,
+  selectAvailableDevices,
+} from "../../store/slices/devices/selectors.ts";
 import { generateUniqueId } from "../../store/slices/entityUtils.ts";
 import { updateDeviceStatus } from "../../store/slices/devices/deviceSlice.ts";
+import store from "../../store/store.ts";
 
 interface EmployeeData {
   employeeId: string;
@@ -77,21 +81,31 @@ function CreateEmployeeForm({
   const { errors } = formState;
 
   const onSubmit: SubmitHandler<EmployeeData> = (data) => {
-    const transformedData = {
-      ...data,
-      employeeId: generateUniqueId(),
-    };
+    const state = store.getState();
+    if (data.assignedDevices) {
+      const foundDevices = data.assignedDevices
+        .map((deviceId) => findDeviceById(deviceId)(state))
+        .filter(Boolean);
 
-    dispatch(
-      updateDeviceStatus({
-        deviceIds: data.assignedDevices,
-        status: 1,
-      }),
-    );
+      const transformedData = {
+        ...data,
+        assignedDevices:
+          foundDevices.map((device) => {
+            return device.model;
+          }) || "No assigned devices",
+        employeeId: generateUniqueId(),
+      };
 
-    dispatch(addEmployee(transformedData));
+      dispatch(
+        updateDeviceStatus({
+          deviceIds: data.assignedDevices,
+          status: 1,
+        }),
+      );
 
-    if (onCloseModal) onCloseModal();
+      dispatch(addEmployee(transformedData));
+      if (onCloseModal) onCloseModal();
+    }
   };
 
   const onError: SubmitErrorHandler<EmployeeData> = (errors) => {

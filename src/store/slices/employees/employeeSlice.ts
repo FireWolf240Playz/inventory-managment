@@ -36,7 +36,7 @@ const initialState: EmployeeState = {
     {
       employeeId: "2",
       employeeName: "Jane Smith",
-      department: "HR",
+      department: "Human Resources",
       assignedDevices: null,
       location: "Los Angeles",
       role: ["Manager"],

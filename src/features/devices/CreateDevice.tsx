@@ -1,9 +1,25 @@
-import { useForm, SubmitHandler, SubmitErrorHandler } from "react-hook-form";
+import {
+  useForm,
+  SubmitHandler,
+  SubmitErrorHandler,
+  Controller,
+} from "react-hook-form";
 import Input from "../../ui/Input";
+
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
+
+import { useDispatch, useSelector } from "react-redux";
+import { generateUniqueId } from "../../store/slices/entityUtils.ts";
+import { addDevice } from "../../store/slices/devices/deviceSlice";
+import {
+  findEmployeeById,
+  selectAllEmployees,
+} from "../../store/slices/employees/selectors.ts";
+import Select from "react-select";
+import store from "../../store/store.ts";
 
 interface DeviceData {
   model: string;
@@ -39,19 +55,36 @@ function CreateDeviceForm({
   } = deviceToEdit;
   const isEditSession = Boolean(deviceId);
 
-  const { register, handleSubmit, reset, formState } = useForm<DeviceData>({
-    defaultValues: {
-      model: model || "",
-      deviceId: deviceId || "",
-      assignedTo: assignedTo || "",
-      deviceFactorySerialNumber: deviceFactorySerialNumber || "0",
-      description: description || "",
-    },
-  });
+  const dispatch = useDispatch();
+  const allEmployees = useSelector(selectAllEmployees);
+
+  const { register, handleSubmit, reset, formState, control } =
+    useForm<DeviceData>({
+      defaultValues: {
+        model: model || "",
+        deviceId: deviceId || "",
+        assignedTo: assignedTo || "",
+        deviceFactorySerialNumber: deviceFactorySerialNumber || "0",
+        description: description || "",
+      },
+    });
   const { errors } = formState;
 
   const onSubmit: SubmitHandler<DeviceData> = (data) => {
-    console.log("Form submitted:", data);
+    const state = store.getState();
+    const foundEmployee = findEmployeeById(data.assignedTo)(state);
+
+    if (!foundEmployee) return;
+
+    const transformedData = {
+      ...data,
+      status: 1 as const,
+      assignedTo: foundEmployee.employeeName,
+      department: foundEmployee.department,
+      deviceId: generateUniqueId(),
+    };
+
+    dispatch(addDevice(transformedData));
     if (onCloseModal) onCloseModal();
   };
 
@@ -75,22 +108,22 @@ function CreateDeviceForm({
       </FormRow>
 
       <FormRow label="Assigned to" error={errors?.assignedTo?.message}>
-        <Input
-          type="text"
-          id="assignedTo"
-          {...register("assignedTo", {
-            required: "This field is required",
-          })}
-        />
-      </FormRow>
-
-      <FormRow label="Device ID" error={errors?.deviceId?.message}>
-        <Input
-          type="text"
-          id="deviceId"
-          {...register("deviceId", {
-            required: "This field is required",
-          })}
+        <Controller
+          name="assignedTo"
+          control={control}
+          rules={{ required: "This field is required" }}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              options={allEmployees}
+              value={allEmployees.filter((opt) => value === opt.value)}
+              onChange={(selectedOption) =>
+                onChange(selectedOption ? selectedOption.value : null)
+              }
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select employee"
+            />
+          )}
         />
       </FormRow>
 

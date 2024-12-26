@@ -81,3 +81,8 @@ export const selectAvailableDevices = createSelector(
         label: `${device.model} (${device.deviceId})`,
       })),
 );
+
+export const findDeviceById = (id: string) =>
+  createSelector([selectDevices], (devices) =>
+    devices.find((device) => device.deviceId === id),
+  );
