@@ -1,8 +1,12 @@
-import styled from "styled-components";
-import { Overlay } from "./Modal.tsx";
-import { HiX } from "react-icons/hi";
 import { ReactNode, useEffect, useRef } from "react";
+
+import styled from "styled-components";
+
 import Heading from "./Heading.tsx";
+import { Overlay } from "./Modal.tsx";
+import Button from "./Button.tsx";
+
+import { HiX } from "react-icons/hi";
 import { FocusTrap } from "focus-trap-react";
 
 interface AdvancedFilterSidebarProps {
@@ -29,28 +33,6 @@ const SidebarContainer = styled.div<{ isOpen: boolean }>`
   }
 `;
 
-const Button = styled.button`
-  background: none;
-  border: none;
-  padding: 0.4rem;
-  border-radius: var(--border-radius-sm);
-  transform: translateX(0.8rem);
-  transition: all 0.2s;
-  position: absolute;
-  top: 1.2rem;
-  right: 1.9rem;
-
-  &:hover {
-    background-color: var(--color-grey-100);
-  }
-
-  & svg {
-    width: 2.4rem;
-    height: 2.4rem;
-    color: var(--color-grey-500);
-  }
-`;
-
 const SidebarHeader = styled.div`
   padding: 1.6rem;
   border-bottom: 1px solid var(--color-grey-100);
@@ -62,7 +44,7 @@ const SidebarHeader = styled.div`
 const SidebarContent = styled.div`
   padding: 1.6rem;
   overflow-y: auto;
-  height: calc(100% - 4.8rem); /* Adjust based on header height */
+  height: calc(100% - 4.8rem);
 `;
 
 const AdvancedFilterSidebar: React.FC<AdvancedFilterSidebarProps> = ({
@@ -95,7 +77,11 @@ const AdvancedFilterSidebar: React.FC<AdvancedFilterSidebarProps> = ({
           >
             <SidebarHeader>
               <Heading as="h2">Advanced Filters</Heading>
-              <Button onClick={onClose} aria-label="Close Advanced Filters">
+              <Button
+                onClick={onClose}
+                aria-label="Close Advanced Filters"
+                variation="secondary"
+              >
                 <HiX />
               </Button>
             </SidebarHeader>

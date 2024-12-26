@@ -1,9 +1,9 @@
 import React, { FormEvent, useState, useEffect } from "react";
-import Select from "react-select";
-import Form from "../../ui/Form";
-import FormRow from "../../ui/FormRow";
-import Button from "../../ui/Button";
 import { useDispatch, useSelector } from "react-redux";
+import { toggleAdvancedFilterSidebarDevices } from "../../store/slices/appSlice.ts";
+import { DeviceState } from "../../store/slices/devices/deviceSlice";
+import { useSearchParams } from "react-router-dom";
+
 import {
   setFilter,
   clearFilters,
@@ -12,23 +12,24 @@ import {
   selectDeviceFilters,
   selectDepartmentOptions,
   selectIdOptions,
-  selectStatusOptions,
   selectModelOptions,
   selectAssignedToOptions,
 } from "../../store/slices/devices/selectors";
 
-import { toggleAdvancedFilterSidebarDevices } from "../../store/slices/appSlice.ts";
-
-import { DeviceState } from "../../store/slices/devices/deviceSlice";
+import Select from "react-select";
+import FormRow from "../../ui/FormRow";
+import Form from "../../ui/Form";
+import Button from "../../ui/Button";
 
 const AdvancedDeviceFilterForm: React.FC = () => {
   const dispatch = useDispatch();
 
+  const [searchParams, setSearchParams] = useSearchParams();
   // Redux filters and options
   const filters = useSelector(selectDeviceFilters);
   const departmentOptions = useSelector(selectDepartmentOptions);
   const idOptions = useSelector(selectIdOptions);
-  const statusOptions = useSelector(selectStatusOptions);
+
   const modelOptions = useSelector(selectModelOptions);
   const assignedToOptions = useSelector(selectAssignedToOptions);
 
@@ -64,6 +65,16 @@ const AdvancedDeviceFilterForm: React.FC = () => {
         }),
       );
     });
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
+    for (const [key, value] of Object.entries(localFilters)) {
+      if (value && value !== "all") {
+        newSearchParams.set(key, value);
+      } else {
+        newSearchParams.delete(key);
+      }
+    }
+    setSearchParams(newSearchParams);
 
     dispatch(toggleAdvancedFilterSidebarDevices());
   };
@@ -71,6 +82,16 @@ const AdvancedDeviceFilterForm: React.FC = () => {
   const handleClear = () => {
     setLocalFilters({});
     dispatch(clearFilters());
+
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+
+    newSearchParams.delete("deviceId");
+    newSearchParams.delete("model");
+    newSearchParams.delete("status");
+    newSearchParams.delete("department");
+    newSearchParams.delete("assignedTo");
+
+    setSearchParams(newSearchParams);
   };
 
   return (
@@ -92,16 +113,6 @@ const AdvancedDeviceFilterForm: React.FC = () => {
           onChange={(selected) => handleChange(selected, "model")}
           isClearable
           placeholder="Select Model"
-        />
-      </FormRow>
-
-      <FormRow label="Status">
-        <Select
-          options={statusOptions}
-          value={statusOptions.find((opt) => opt.value === localFilters.status)}
-          onChange={(selected) => handleChange(selected, "status")}
-          isClearable
-          placeholder="Select Status"
         />
       </FormRow>
 
