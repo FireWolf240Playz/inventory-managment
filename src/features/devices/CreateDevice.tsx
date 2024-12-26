@@ -9,7 +9,7 @@ interface DeviceData {
   model: string;
   assignedTo: string;
   deviceId: string;
-  deviceFactorySerialNumber: number;
+  deviceFactorySerialNumber: string;
   description: string;
 }
 
@@ -17,7 +17,7 @@ interface DeviceToEdit {
   deviceId?: string;
   model?: string;
   assignedTo?: string | null;
-  deviceFactorySerialNumber?: number;
+  deviceFactorySerialNumber?: string;
   description?: string;
 }
 
@@ -30,18 +30,24 @@ function CreateDeviceForm({
   deviceToEdit = {},
   onCloseModal,
 }: CreateDeviceProps) {
-  const { deviceId, ...editValues } = deviceToEdit;
+  const {
+    deviceId,
+    model,
+    assignedTo,
+    deviceFactorySerialNumber,
+    description,
+  } = deviceToEdit;
   const isEditSession = Boolean(deviceId);
 
-  const { register, handleSubmit, reset, getValues, formState } =
-    useForm<DeviceData>({
-      defaultValues: {
-        model: editValues.model || "",
-        assignedTo: editValues.assignedTo || "",
-        deviceFactorySerialNumber: editValues.deviceFactorySerialNumber || 0,
-        description: editValues.description || "",
-      },
-    });
+  const { register, handleSubmit, reset, formState } = useForm<DeviceData>({
+    defaultValues: {
+      model: model || "",
+      deviceId: deviceId || "",
+      assignedTo: assignedTo || "",
+      deviceFactorySerialNumber: deviceFactorySerialNumber || "0",
+      description: description || "",
+    },
+  });
   const { errors } = formState;
 
   const onSubmit: SubmitHandler<DeviceData> = (data) => {
