@@ -11,7 +11,10 @@ import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 
-import { addEmployee } from "../../store/slices/employees/employeeSlice.ts";
+import {
+  addEmployee,
+  editEmployee,
+} from "../../store/slices/employees/employeeSlice.ts";
 import {
   LOCATION_OPTIONS_OFFICE_AND_REMOTE,
   ROLE_OPTIONS,
@@ -24,7 +27,10 @@ import {
   selectAvailableDevices,
 } from "../../store/slices/devices/selectors.ts";
 import { generateUniqueId } from "../../store/slices/entityUtils.ts";
-import { updateDeviceStatus } from "../../store/slices/devices/deviceSlice.ts";
+import {
+  updateDeviceStatus,
+  reassignDevicesToEmployee,
+} from "../../store/slices/devices/deviceSlice.ts";
 import store from "../../store/store.ts";
 
 interface EmployeeData {
@@ -82,6 +88,8 @@ function CreateEmployeeForm({
 
   const onSubmit: SubmitHandler<EmployeeData> = (data) => {
     const state = store.getState();
+    const isEditSession = Boolean(data.employeeId);
+
     if (data.assignedDevices) {
       const foundDevices = data.assignedDevices
         .map((deviceId) => findDeviceById(deviceId)(state))
@@ -89,21 +97,40 @@ function CreateEmployeeForm({
 
       const transformedData = {
         ...data,
-        assignedDevices:
-          foundDevices.map((device) => {
-            return device.model;
-          }) || "No assigned devices",
-        employeeId: generateUniqueId(),
+        assignedDevices: foundDevices?.map((device) => device.deviceId) || [],
       };
+      if (isEditSession) {
+        const oldDeviceIds = employeeToEdit.assignedDevices || [];
+        const newDeviceIds = data.assignedDevices || [];
+
+        dispatch(
+          reassignDevicesToEmployee({
+            employeeName: data.employeeName,
+            oldDeviceIds,
+            newDeviceIds,
+          }),
+        );
+
+        dispatch(
+          updateDeviceStatus({
+            deviceIds: newDeviceIds,
+            status: 1,
+          }),
+        );
+
+        dispatch(editEmployee(transformedData));
+      } else {
+        transformedData.employeeId = generateUniqueId();
+
+        dispatch(addEmployee(transformedData));
+      }
 
       dispatch(
         updateDeviceStatus({
           deviceIds: data.assignedDevices,
-          status: 1,
+          status: 1 as const,
         }),
       );
-
-      dispatch(addEmployee(transformedData));
       if (onCloseModal) onCloseModal();
     }
   };

@@ -13,7 +13,10 @@ import FormRow from "../../ui/FormRow";
 
 import { useDispatch, useSelector } from "react-redux";
 import { generateUniqueId } from "../../store/slices/entityUtils.ts";
-import { addDevice } from "../../store/slices/devices/deviceSlice";
+import {
+  addDevice,
+  updateDevice,
+} from "../../store/slices/devices/deviceSlice";
 import {
   findEmployeeById,
   selectAllEmployees,
@@ -75,24 +78,37 @@ function CreateDeviceForm({
     const state = store.getState();
     const foundEmployee = findEmployeeById(data.assignedTo)(state);
     if (!foundEmployee) return;
-    const newId = generateUniqueId();
+
+    const isEditSession = Boolean(data.deviceId);
 
     const transformedData = {
       ...data,
       status: 1 as const,
       assignedTo: foundEmployee.employeeName,
       department: foundEmployee.department,
-      deviceId: newId,
     };
+    //We don't change the id when is editing
+    if (isEditSession) {
+      dispatch(updateDevice(transformedData));
+      dispatch(
+        addDeviceToEmployee({
+          employeeId: foundEmployee.employeeId,
+          deviceId: transformedData.deviceId,
+        }),
+      );
+    } else {
+      //When we are creating new device, then we create newId
+      const newId = generateUniqueId();
+      transformedData.deviceId = newId;
+      dispatch(addDevice(transformedData));
+      dispatch(
+        addDeviceToEmployee({
+          employeeId: foundEmployee.employeeId,
+          deviceId: newId,
+        }),
+      );
+    }
 
-    dispatch(addDevice(transformedData));
-
-    dispatch(
-      addDeviceToEmployee({
-        employeeId: foundEmployee.employeeId,
-        deviceId: newId,
-      }),
-    );
     if (onCloseModal) onCloseModal();
   };
 

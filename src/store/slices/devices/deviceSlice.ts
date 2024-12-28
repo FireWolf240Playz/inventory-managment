@@ -18,6 +18,13 @@ export interface DeviceState {
     assignedTo?: string;
   };
 }
+
+interface ReassignPayload {
+  employeeName: string;
+  oldDeviceIds: string[];
+  newDeviceIds: string[];
+}
+
 interface UpdateDeviceStatusPayload {
   deviceIds: string[] | null;
   status: 0 | 1 | 2;
@@ -117,6 +124,42 @@ const deviceSlice = createSlice({
         }
       });
     },
+    updateDevice(state, action: PayloadAction<Device>) {
+      const index = state.devices.findIndex(
+        (device) => device.deviceId === action.payload.deviceId,
+      );
+
+      if (index !== -1) state.devices[index] = action.payload;
+    },
+
+    reassignDevicesToEmployee: (
+      state,
+      action: PayloadAction<ReassignPayload>,
+    ) => {
+      const { employeeName, oldDeviceIds, newDeviceIds } = action.payload;
+
+      // 1) For devices that were in old but not in new => unassign them
+      const removedIds = oldDeviceIds.filter(
+        (id) => !newDeviceIds.includes(id),
+      );
+      removedIds.forEach((id) => {
+        const device = state.devices.find((d) => d.deviceId === id);
+        if (device) {
+          device.assignedTo = null; // or device.status = 0, etc.
+        }
+      });
+
+      // 2) For devices that are new => assign them
+      const addedIds = newDeviceIds.filter((id) => !oldDeviceIds.includes(id));
+      addedIds.forEach((id) => {
+        const device = state.devices.find((d) => d.deviceId === id);
+        if (device) {
+          device.assignedTo = employeeName;
+        }
+      });
+
+      // 3) For devices that remain in both old and new => do nothing
+    },
   },
 });
 export const {
@@ -127,5 +170,7 @@ export const {
   deleteDevice,
   duplicateDevice,
   updateDeviceStatus,
+  updateDevice,
+  reassignDevicesToEmployee,
 } = deviceSlice.actions;
 export default deviceSlice.reducer;
