@@ -97,7 +97,7 @@ function CreateEmployeeForm({
 
       const transformedData = {
         ...data,
-        assignedDevices: foundDevices?.map((device) => device.deviceId) || [],
+        assignedDevices: foundDevices?.map((device) => device!.deviceId) || [],
       };
       if (isEditSession) {
         const oldDeviceIds = employeeToEdit.assignedDevices || [];
