@@ -25,7 +25,6 @@ const StyledTag = styled.span<{ color: string }>`
   font-size: 1.1rem;
   padding: 0.4rem 1.2rem;
   border-radius: 100px;
-
   color: var(--color-${(props) => props.color}-700);
   background-color: var(--color-${(props) => props.color}-100);
 `;

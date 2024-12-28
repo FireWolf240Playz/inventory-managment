@@ -9,8 +9,12 @@ import {
 import { RootState } from "../../store/store";
 
 import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice";
-import { duplicateDevice } from "../../store/slices/devices/deviceSlice.ts";
-import { deleteDevice } from "../../store/slices/devices/deviceSlice.ts";
+import {
+  duplicateDevice,
+  deleteDevice,
+  statusMapToString,
+} from "../../store/slices/devices/deviceSlice.ts";
+
 import { useSearchParams } from "react-router-dom";
 
 import Table from "../../ui/Table";
@@ -130,7 +134,7 @@ const DeviceTable: React.FC = () => {
                           details={{
                             "Device ID": device.deviceId,
                             Model: device.model,
-                            Status: device.status.toString(),
+                            Status: statusMapToString[device.status],
                             "Assigned to": device.assignedTo,
                             Department: device.department,
                           }}

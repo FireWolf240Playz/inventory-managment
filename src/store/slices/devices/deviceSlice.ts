@@ -30,10 +30,10 @@ interface UpdateDeviceStatusPayload {
   status: 0 | 1 | 2;
 }
 
-export const statusMap: Record<string, number> = {
-  available: 0,
-  "in-use": 1,
-  "under-maintenance": 2,
+export const statusMapToString: Record<number, string> = {
+  0: "Available",
+  1: "In use",
+  2: "Under maintenance",
 };
 
 const initialState: DeviceState = {

@@ -29,7 +29,10 @@ function Devices() {
           ]}
         />
       </Row>
-      <Row type={"horizontal"} style={{ justifyContent: "end", gap: "2rem" }}>
+      <Row
+        type={width !== null && width < 800 ? "vertical" : "horizontal"}
+        style={{ justifyContent: "end", gap: "2rem" }}
+      >
         <div style={{ marginRight: "auto" }}>
           <Heading as="h2"> Quick actions</Heading>
         </div>
