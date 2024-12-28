@@ -11,6 +11,11 @@ export interface Employee {
   role: string[];
 }
 
+export interface AddDeviceToEmployeePayload {
+  employeeId: string;
+  deviceId: string;
+}
+
 interface EmployeeFilters {
   employeeId?: string;
   employeeName?: string;
@@ -29,7 +34,7 @@ const initialState: EmployeeState = {
       employeeId: "1",
       employeeName: "John Doe",
       department: "IT",
-      assignedDevices: ["Laptop-123", "Monitor-456"],
+      assignedDevices: ["1", "2"],
       location: "New York",
       role: ["Developer"],
     },
@@ -97,6 +102,23 @@ const employeeSlice = createSlice({
       const duplicatedEmployee = duplicateEntity(action.payload) as Employee;
       state.employees.push(duplicatedEmployee);
     },
+    addDeviceToEmployee(
+      state,
+      action: PayloadAction<AddDeviceToEmployeePayload>,
+    ) {
+      const { employeeId, deviceId } = action.payload;
+      const employee = state.employees.find(
+        (emp) => emp.employeeId === employeeId,
+      );
+
+      if (!employee) return state;
+
+      if (!employee.assignedDevices) employee.assignedDevices = [];
+
+      if (!employee.assignedDevices.includes(deviceId)) {
+        employee.assignedDevices.push(deviceId);
+      }
+    },
   },
 });
 
@@ -107,6 +129,7 @@ export const {
   editEmployee,
   deleteEmployee,
   duplicateEmployee,
+  addDeviceToEmployee,
 } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

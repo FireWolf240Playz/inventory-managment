@@ -18,6 +18,7 @@ import {
   findEmployeeById,
   selectAllEmployees,
 } from "../../store/slices/employees/selectors.ts";
+import { addDeviceToEmployee } from "../../store/slices/employees/employeeSlice.ts";
 import Select from "react-select";
 import store from "../../store/store.ts";
 
@@ -73,18 +74,25 @@ function CreateDeviceForm({
   const onSubmit: SubmitHandler<DeviceData> = (data) => {
     const state = store.getState();
     const foundEmployee = findEmployeeById(data.assignedTo)(state);
-
     if (!foundEmployee) return;
+    const newId = generateUniqueId();
 
     const transformedData = {
       ...data,
       status: 1 as const,
       assignedTo: foundEmployee.employeeName,
       department: foundEmployee.department,
-      deviceId: generateUniqueId(),
+      deviceId: newId,
     };
 
     dispatch(addDevice(transformedData));
+
+    dispatch(
+      addDeviceToEmployee({
+        employeeId: foundEmployee.employeeId,
+        deviceId: newId,
+      }),
+    );
     if (onCloseModal) onCloseModal();
   };
 

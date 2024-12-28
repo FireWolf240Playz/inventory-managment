@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../store.ts";
-
+import { Device } from "./deviceSlice.ts";
 // Base selectors
 export const selectDevices = (state: RootState) => state.devices.devices;
 export const selectDeviceFilters = (state: RootState) => state.devices.filters;
@@ -86,3 +86,14 @@ export const findDeviceById = (id: string) =>
   createSelector([selectDevices], (devices) =>
     devices.find((device) => device.deviceId === id),
   );
+
+export const selectDevicesMap = createSelector(
+  [(state: RootState) => state.devices.devices],
+  (devices) => {
+    const map: Record<string, Device> = {};
+    devices.forEach((d) => {
+      map[d.deviceId] = d;
+    });
+    return map;
+  },
+);

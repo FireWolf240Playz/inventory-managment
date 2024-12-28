@@ -10,6 +10,8 @@ import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar";
 import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees";
 import ViewWindow from "../../ui/ViewWindow";
 import { selectFilteredEmployees } from "../../store/slices/employees/selectors";
+import { selectDevicesMap } from "../../store/slices/devices/selectors.ts";
+
 import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlice";
 import {
   duplicateEmployee,
@@ -28,6 +30,8 @@ function EmployeesTable() {
   const handleCloseFilterSidebar = () => {
     dispatch(toggleAdvancedFilterSidebarEmployees());
   };
+
+  const deviceMap = useSelector(selectDevicesMap);
 
   return (
     <>
@@ -60,7 +64,15 @@ function EmployeesTable() {
                 <div data-label="Name:">{employee.employeeName}</div>
                 <div data-label="Department:">{employee.department}</div>
                 <div data-label="Assigned Devices:">
-                  {employee.assignedDevices?.join(", ") || "No devices"}
+                  {employee.assignedDevices &&
+                  employee.assignedDevices.length > 0
+                    ? employee.assignedDevices
+                        .map(
+                          (deviceId) =>
+                            deviceMap[deviceId]?.model ?? "Unknown device",
+                        )
+                        .join(", ")
+                    : "No devices assigned"}
                 </div>
                 <div data-label="Location:">{employee.location}</div>
                 <div data-label="Role:">{employee.role}</div>
@@ -118,8 +130,14 @@ function EmployeesTable() {
                             Role: employee.role,
                             Location: employee.location,
                             Assigned: employee.assignedDevices
-                              ? employee.assignedDevices.join(", ")
-                              : "None",
+                              ? employee.assignedDevices
+                                  .map(
+                                    (deviceId) =>
+                                      deviceMap[deviceId]?.model ??
+                                      "Unknown device",
+                                  )
+                                  .join(", ")
+                              : "No devices assigned",
                           }}
                         />
                       </Modal.Window>
