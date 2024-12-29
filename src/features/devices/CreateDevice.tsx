@@ -84,7 +84,7 @@ function CreateDeviceForm({
     const transformedData = {
       ...data,
       status: 1 as const,
-      assignedTo: foundEmployee.employeeName,
+      assignedTo: foundEmployee.employeeId,
       department: foundEmployee.department,
     };
     //We don't change the id when is editing

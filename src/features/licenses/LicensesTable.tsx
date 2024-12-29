@@ -23,9 +23,10 @@ import {
   duplicateLicense,
   deleteLicense,
 } from "../../store/slices/licenses/licensesSlice.ts";
-
 import { PAGE_SIZE } from "../../utils/constants";
+
 import CreateLicense from "./CreateLicense.tsx";
+import { selectEmployeesMap } from "../../store/slices/employees/selectors.ts";
 
 function LicenseTable() {
   const dispatch = useDispatch();
@@ -42,6 +43,7 @@ function LicenseTable() {
   const endIndex = currentPage * PAGE_SIZE;
 
   const licenses = useSelector(selectFilteredLicenses);
+  const employeesMap = useSelector(selectEmployeesMap);
 
   const paginatedLicenses = licenses.slice(startIndex, endIndex);
 
@@ -51,7 +53,6 @@ function LicenseTable() {
 
   return (
     <>
-      {/* Advanced Filter Sidebar */}
       {isCollapsedAdvancedSidebarLicenses && (
         <AdvancedFilterSidebar
           isOpen={isCollapsedAdvancedSidebarLicenses}
@@ -81,7 +82,10 @@ function LicenseTable() {
                 <div data-label="Name:">{license.licenseName}</div>
                 <div data-label="Type:">{license.type}</div>
                 <div data-label="Assigned To:">
-                  {license.assignedTo || "Unassigned"}
+                  {license.assignedTo
+                    ? employeesMap[license.assignedTo]?.employeeName ||
+                      "Unknown employee"
+                    : "Unassigned"}
                 </div>
                 <div data-label="Status:">
                   {statusMapToStringLicenses[license.status]}

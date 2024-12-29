@@ -1,6 +1,7 @@
 import { createSelector } from "@reduxjs/toolkit";
 
 import { RootState } from "../../store.ts";
+import { Employee } from "./employeeSlice.ts";
 
 export const selectEmployees = (state: RootState) => state.employees.employees;
 export const selectEmployeesFilter = (state: RootState) =>
@@ -114,6 +115,17 @@ export const selectAllEmployees = createSelector(
       value: emp.employeeId,
       label: emp.employeeName,
     }));
+  },
+);
+
+export const selectEmployeesMap = createSelector(
+  [selectEmployees],
+  (employees) => {
+    const map: Record<string, Employee> = {};
+    employees.forEach((emp) => {
+      map[emp.employeeId] = emp;
+    });
+    return map;
   },
 );
 

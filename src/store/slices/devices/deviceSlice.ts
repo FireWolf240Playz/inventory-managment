@@ -44,7 +44,7 @@ const initialState: DeviceState = {
     {
       deviceId: "1",
       model: "Laptop-123",
-      assignedTo: "John Doe",
+      assignedTo: "1",
       status: 1,
       department: "IT",
     },

@@ -29,6 +29,7 @@ import ViewWindow from "../../ui/ViewWindow.tsx";
 import Tag from "../../ui/Tag.tsx";
 
 import { PAGE_SIZE } from "../../utils/constants.ts";
+import { selectEmployeesMap } from "../../store/slices/employees/selectors.ts";
 
 const DeviceTable: React.FC = () => {
   const dispatch = useDispatch();
@@ -52,6 +53,7 @@ const DeviceTable: React.FC = () => {
   const statusCode = statusOption?.statusCode;
 
   const devices = useSelector(selectFilteredDevices);
+  const employeesMap = useSelector(selectEmployeesMap);
 
   const filteredDevices =
     statusCode === null
@@ -98,7 +100,10 @@ const DeviceTable: React.FC = () => {
                   <Tag status={device.status} />
                 </div>
                 <div data-label="Assigned To:">
-                  {device.assignedTo || "Unassigned"}
+                  {device.assignedTo
+                    ? employeesMap[device.assignedTo]?.employeeName ||
+                      "Unknown employee"
+                    : "Unassigned"}
                 </div>
                 <div data-label="Department:">
                   {device.status === 0 ? "No department" : device.department}
