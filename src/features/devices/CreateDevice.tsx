@@ -126,7 +126,7 @@ function CreateDeviceForm({
           type="text"
           id="deviceModel"
           {...register("model", {
-            required: "This field is required",
+            required: isEditSession ? "This field is required" : false,
           })}
         />
       </FormRow>
@@ -135,7 +135,11 @@ function CreateDeviceForm({
         <Controller
           name="assignedTo"
           control={control}
-          rules={{ required: "This field is required" }}
+          rules={
+            isEditSession
+              ? { required: false }
+              : { required: "This field is required" }
+          }
           render={({ field: { onChange, value } }) => (
             <Select
               options={allEmployees}
@@ -159,7 +163,7 @@ function CreateDeviceForm({
           type="number"
           id="deviceFactorySerialNumber"
           {...register("deviceFactorySerialNumber", {
-            required: "This field is required",
+            required: isEditSession ? "This field is required" : false,
             valueAsNumber: true,
           })}
         />
@@ -172,7 +176,7 @@ function CreateDeviceForm({
         <Textarea
           id="description"
           {...register("description", {
-            required: "This field is required",
+            required: isEditSession ? "This field is required" : false,
           })}
         />
       </FormRow>

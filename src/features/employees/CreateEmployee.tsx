@@ -232,7 +232,11 @@ function CreateEmployeeForm({
         <Controller
           name="department"
           control={control}
-          rules={isEditSession ? { required: "This field is required" } : {}}
+          rules={
+            isEditSession
+              ? { required: false }
+              : { required: "This field is required" }
+          }
           render={({ field: { onChange, value } }) => (
             <Select
               options={[...DEPARTMENT_OPTIONS]}
@@ -250,7 +254,11 @@ function CreateEmployeeForm({
         <Controller
           name="location"
           control={control}
-          rules={isEditSession ? { required: "This field is required" } : {}}
+          rules={
+            isEditSession
+              ? { required: false }
+              : { required: "This field is required" }
+          }
           render={({ field: { onChange, value } }) => (
             <Select
               // The array of location options, including remote
@@ -273,7 +281,11 @@ function CreateEmployeeForm({
         <Controller
           name="role"
           control={control}
-          rules={isEditSession ? { required: "This field is required" } : {}}
+          rules={
+            isEditSession
+              ? { required: false }
+              : { required: "This field is required" }
+          }
           render={({ field: { onChange, value } }) => (
             <Select
               options={[...ROLE_OPTIONS]}
