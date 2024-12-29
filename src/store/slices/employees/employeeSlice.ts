@@ -7,6 +7,7 @@ export interface Employee {
   employeeName: string;
   department: string;
   assignedDevices: string[] | null;
+  assignedLicenses: string[] | null;
   location: string;
   role: string[];
 }
@@ -29,6 +30,11 @@ export interface AddDeviceToEmployeePayload {
   deviceId: string;
 }
 
+export interface AddLicenseToEmployeePayload {
+  employeeId: string;
+  licenseId: string;
+}
+
 const initialState: EmployeeState = {
   employees: [
     {
@@ -36,6 +42,7 @@ const initialState: EmployeeState = {
       employeeName: "John Doe",
       department: "IT",
       assignedDevices: ["1", "2"], // these are the ids of devices
+      assignedLicenses: ["L1"],
       location: "New York",
       role: ["Developer"],
     },
@@ -44,6 +51,7 @@ const initialState: EmployeeState = {
       employeeName: "Jane Smith",
       department: "Human Resources",
       assignedDevices: null,
+      assignedLicenses: ["L2"],
       location: "Los Angeles",
       role: ["Manager"],
     },
@@ -52,6 +60,7 @@ const initialState: EmployeeState = {
       employeeName: "Michael Brown",
       department: "Finance",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Chicago",
       role: ["Accountant"],
     },
@@ -60,6 +69,7 @@ const initialState: EmployeeState = {
       employeeName: "Emily Davis",
       department: "Marketing",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Sofia",
       role: ["Marketing Specialist"],
     },
@@ -68,6 +78,7 @@ const initialState: EmployeeState = {
       employeeName: "Robert Miller",
       department: "IT",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Sofia",
       role: ["Developer"],
     },
@@ -76,6 +87,7 @@ const initialState: EmployeeState = {
       employeeName: "Sarah Wilson",
       department: "Human Resources",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "New York",
       role: ["Recruiter"],
     },
@@ -84,6 +96,7 @@ const initialState: EmployeeState = {
       employeeName: "David Anderson",
       department: "Finance",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Chicago",
       role: ["Manager"],
     },
@@ -92,6 +105,7 @@ const initialState: EmployeeState = {
       employeeName: "Linda Thompson",
       department: "Marketing",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Los Angeles",
       role: ["Manager"],
     },
@@ -100,6 +114,7 @@ const initialState: EmployeeState = {
       employeeName: "Mark Williams",
       department: "IT",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Seattle",
       role: ["Developer"],
     },
@@ -108,6 +123,7 @@ const initialState: EmployeeState = {
       employeeName: "James Adams",
       department: "Finance",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Chicago",
       role: ["Paralegal"],
     },
@@ -116,6 +132,7 @@ const initialState: EmployeeState = {
       employeeName: "Nicole Reed",
       department: "Marketing",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Varna",
       role: ["Coordinator"],
     },
@@ -124,6 +141,7 @@ const initialState: EmployeeState = {
       employeeName: "William Carter",
       department: "IT",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "New York",
       role: ["QA Engineer"],
     },
@@ -132,6 +150,7 @@ const initialState: EmployeeState = {
       employeeName: "Olivia Green",
       department: "Human Resources",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Los Angeles",
       role: ["Assistant"],
     },
@@ -140,6 +159,7 @@ const initialState: EmployeeState = {
       employeeName: "Daniel White",
       department: "Finance",
       assignedDevices: null,
+      assignedLicenses: null,
       location: "Remote",
       role: ["Analyst"],
     },
@@ -212,6 +232,25 @@ const employeeSlice = createSlice({
         employee.assignedDevices.push(deviceId);
       }
     },
+
+    addLicenseToEmployee(
+      state,
+      action: PayloadAction<AddLicenseToEmployeePayload>,
+    ) {
+      const { employeeId, licenseId } = action.payload;
+
+      const employee = state.employees.find(
+        (emp) => emp.employeeId === employeeId,
+      );
+
+      if (!employee) return state;
+
+      if (!employee.assignedLicenses) employee.assignedLicenses = [];
+
+      if (!employee.assignedLicenses.includes(licenseId)) {
+        employee.assignedLicenses.push(licenseId);
+      }
+    },
   },
 });
 
@@ -223,6 +262,7 @@ export const {
   deleteEmployee,
   duplicateEmployee,
   addDeviceToEmployee,
+  addLicenseToEmployee,
 } = employeeSlice.actions;
 
 export default employeeSlice.reducer;

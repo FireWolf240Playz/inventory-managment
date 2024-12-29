@@ -10,7 +10,7 @@ import Select from "react-select";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
-import Textarea from "../../ui/Textarea";
+
 import Button from "../../ui/Button";
 
 import { generateUniqueId } from "../../store/slices/entityUtils.ts";
@@ -23,6 +23,7 @@ import {
   findEmployeeById,
 } from "../../store/slices/employees/selectors.ts";
 import store from "../../store/store.ts";
+import { selectLicenseTypeOptions } from "../../store/slices/licenses/selectors.ts";
 
 interface LicenseData {
   licenseId: string;
@@ -68,6 +69,7 @@ function CreateLicenseForm({
   const dispatch = useDispatch();
 
   const allEmployees = useSelector(selectAllEmployees);
+  const typeLicenseOptions = useSelector(selectLicenseTypeOptions);
 
   const { register, handleSubmit, control, reset, formState } =
     useForm<LicenseData>({
@@ -88,10 +90,12 @@ function CreateLicenseForm({
     const state = store.getState();
     const foundEmployee = findEmployeeById(data.assignedTo)(state);
 
+    if (!foundEmployee) return;
     const transformedData = {
       ...data,
       status: 1 as const,
-      assignedTo: foundEmployee?.employeeId || null,
+      assignedTo: foundEmployee.employeeName,
+      department: foundEmployee.department,
     };
 
     if (isEditSession) {
@@ -126,13 +130,22 @@ function CreateLicenseForm({
       </FormRow>
 
       <FormRow label="Type" error={errors?.type?.message}>
-        <Input
-          type="text"
-          id="licenseType"
-          {...register("type", {
-            required:
-              "Please enter a license type (Subscription, Perpetual, etc.)",
-          })}
+        <Controller
+          name="type"
+          rules={{ required: "This field is required" }}
+          control={control}
+          render={({ field: { onChange, value } }) => (
+            <Select
+              options={typeLicenseOptions}
+              value={typeLicenseOptions.filter((opt) => value === opt.value)}
+              onChange={(selectedOption) =>
+                onChange(selectedOption ? selectedOption.value : null)
+              }
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select type"
+            />
+          )}
         />
       </FormRow>
 
@@ -154,31 +167,6 @@ function CreateLicenseForm({
             />
           )}
         />
-      </FormRow>
-
-      <FormRow label="Department" error={errors?.department?.message}>
-        <Input
-          type="text"
-          id="licenseDepartment"
-          {...register("department", {
-            required: "This field is required",
-          })}
-        />
-      </FormRow>
-
-      <FormRow label="Status" error={errors?.status?.message}>
-        <Input
-          type="number"
-          id="licenseStatus"
-          {...register("status", {
-            required: "This field is required",
-            valueAsNumber: true,
-          })}
-        />
-      </FormRow>
-
-      <FormRow label="Description" error={errors?.description?.message}>
-        <Textarea id="description" {...register("description")} />
       </FormRow>
 
       <FormRow>

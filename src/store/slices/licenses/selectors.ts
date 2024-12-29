@@ -114,7 +114,13 @@ export const selectLicenseTypeOptions = createSelector(
 
 export const selectAvailableLicenses = createSelector(
   [selectLicenses],
-  (licenses) => licenses.filter((lic) => lic.status === 0),
+  (licenses) =>
+    licenses
+      .filter((lic) => lic.status === 0)
+      .map((license) => ({
+        value: license.licenseId,
+        label: license.licenseName,
+      })),
 );
 
 export const selectLicensesInUse = createSelector(

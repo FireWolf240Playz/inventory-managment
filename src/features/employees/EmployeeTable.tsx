@@ -23,6 +23,7 @@ import {
 
 import { PAGE_SIZE } from "../../utils/constants.ts";
 import { useSearchParams } from "react-router-dom";
+import { selectLicensesMap } from "../../store/slices/licenses/selectors.ts";
 
 function EmployeesTable() {
   const isCollapsedAdvancedSidebar = useSelector(
@@ -40,6 +41,7 @@ function EmployeesTable() {
 
   const employees = useSelector(selectFilteredEmployees);
   const deviceMap = useSelector(selectDevicesMap);
+  const licenseMap = useSelector(selectLicensesMap);
 
   const paginatedEmployees = employees.slice(startIndex, endIndex);
 
@@ -59,12 +61,13 @@ function EmployeesTable() {
       )}
 
       <Menus>
-        <Table columns="0.6fr 1fr 1fr 1.8fr 1.2fr 1fr 0.6fr">
+        <Table columns="0.6fr 1fr 1fr 1.8fr 1.8fr 1.2fr 1fr 0.6fr">
           <Table.Header>
             <div>ID</div>
             <div>Name</div>
             <div>Department</div>
             <div>Assigned Devices</div>
+            <div>Assigned Licenses</div>
             <div>Location</div>
             <div>Role</div>
             <div>Actions</div>
@@ -87,6 +90,18 @@ function EmployeesTable() {
                         )
                         .join(", ")
                     : "No devices assigned"}
+                </div>
+                <div data-label="Assigned Licenses:">
+                  {employee.assignedLicenses &&
+                  employee.assignedLicenses.length > 0
+                    ? employee.assignedLicenses
+                        .map(
+                          (licenseId) =>
+                            licenseMap[licenseId]?.licenseName ??
+                            "Unknown device",
+                        )
+                        .join(", ")
+                    : "No licenses assigned"}
                 </div>
                 <div data-label="Location:">{employee.location}</div>
                 <div data-label="Role:">{employee.role}</div>

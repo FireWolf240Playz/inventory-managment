@@ -32,11 +32,13 @@ import {
   reassignDevicesToEmployee,
 } from "../../store/slices/devices/deviceSlice.ts";
 import store from "../../store/store.ts";
+import { selectAvailableLicenses } from "../../store/slices/licenses/selectors.ts";
 
 interface EmployeeData {
   employeeId: string;
   employeeName: string;
   assignedDevices: string[] | null;
+  assignedLicenses: string[] | null;
   department: string;
   location: string;
   role: string[];
@@ -46,6 +48,7 @@ interface EmployeeToEdit {
   employeeId?: string;
   employeeName?: string;
   assignedDevices?: string[] | null;
+  assignedLicenses?: string[] | null;
   department?: string;
   location?: string;
   role?: string[];
@@ -67,11 +70,13 @@ function CreateEmployeeForm({
     role,
     department,
     assignedDevices,
+    assignedLicenses,
   } = employeeToEdit;
   const isEditSession = Boolean(employeeId);
   const dispatch = useDispatch();
 
   const availableDevices = useSelector(selectAvailableDevices);
+  const availableLicenses = useSelector(selectAvailableLicenses);
 
   const { control, register, handleSubmit, reset, formState } =
     useForm<EmployeeData>({
@@ -79,6 +84,7 @@ function CreateEmployeeForm({
         employeeId: employeeId || "",
         employeeName: employeeName || "",
         assignedDevices: assignedDevices || [],
+        assignedLicenses: assignedLicenses || [],
         department: department || "",
         location: location || "",
         role: role || [],
@@ -149,7 +155,7 @@ function CreateEmployeeForm({
           type="text"
           id="employeeName"
           {...register("employeeName", {
-            required: "This field is required",
+            required: isEditSession ? "This field is required" : false,
           })}
         />
       </FormRow>
@@ -161,13 +167,50 @@ function CreateEmployeeForm({
         <Controller
           name="assignedDevices"
           control={control}
-          rules={{ required: "This field is required" }}
+          rules={
+            isEditSession
+              ? { required: false }
+              : { required: "This field is required" }
+          }
           render={({ field: { onChange, value } }) => (
             <Select
-              options={availableDevices} // array of { value: deviceId, label: displayString }
+              options={availableDevices}
               isMulti
-              // Now we compare each option's .value (the deviceId) to the array in `value`
               value={availableDevices.filter((opt) =>
+                value?.includes(opt.value),
+              )}
+              onChange={(selectedOptions) =>
+                onChange(
+                  Array.isArray(selectedOptions)
+                    ? selectedOptions.map((opt) => opt.value)
+                    : [],
+                )
+              }
+              isClearable
+              maxMenuHeight={200}
+              placeholder="Select devices"
+            />
+          )}
+        />
+      </FormRow>
+
+      <FormRow
+        label="Assigned Licenses"
+        error={errors?.assignedDevices?.message}
+      >
+        <Controller
+          name="assignedLicenses"
+          control={control}
+          rules={
+            isEditSession
+              ? { required: false }
+              : { required: "This field is required" }
+          }
+          render={({ field: { onChange, value } }) => (
+            <Select
+              options={availableLicenses}
+              isMulti
+              value={availableLicenses.filter((opt) =>
                 value?.includes(opt.value),
               )}
               onChange={(selectedOptions) =>
@@ -189,7 +232,7 @@ function CreateEmployeeForm({
         <Controller
           name="department"
           control={control}
-          rules={{ required: "This field is required" }}
+          rules={isEditSession ? { required: "This field is required" } : {}}
           render={({ field: { onChange, value } }) => (
             <Select
               options={[...DEPARTMENT_OPTIONS]}
@@ -207,7 +250,7 @@ function CreateEmployeeForm({
         <Controller
           name="location"
           control={control}
-          rules={{ required: "This field is required" }}
+          rules={isEditSession ? { required: "This field is required" } : {}}
           render={({ field: { onChange, value } }) => (
             <Select
               // The array of location options, including remote
@@ -230,7 +273,7 @@ function CreateEmployeeForm({
         <Controller
           name="role"
           control={control}
-          rules={{ required: "This field is required" }}
+          rules={isEditSession ? { required: "This field is required" } : {}}
           render={({ field: { onChange, value } }) => (
             <Select
               options={[...ROLE_OPTIONS]}
