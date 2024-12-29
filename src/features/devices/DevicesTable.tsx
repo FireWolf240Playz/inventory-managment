@@ -88,7 +88,9 @@ const DeviceTable: React.FC = () => {
                 <div data-label="Assigned To:">
                   {device.assignedTo || "Unassigned"}
                 </div>
-                <div data-label="Department:">{device.department}</div>
+                <div data-label="Department:">
+                  {device.status === 0 ? "No department" : device.department}
+                </div>
 
                 <div data-label="Actions:">
                   <Modal>
