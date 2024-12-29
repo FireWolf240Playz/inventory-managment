@@ -12,7 +12,7 @@ import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlic
 import {
   duplicateDevice,
   deleteDevice,
-  statusMapToString,
+  statusMapToStringDevices,
 } from "../../store/slices/devices/deviceSlice.ts";
 
 import { useSearchParams } from "react-router-dom";
@@ -22,7 +22,7 @@ import Pagination from "../../ui/Pagination";
 import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal.tsx";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
-import AdvancedFilterDevices from "./AdvancedFilterDevices.tsx";
+import AdvancedFilterDevices from "./AdvancedFilterFormDevices.tsx";
 import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
 import CreateDeviceForm from "./CreateDevice.tsx";
 import ViewWindow from "../../ui/ViewWindow.tsx";
@@ -148,7 +148,7 @@ const DeviceTable: React.FC = () => {
                           details={{
                             "Device ID": device.deviceId,
                             Model: device.model,
-                            Status: statusMapToString[device.status],
+                            Status: statusMapToStringDevices[device.status],
                             "Assigned to": device.assignedTo,
                             Department: device.department,
                           }}

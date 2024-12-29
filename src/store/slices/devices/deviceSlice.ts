@@ -33,7 +33,7 @@ interface UpdateDeviceStatusPayload {
   status: 0 | 1 | 2;
 }
 
-export const statusMapToString: Record<number, string> = {
+export const statusMapToStringDevices: Record<number, string> = {
   0: "Available",
   1: "In use",
   2: "Under maintenance",

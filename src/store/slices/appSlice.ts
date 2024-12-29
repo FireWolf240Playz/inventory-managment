@@ -4,12 +4,14 @@ interface AppState {
   isCollapsedSidebar: boolean;
   isCollapsedAdvancedSidebarEmployees: boolean;
   isCollapsedAdvancedSidebarDevices: boolean;
+  isCollapsedAdvancedSidebarLicenses: boolean;
 }
 
 const initialState: AppState = {
   isCollapsedSidebar: false,
   isCollapsedAdvancedSidebarEmployees: false,
   isCollapsedAdvancedSidebarDevices: false,
+  isCollapsedAdvancedSidebarLicenses: false,
 };
 
 const appSlice = createSlice({
@@ -47,6 +49,17 @@ const appSlice = createSlice({
     ) {
       state.isCollapsedAdvancedSidebarDevices = action.payload;
     },
+
+    toggleAdvancedFilterLicenses(state) {
+      state.isCollapsedAdvancedSidebarLicenses =
+        !state.isCollapsedAdvancedSidebarLicenses;
+    },
+    setAdvancedFilterSidebarStateLicenses(
+      state,
+      action: PayloadAction<boolean>,
+    ) {
+      state.isCollapsedAdvancedSidebarDevices = action.payload;
+    },
   },
 });
 
@@ -57,6 +70,8 @@ export const {
   setAdvancedFilterSidebarStateEmployees,
   toggleAdvancedFilterSidebarDevices,
   setAdvancedFilterSidebarStateDevices,
+  toggleAdvancedFilterLicenses,
+  setAdvancedFilterSidebarStateLicenses,
 } = appSlice.actions;
 
 export default appSlice.reducer;

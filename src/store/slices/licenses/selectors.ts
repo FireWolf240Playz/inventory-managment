@@ -1,9 +1,17 @@
 import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../store";
 
+import { License } from "./licensesSlice.ts";
+
 export const selectLicenses = (state: RootState) => state.licenses.licenses;
 export const selectLicenseFilters = (state: RootState) =>
   state.licenses.filters;
+
+export const statusMapToStringLicenses: Record<number, string> = {
+  0: "Available",
+  1: "In use",
+  2: "Expired",
+};
 
 export const selectFilteredLicenses = createSelector(
   [selectLicenses, selectLicenseFilters],
@@ -43,5 +51,94 @@ export const selectFilteredLicenses = createSelector(
 
       return true;
     });
+  },
+);
+
+export const selectLicenseDepartmentOptions = createSelector(
+  [selectLicenses],
+  (licenses) =>
+    Array.from(new Set(licenses.map((lic) => lic.department))).map((dept) => ({
+      value: dept,
+      label: dept,
+    })),
+);
+
+export const selectLicenseIdOptions = createSelector(
+  [selectLicenses],
+  (licenses) =>
+    licenses.map((lic) => ({
+      value: lic.licenseId,
+      label: lic.licenseId,
+    })),
+);
+
+export const selectLicenseStatusOptions = () => [
+  { value: "all", label: "All", statusCode: null },
+  { value: "0", label: "Available", statusCode: 0 },
+  { value: "1", label: "In Use", statusCode: 1 },
+  { value: "2", label: "Under Maintenance", statusCode: 2 },
+];
+
+export const selectLicenseNameOptions = createSelector(
+  [selectLicenses],
+  (licenses) =>
+    Array.from(new Set(licenses.map((lic) => lic.licenseName))).map((name) => ({
+      value: name,
+      label: name,
+    })),
+);
+
+export const selectLicenseAssignedToOptions = createSelector(
+  [selectLicenses],
+  (licenses) =>
+    Array.from(
+      new Set(
+        licenses.map((lic) => (lic.assignedTo ? lic.assignedTo : "Unassigned")),
+      ),
+    ).map((user) => ({
+      value: user,
+      label: user,
+    })),
+);
+
+export const selectLicenseTypeOptions = createSelector(
+  [selectLicenses],
+  (licenses) =>
+    Array.from(new Set(licenses.map((license) => license.type))).map(
+      (type) => ({
+        value: type,
+        label: type,
+      }),
+    ),
+);
+
+export const selectAvailableLicenses = createSelector(
+  [selectLicenses],
+  (licenses) => licenses.filter((lic) => lic.status === 0),
+);
+
+export const selectLicensesInUse = createSelector(
+  [selectLicenses],
+  (licenses) => licenses.filter((lic) => lic.status === 1),
+);
+
+export const selectLicensesUnderMaintenance = createSelector(
+  [selectLicenses],
+  (licenses) => licenses.filter((lic) => lic.status === 2),
+);
+
+export const findLicenseById = (id: string) =>
+  createSelector([selectLicenses], (licenses) =>
+    licenses.find((lic) => lic.licenseId === id),
+  );
+
+export const selectLicensesMap = createSelector(
+  [selectLicenses],
+  (licenses) => {
+    const map: Record<string, License> = {};
+    licenses.forEach((lic) => {
+      map[lic.licenseId] = lic;
+    });
+    return map;
   },
 );

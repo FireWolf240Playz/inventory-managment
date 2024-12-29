@@ -99,9 +99,9 @@ const licenseSlice = createSlice({
         state.licenses[index] = action.payload;
       }
     },
-    deleteLicense(state, action: PayloadAction<License>) {
+    deleteLicense(state, action: PayloadAction<string>) {
       state.licenses = state.licenses.filter(
-        (lic) => lic.licenseId !== action.payload.licenseId,
+        (lic) => lic.licenseId !== action.payload,
       );
     },
 
@@ -121,6 +121,7 @@ const licenseSlice = createSlice({
         }
       });
     },
+
     reassignLicenses: (
       state,
       action: PayloadAction<{

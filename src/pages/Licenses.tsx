@@ -4,6 +4,8 @@ import Button from "../ui/Button.tsx";
 import Modal from "../ui/Modal.tsx";
 import { useWindowSize } from "@uidotdev/usehooks";
 import { useDispatch } from "react-redux";
+import { toggleAdvancedFilterLicenses } from "../store/slices/appSlice.ts";
+import LicensesTable from "../features/licenses/LicensesTable.tsx";
 
 function Licenses() {
   const { width } = useWindowSize();
@@ -35,12 +37,14 @@ function Licenses() {
           style={{
             width: width !== null && width < 800 ? "100%" : "fit-content",
           }}
-          // onClick={() => dispatch(toggleAdvancedFilterSidebarDevices())}
+          onClick={() => dispatch(toggleAdvancedFilterLicenses())}
         >
-          Advanced filter (doesn't work for now)
+          Advanced filter
         </Button>
       </Row>
-      <Row></Row>
+      <Row>
+        <LicensesTable />
+      </Row>
     </Modal>
   );
 }
