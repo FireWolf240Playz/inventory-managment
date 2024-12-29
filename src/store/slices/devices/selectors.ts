@@ -82,6 +82,15 @@ export const selectAvailableDevices = createSelector(
       })),
 );
 
+export const selectDevicesInUse = createSelector([selectDevices], (devices) =>
+  devices.filter((device) => device.status === 1),
+);
+
+export const selectDevicesUnderMaintenance = createSelector(
+  [selectDevices],
+  (devices) => devices.filter((device) => device.status === 2),
+);
+
 export const findDeviceById = (id: string) =>
   createSelector([selectDevices], (devices) =>
     devices.find((device) => device.deviceId === id),

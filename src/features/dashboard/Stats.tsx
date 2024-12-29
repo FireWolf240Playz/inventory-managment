@@ -3,6 +3,13 @@ import { HiMiniDeviceTablet } from "react-icons/hi2";
 import { HiMiniDevicePhoneMobile } from "react-icons/hi2";
 import { FaExclamation } from "react-icons/fa";
 import { GrPersonalComputer } from "react-icons/gr";
+import { useSelector } from "react-redux";
+import {
+  selectAvailableDevices,
+  selectDevices,
+  selectDevicesInUse,
+  selectDevicesUnderMaintenance,
+} from "../../store/slices/devices/selectors.ts";
 import styled from "styled-components";
 
 const StyledStatWrapper = styled.div`
@@ -17,32 +24,37 @@ const StyledStatWrapper = styled.div`
 `;
 
 function Stats() {
+  const allDevices = useSelector(selectDevices);
+  const availableDevices = useSelector(selectAvailableDevices);
+  const devicesInUse = useSelector(selectDevicesInUse);
+  const devicesUnderMaintenance = useSelector(selectDevicesUnderMaintenance);
+
   return (
     <StyledStatWrapper>
       <Stat
         icon={<HiMiniDeviceTablet />}
         title={"All devices"}
-        value={30}
+        value={allDevices.length}
         color="green"
       />
 
       <Stat
         icon={<HiMiniDevicePhoneMobile />}
         title={"Available devices"}
-        value={15}
+        value={availableDevices.length}
         color="blue"
       />
 
       <Stat
         icon={<GrPersonalComputer />}
         title={"In use"}
-        value={10}
+        value={devicesInUse.length}
         color="green"
       />
       <Stat
         icon={<FaExclamation />}
         title={"Under maintenance"}
-        value={5}
+        value={devicesUnderMaintenance.length}
         color="yellow"
       />
     </StyledStatWrapper>
