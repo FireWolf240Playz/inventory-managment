@@ -10,21 +10,34 @@ export const selectFilteredDevices = createSelector(
   [selectDevices, selectDeviceFilters],
   (devices, filters) => {
     return devices.filter((device) => {
-      if (filters.deviceId && device.deviceId !== filters.deviceId)
-        return false;
-      if (filters.model && device.model !== filters.model) return false;
-      if (
-        filters.status &&
-        filters.status !== "all" &&
-        `${device.status}` !== filters.status
-      )
-        return false;
-      if (filters.department && device.department !== filters.department)
-        return false;
-      return !(
-        filters.assignedTo &&
-        filters.assignedTo !== (device.assignedTo || "Unassigned")
-      );
+      // 1) deviceId filter
+      if (filters.deviceId && filters.deviceId.length > 0) {
+        if (!filters.deviceId.includes(device.deviceId)) return false;
+      }
+
+      // 2) model filter
+      if (filters.model && filters.model.length > 0) {
+        if (!filters.model.includes(device.model)) return false;
+      }
+
+      // 3) department filter
+      if (filters.department && filters.department.length > 0) {
+        if (!filters.department.includes(device.department)) return false;
+      }
+
+      // 4) assignedTo filter
+      if (filters.assignedTo && filters.assignedTo.length > 0) {
+        const assigned = device.assignedTo ?? "Unassigned";
+        if (!filters.assignedTo.includes(assigned)) return false;
+      }
+
+      // 5) status filter
+      if (filters.status && filters.status.length > 0) {
+        const statusAsString = device.status.toString(); // e.g. "0", "1", or "2"
+        if (!filters.status.includes(statusAsString)) return false;
+      }
+      // if we passed all checks, keep the device
+      return true;
     });
   },
 );

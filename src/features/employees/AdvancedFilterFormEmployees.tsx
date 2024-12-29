@@ -14,36 +14,49 @@ import {
   selectEmployeeRoleOptions,
   selectEmployeeNameOptions,
   selectEmployeeIdOptions,
+  selectEmployeeLocationOptions,
 } from "../../store/slices/employees/selectors";
 import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlice";
+
+import { MultiValue } from "react-select";
+
+export interface OptionType {
+  value: string;
+  label: string;
+}
 
 const AdvancedFilterFormEmployees: React.FC = () => {
   const dispatch = useDispatch();
 
+  // Grab the current filter values from Redux
   const filters = useSelector(selectEmployeesFilter);
+
   const departmentOptions = useSelector(selectDepartmentOptions);
   const roleOptions = useSelector(selectEmployeeRoleOptions);
   const employeeNameOptions = useSelector(selectEmployeeNameOptions);
   const employeeIdOptions = useSelector(selectEmployeeIdOptions);
+  const employeeLocationOptions = useSelector(selectEmployeeLocationOptions);
 
   const [localFilters, setLocalFilters] = useState(filters);
 
-  // Sync local filters with Redux state
+  // Keep localFilters in sync if the Redux filters change externally
   useEffect(() => {
     setLocalFilters(filters);
   }, [filters]);
 
-  const handleChange = (
-    selectedOption: { value: string } | null,
+  function handleChangeMultiSelect(
+    selectedOptions: MultiValue<OptionType> | null,
     name: keyof typeof filters,
-  ) => {
+  ) {
     setLocalFilters((prev) => ({
       ...prev,
-      [name]: selectedOption?.value || undefined,
+      [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
-  };
+  }
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    // Dispatch each field to Redux
     Object.entries(localFilters).forEach(([key, value]) => {
       dispatch(
         setFilter({
@@ -52,6 +65,7 @@ const AdvancedFilterFormEmployees: React.FC = () => {
         }),
       );
     });
+    // Close the sidebar
     dispatch(toggleAdvancedFilterSidebarEmployees());
   };
 
@@ -64,58 +78,108 @@ const AdvancedFilterFormEmployees: React.FC = () => {
     <Form type="modal" onSubmit={handleSubmit}>
       <FormRow label="Employee ID">
         <Select
+          isMulti
           options={employeeIdOptions}
-          value={employeeIdOptions.find(
-            (opt) => opt.value === localFilters.employeeId,
-          )}
-          onChange={(selected) => handleChange(selected, "employeeId")}
+          value={
+            localFilters.employeeId
+              ? employeeIdOptions.filter(
+                  (opt) =>
+                    localFilters.employeeId &&
+                    localFilters.employeeId.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selectedOptions) =>
+            setLocalFilters((prev) => ({
+              ...prev,
+              employeeId: Array.isArray(selectedOptions)
+                ? selectedOptions.map((opt) => opt.value)
+                : [],
+            }))
+          }
           isClearable
-          placeholder="Select Employee ID"
+          placeholder="Select Employee ID(s)"
         />
       </FormRow>
 
       <FormRow label="Name">
         <Select
+          isMulti
           options={employeeNameOptions}
-          value={employeeNameOptions.find(
-            (opt) => opt.value === localFilters.employeeName,
-          )}
-          onChange={(selected) => handleChange(selected, "employeeName")}
+          value={
+            localFilters.employeeName
+              ? employeeNameOptions.filter(
+                  (opt) =>
+                    localFilters.employeeName &&
+                    localFilters.employeeName.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) =>
+            handleChangeMultiSelect(selected, "employeeName")
+          }
           isClearable
-          placeholder="Select Employee Name"
+          placeholder="Select Employee Name(s)"
         />
       </FormRow>
 
       <FormRow label="Department">
         <Select
+          isMulti
           options={departmentOptions}
-          value={departmentOptions.find(
-            (opt) => opt.value === localFilters.department,
-          )}
-          onChange={(selected) => handleChange(selected, "department")}
+          value={
+            localFilters.department
+              ? departmentOptions.filter(
+                  (opt) =>
+                    localFilters.department &&
+                    localFilters.department.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) =>
+            handleChangeMultiSelect(selected, "department")
+          }
           isClearable
-          placeholder="Select Department"
+          placeholder="Select Department(s)"
+        />
+      </FormRow>
+
+      <FormRow label="Location">
+        <Select
+          isMulti
+          options={employeeLocationOptions}
+          value={
+            localFilters.location
+              ? employeeLocationOptions.filter(
+                  (opt) =>
+                    localFilters.location &&
+                    localFilters.location.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) => handleChangeMultiSelect(selected, "location")}
+          isClearable
+          placeholder="Select Employee Location"
         />
       </FormRow>
 
       <FormRow label="Role">
         <Select
+          isMulti
           options={roleOptions}
           value={
-            localFilters.role && localFilters.role.length > 0
-              ? roleOptions.find((opt) => opt.value === localFilters.role![0])
-              : null
+            localFilters.role
+              ? roleOptions.filter((opt) =>
+                  (localFilters.role as string[]).includes(opt.value),
+                )
+              : []
           }
-          onChange={(selected) => {
-            setLocalFilters((prev) => ({
-              ...prev,
-              role: selected ? [selected.value] : [],
-            }));
-          }}
+          onChange={(selected) => handleChangeMultiSelect(selected, "role")}
           isClearable
-          placeholder="Select Role"
+          placeholder="Select Role(s)"
         />
       </FormRow>
+
       <FormRow>
         <Button variation="secondary" type="button" onClick={handleClear}>
           Clear

@@ -11,21 +11,22 @@ export interface Employee {
   role: string[];
 }
 
-export interface AddDeviceToEmployeePayload {
-  employeeId: string;
-  deviceId: string;
-}
-
 interface EmployeeFilters {
-  employeeId?: string;
-  employeeName?: string;
-  department?: string;
-  role?: string[];
+  employeeId?: string | string[];
+  employeeName?: string | string[];
+  department?: string | string[];
+  role?: string | string[];
+  location?: string | string[];
 }
 
 interface EmployeeState {
   employees: Employee[];
   filters: EmployeeFilters;
+}
+
+export interface AddDeviceToEmployeePayload {
+  employeeId: string;
+  deviceId: string;
 }
 
 const initialState: EmployeeState = {
@@ -164,11 +165,7 @@ const employeeSlice = createSlice({
         return;
       }
 
-      if (key === "role") {
-        state.filters.role = Array.isArray(value) ? value : [value];
-      } else {
-        state.filters[key] = Array.isArray(value) ? value[0] : value;
-      }
+      state.filters[key] = Array.isArray(value) ? value : [value];
     },
 
     clearFilters(state) {

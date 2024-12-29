@@ -1,7 +1,7 @@
 import React, { FormEvent, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleAdvancedFilterSidebarDevices } from "../../store/slices/appSlice.ts";
-import { DeviceState } from "../../store/slices/devices/deviceSlice";
+import { DeviceFilters } from "../../store/slices/devices/deviceSlice";
 import { useSearchParams } from "react-router-dom";
 
 import {
@@ -21,21 +21,22 @@ import FormRow from "../../ui/FormRow";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 
+import { MultiValue } from "react-select";
+import { OptionType } from "../employees/AdvancedFilterFormEmployees.tsx";
+
 const AdvancedDeviceFilterForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const [searchParams, setSearchParams] = useSearchParams();
   // Redux filters and options
+
   const filters = useSelector(selectDeviceFilters);
   const departmentOptions = useSelector(selectDepartmentOptions);
   const idOptions = useSelector(selectIdOptions);
-
   const modelOptions = useSelector(selectModelOptions);
   const assignedToOptions = useSelector(selectAssignedToOptions);
 
-  // Local state to manage form values before submission
-  const [localFilters, setLocalFilters] =
-    useState<DeviceState["filters"]>(filters);
+  const [localFilters, setLocalFilters] = useState<DeviceFilters>(filters);
 
   // Sync local state with Redux when filters change
   useEffect(() => {
@@ -43,15 +44,15 @@ const AdvancedDeviceFilterForm: React.FC = () => {
   }, [filters]);
 
   // Update local state on selection change
-  const handleChange = (
-    selectedOption: { value: string } | null,
-    name: keyof DeviceState["filters"],
-  ) => {
+  function handleChangeMultiSelect(
+    selectedOptions: MultiValue<OptionType> | null,
+    name: keyof typeof filters,
+  ) {
     setLocalFilters((prev) => ({
       ...prev,
-      [name]: selectedOption?.value || undefined,
+      [name]: selectedOptions ? selectedOptions.map((opt) => opt.value) : [],
     }));
-  };
+  }
 
   // Apply filters on form submission
   const handleSubmit = (e: FormEvent) => {
@@ -60,7 +61,7 @@ const AdvancedDeviceFilterForm: React.FC = () => {
     Object.entries(localFilters).forEach(([key, value]) => {
       dispatch(
         setFilter({
-          key: key as keyof DeviceState["filters"],
+          key: key as keyof typeof filters,
           value: value || "all",
         }),
       );
@@ -99,8 +100,17 @@ const AdvancedDeviceFilterForm: React.FC = () => {
       <FormRow label="Device ID">
         <Select
           options={idOptions}
-          value={idOptions.find((opt) => opt.value === localFilters.deviceId)}
-          onChange={(selected) => handleChange(selected, "deviceId")}
+          isMulti
+          value={
+            localFilters.deviceId
+              ? idOptions.filter(
+                  (opt) =>
+                    localFilters.deviceId &&
+                    localFilters.deviceId.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) => handleChangeMultiSelect(selected, "deviceId")}
           isClearable
           placeholder="Select Device ID"
         />
@@ -109,8 +119,17 @@ const AdvancedDeviceFilterForm: React.FC = () => {
       <FormRow label="Model">
         <Select
           options={modelOptions}
-          value={modelOptions.find((opt) => opt.value === localFilters.model)}
-          onChange={(selected) => handleChange(selected, "model")}
+          isMulti
+          value={
+            localFilters.model
+              ? modelOptions.filter(
+                  (opt) =>
+                    localFilters.model &&
+                    localFilters.model.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) => handleChangeMultiSelect(selected, "model")}
           isClearable
           placeholder="Select Model"
         />
@@ -119,10 +138,19 @@ const AdvancedDeviceFilterForm: React.FC = () => {
       <FormRow label="Department">
         <Select
           options={departmentOptions}
-          value={departmentOptions.find(
-            (opt) => opt.value === localFilters.department,
-          )}
-          onChange={(selected) => handleChange(selected, "department")}
+          isMulti
+          value={
+            localFilters.department
+              ? departmentOptions.filter(
+                  (opt) =>
+                    localFilters.department &&
+                    localFilters.department.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) =>
+            handleChangeMultiSelect(selected, "department")
+          }
           isClearable
           placeholder="Select Department"
         />
@@ -131,10 +159,19 @@ const AdvancedDeviceFilterForm: React.FC = () => {
       <FormRow label="Assigned To">
         <Select
           options={assignedToOptions}
-          value={assignedToOptions.find(
-            (opt) => opt.value === localFilters.assignedTo,
-          )}
-          onChange={(selected) => handleChange(selected, "assignedTo")}
+          isMulti
+          value={
+            localFilters.assignedTo
+              ? assignedToOptions.filter(
+                  (opt) =>
+                    localFilters.assignedTo &&
+                    localFilters.assignedTo.includes(opt.value),
+                )
+              : []
+          }
+          onChange={(selected) =>
+            handleChangeMultiSelect(selected, "assignedTo")
+          }
           isClearable
           placeholder="Select User"
         />

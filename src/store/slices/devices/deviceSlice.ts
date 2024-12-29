@@ -8,15 +8,18 @@ export interface Device {
   status: 0 | 1 | 2;
   department: string;
 }
+
+export interface DeviceFilters {
+  deviceId?: string | string[];
+  model?: string | string[];
+  status?: string | string[];
+  department?: string | string[];
+  assignedTo?: string | string[];
+}
+
 export interface DeviceState {
   devices: Device[];
-  filters: {
-    deviceId?: string;
-    model?: string;
-    status?: string;
-    department?: string;
-    assignedTo?: string;
-  };
+  filters: DeviceFilters;
 }
 
 interface ReassignPayload {
@@ -150,12 +153,18 @@ const deviceSlice = createSlice({
     setFilter(
       state,
       action: PayloadAction<{
-        key: keyof DeviceState["filters"];
-        value: string;
+        key: keyof DeviceFilters;
+        value: string | string[];
       }>,
     ) {
       const { key, value } = action.payload;
-      state.filters[key] = value === "all" ? undefined : value;
+
+      if (value === "all" || (Array.isArray(value) && value.length === 0)) {
+        state.filters[key] = undefined;
+        return;
+      }
+
+      state.filters[key] = Array.isArray(value) ? value : [value];
     },
 
     clearFilters(state) {

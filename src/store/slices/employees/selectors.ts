@@ -10,14 +10,43 @@ export const selectFilteredEmployees = createSelector(
   [selectEmployees, selectEmployeesFilter],
   (employees, filters) => {
     return employees.filter((emp) => {
-      if (filters.employeeId && emp.employeeId !== filters.employeeId)
-        return false;
-      if (filters.employeeName && emp.employeeName !== filters.employeeName)
-        return false;
+      if (filters.employeeId) {
+        const ids = Array.isArray(filters.employeeId)
+          ? filters.employeeId
+          : [filters.employeeId];
+        if (!ids.includes(emp.employeeId)) return false;
+      }
 
-      if (filters.department && emp.department !== filters.department)
-        return false;
-      return !(filters.role && emp.role !== filters.role);
+      if (filters.employeeName) {
+        const names = Array.isArray(filters.employeeName)
+          ? filters.employeeName
+          : [filters.employeeName];
+        if (!names.includes(emp.employeeName)) return false;
+      }
+
+      if (filters.department) {
+        const departments = Array.isArray(filters.department)
+          ? filters.department
+          : [filters.department];
+        if (!departments.includes(emp.department)) return false;
+      }
+
+      if (filters.location) {
+        const locations = Array.isArray(filters.location)
+          ? filters.location
+          : [filters.location];
+        if (!locations.includes(emp.location)) return false;
+      }
+
+      if (filters.role) {
+        const roles = Array.isArray(filters.role)
+          ? filters.role
+          : [filters.role];
+        const hasMatchingRole = emp.role.some((r) => roles.includes(r));
+        if (!hasMatchingRole) return false;
+      }
+
+      return true;
     });
   },
 );
@@ -62,6 +91,18 @@ export const selectEmployeeRoleOptions = createSelector(
     return uniqueRoles.map((role) => ({
       value: role,
       label: role,
+    }));
+  },
+);
+
+export const selectEmployeeLocationOptions = createSelector(
+  [selectEmployees],
+  (employees) => {
+    const allLocations = employees.flatMap((emp) => emp.location);
+    const uniqueLocations = Array.from(new Set(allLocations));
+    return uniqueLocations.map((location) => ({
+      value: location,
+      label: location,
     }));
   },
 );
