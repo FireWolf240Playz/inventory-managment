@@ -22,3 +22,5 @@ export const DEPARTMENT_OPTIONS = [
   { value: "marketing", label: "Marketing" },
   { value: "finance", label: "Finance" },
 ];
+
+export const PAGE_SIZE = 10;

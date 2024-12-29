@@ -8,7 +8,9 @@ import ConfirmDelete from "../../ui/ConfirmDelete";
 import CreateEmployeeForm from "./CreateEmployee";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar";
 import AdvancedFilterFormEmployees from "./AdvancedFilterFormEmployees";
+import Pagination from "../../ui/Pagination.tsx";
 import ViewWindow from "../../ui/ViewWindow";
+
 import { selectFilteredEmployees } from "../../store/slices/employees/selectors";
 import { selectDevicesMap } from "../../store/slices/devices/selectors.ts";
 
@@ -16,8 +18,11 @@ import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlic
 import {
   duplicateEmployee,
   editEmployee,
+  deleteEmployee,
 } from "../../store/slices/employees/employeeSlice.ts";
-import { deleteEmployee } from "../../store/slices/employees/employeeSlice.ts";
+
+import { PAGE_SIZE } from "../../utils/constants.ts";
+import { useSearchParams } from "react-router-dom";
 
 function EmployeesTable() {
   const isCollapsedAdvancedSidebar = useSelector(
@@ -25,13 +30,22 @@ function EmployeesTable() {
   );
   const dispatch = useDispatch();
 
+  const [searchParams] = useSearchParams();
+  const currentPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
+
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = currentPage * PAGE_SIZE;
+
   const employees = useSelector(selectFilteredEmployees);
+  const deviceMap = useSelector(selectDevicesMap);
+
+  const paginatedEmployees = employees.slice(startIndex, endIndex);
 
   const handleCloseFilterSidebar = () => {
     dispatch(toggleAdvancedFilterSidebarEmployees());
   };
-
-  const deviceMap = useSelector(selectDevicesMap);
 
   return (
     <>
@@ -57,7 +71,7 @@ function EmployeesTable() {
           </Table.Header>
 
           <Table.Body
-            data={employees}
+            data={paginatedEmployees}
             render={(employee) => (
               <Table.Row key={employee.employeeId}>
                 <div data-label="ID:">{employee.employeeId}</div>
@@ -147,6 +161,9 @@ function EmployeesTable() {
               </Table.Row>
             )}
           />
+          <Table.Footer>
+            <Pagination count={employees.length} />
+          </Table.Footer>
         </Table>
       </Menus>
     </>

@@ -103,7 +103,7 @@ interface TableContextType {
 const TableContext = createContext<TableContextType | undefined>(undefined);
 
 interface TableProps {
-  columns: string; // CSS grid template columns
+  columns: string;
   children: ReactNode;
 }
 

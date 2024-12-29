@@ -18,6 +18,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 
 import Table from "../../ui/Table";
+import Pagination from "../../ui/Pagination";
 import Menus from "../../ui/Menus";
 import Modal from "../../ui/Modal.tsx";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
@@ -27,13 +28,22 @@ import CreateDeviceForm from "./CreateDevice.tsx";
 import ViewWindow from "../../ui/ViewWindow.tsx";
 import Tag from "../../ui/Tag.tsx";
 
+import { PAGE_SIZE } from "../../utils/constants.ts";
+
 const DeviceTable: React.FC = () => {
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
-  const [searchParams] = useSearchParams();
+
   const currentFilter = searchParams.get("status") || "all";
+  const currentPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
+
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const endIndex = currentPage * PAGE_SIZE;
 
   const statusOptions = selectStatusOptions();
   const statusOption = statusOptions.find(
@@ -47,6 +57,8 @@ const DeviceTable: React.FC = () => {
     statusCode === null
       ? devices
       : devices.filter((device) => device.status === statusCode);
+
+  const paginatedDevices = filteredDevices.slice(startIndex, endIndex);
 
   // Handlers for advanced filter sidebar
   const handleCloseSidebar = () =>
@@ -77,7 +89,7 @@ const DeviceTable: React.FC = () => {
           </Table.Header>
 
           <Table.Body
-            data={filteredDevices}
+            data={paginatedDevices}
             render={(device) => (
               <Table.Row key={device.deviceId}>
                 <div data-label="ID:">{device.deviceId}</div>
@@ -148,6 +160,9 @@ const DeviceTable: React.FC = () => {
               </Table.Row>
             )}
           />
+          <Table.Footer>
+            <Pagination count={filteredDevices.length} />
+          </Table.Footer>
         </Table>
       </Menus>
     </>
