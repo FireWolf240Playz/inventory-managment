@@ -6,6 +6,7 @@ import { useWindowSize } from "@uidotdev/usehooks";
 import { useDispatch } from "react-redux";
 import { toggleAdvancedFilterLicenses } from "../store/slices/appSlice.ts";
 import LicensesTable from "../features/licenses/LicensesTable.tsx";
+import CreateLicense from "../features/licenses/CreateLicense.tsx";
 
 function Licenses() {
   const { width } = useWindowSize();
@@ -45,6 +46,9 @@ function Licenses() {
       <Row>
         <LicensesTable />
       </Row>
+      <Modal.Window name="createLicense">
+        <CreateLicense />
+      </Modal.Window>
     </Modal>
   );
 }
