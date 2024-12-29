@@ -1,7 +1,8 @@
 import { Device } from "./devices/deviceSlice.ts";
 import { Employee } from "./employees/employeeSlice.ts";
+import { License } from "./licenses/licensesSlice.ts";
 
-type Entity = Device | Employee;
+type Entity = Device | Employee | License;
 
 export function duplicateEntity(entity: Entity): Entity {
   if ("model" in entity) {
@@ -17,6 +18,14 @@ export function duplicateEntity(entity: Entity): Entity {
       ...entity,
       employeeId: generateUniqueId(), //Todo: Will come up with something better later
       employeeName: `Copy of ${entity.employeeName}`,
+    };
+  }
+
+  if ("licenseName" in entity) {
+    return {
+      ...entity,
+      licenseId: generateUniqueId(),
+      licenseName: `Copy of ${entity.licenseName}`,
     };
   }
 

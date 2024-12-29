@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import { HiOutlineCalendarDays, HiOutlineHome } from "react-icons/hi2";
 import { FaUsers } from "react-icons/fa6";
+import { GrLicense } from "react-icons/gr";
 import ToggleButton from "./ToggleButton.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
@@ -99,6 +100,12 @@ function MainNav() {
           <StyledNavLink to="/employees" isCollapsed={isCollapsed}>
             <FaUsers />
             <span>Employees</span>
+          </StyledNavLink>
+        </li>
+        <li>
+          <StyledNavLink to="/licenses" isCollapsed={isCollapsed}>
+            <GrLicense />
+            <span>Licenses</span>
           </StyledNavLink>
         </li>
       </NavList>

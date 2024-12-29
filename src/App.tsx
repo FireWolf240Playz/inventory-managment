@@ -9,6 +9,7 @@ import AppLayout from "./ui/AppLayout.tsx";
 import Account from "./pages/Account.tsx";
 import { Toaster, ToastBar, toast } from "react-hot-toast";
 import { HiXMark } from "react-icons/hi2";
+import Licenses from "./pages/Licenses.tsx";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/devices" element={<Devices />} />
             <Route path="/employees" element={<Employees />} />
+            <Route path="/licenses" element={<Licenses />} />
             <Route path="/account" element={<Account />} />
             <Route path="*" element={<PageNotFound />} />
           </Route>
