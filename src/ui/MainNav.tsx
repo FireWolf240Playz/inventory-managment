@@ -1,6 +1,10 @@
 import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import { HiOutlineCalendarDays, HiOutlineHome } from "react-icons/hi2";
+import {
+  HiArrowLeftOnRectangle,
+  HiOutlineCalendarDays,
+  HiOutlineHome,
+} from "react-icons/hi2";
 import { FaUsers } from "react-icons/fa6";
 import { GrLicense } from "react-icons/gr";
 import ToggleButton from "./ToggleButton.tsx";
@@ -17,9 +21,10 @@ const StyledNav = styled.nav<NavProps>`
   transition: width 0.3s ease;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: flex-start;
+  align-items: center;
   padding-top: 4rem;
+  height: 100%;
 `;
 
 const NavList = styled.ul`
@@ -27,6 +32,11 @@ const NavList = styled.ul`
   flex-direction: column;
   gap: 0.8rem;
   margin-top: 2rem;
+  flex: 1;
+
+  li:last-child {
+    margin-top: auto;
+  }
 `;
 
 const StyledNavLink = styled(NavLink)<NavProps>`
@@ -91,21 +101,27 @@ function MainNav() {
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/devices" isCollapsed={isCollapsed}>
-            <HiOutlineCalendarDays />
-            <span>Devices</span>
-          </StyledNavLink>
-        </li>
-        <li>
           <StyledNavLink to="/employees" isCollapsed={isCollapsed}>
             <FaUsers />
             <span>Employees</span>
           </StyledNavLink>
         </li>
         <li>
+          <StyledNavLink to="/devices" isCollapsed={isCollapsed}>
+            <HiOutlineCalendarDays />
+            <span>Devices</span>
+          </StyledNavLink>
+        </li>
+        <li>
           <StyledNavLink to="/licenses" isCollapsed={isCollapsed}>
             <GrLicense />
             <span>Licenses</span>
+          </StyledNavLink>
+        </li>
+        <li>
+          <StyledNavLink to="/login" isCollapsed={isCollapsed}>
+            <HiArrowLeftOnRectangle />
+            <span>Log out</span>
           </StyledNavLink>
         </li>
       </NavList>

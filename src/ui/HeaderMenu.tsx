@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
-import { HiArrowLeftOnRectangle } from "react-icons/hi2";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineUser } from "react-icons/hi";
 import { useOutsideClick } from "../hooks/useOutsideClick.ts";
@@ -128,9 +127,7 @@ function Header() {
 
   const navItems = [
     { icon: HiOutlineUser, label: "Account", path: "/account" },
-    { icon: HiArrowLeftOnRectangle, label: "Log out", path: "/login" },
   ];
-  //
 
   const close = () => setDropdownOpen(false);
   const ref = useOutsideClick(close, false);

@@ -9,7 +9,13 @@ const StyledSidebar = styled.aside`
   grid-row: 1 / -1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 3.2rem;
+  height: 100vh;
+
+  &:last-child {
+    margin-top: auto;
+  }
 `;
 
 function Sidebar() {
