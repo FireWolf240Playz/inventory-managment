@@ -20,7 +20,8 @@ const EmployeeSchema: Schema = new Schema(
   },
   {
     timestamps: true,
+    collection: "employees",
   },
 );
 
-export default mongoose.model<IEmployee>("Employee", EmployeeSchema);
+export default mongoose.model<IEmployee>("employees", EmployeeSchema);

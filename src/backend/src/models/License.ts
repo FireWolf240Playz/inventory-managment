@@ -22,7 +22,8 @@ const LicenseSchema: Schema = new Schema(
   },
   {
     timestamps: true,
+    collection: "licenses",
   },
 );
 
-export default mongoose.model<ILicense>("License", LicenseSchema);
+export default mongoose.model<ILicense>("licenses", LicenseSchema);

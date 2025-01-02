@@ -1,15 +1,15 @@
 // src/backend/index.ts
 import express from "express";
 import dotenv from "dotenv";
-import connectDB from "./config/db";
 import deviceRoutes from "./routes/deviceRoutes";
 import employeeRoutes from "./routes/employeeRoutes";
 import licenseRoutes from "./routes/licenseRoutes";
 
 import helmet from "helmet";
+import connectDB from "./config/db";
 import rateLimit from "express-rate-limit";
-import mongoSanitize from "express-mongo-sanitize";
 import cors from "cors";
+import mongoSanitize from "express-mongo-sanitize";
 
 dotenv.config();
 

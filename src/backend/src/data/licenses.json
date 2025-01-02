@@ -1,0 +1,34 @@
+ [
+    {
+      "licenseId": "L1",
+      "licenseName": "Office 365",
+      "type": "Subscription",
+      "assignedTo": "1",
+      "status": 1,
+      "department": "IT"
+    },
+    {
+      "licenseId": "L2",
+      "licenseName": "Adobe Photoshop",
+      "type": "Perpetual",
+      "assignedTo": null,
+      "status": 0,
+      "department": "Marketing"
+    },
+    {
+      "licenseId": "L3",
+      "licenseName": "Antivirus Suite",
+      "type": "Subscription",
+      "assignedTo": "2",
+      "status": 0,
+      "department": "IT"
+    },
+    {
+      "licenseId": "L4",
+      "licenseName": "VPN Access",
+      "type": "Subscription",
+      "assignedTo": null,
+      "status": 2,
+      "department": "Finance"
+    }
+  ]

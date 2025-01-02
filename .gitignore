@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 .env
+/src/backend/src/data/import-dev-data.ts
+/src/backend/src/data/devices.json
+/src/backend/src/data/employees.json
+/src/backend/src/data/licenses.json
 
 # Editor directories and files
 .vscode/*

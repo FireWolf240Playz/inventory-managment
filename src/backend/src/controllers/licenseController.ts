@@ -5,36 +5,29 @@ import { asyncHandler } from "../utils/asyncHandlerWrapper";
 
 export const getAllLicenses = asyncHandler(
   async (req: Request, res: Response) => {
-    try {
-      const licenses: ILicense[] = await License.find();
-      res.status(200).json({
-        status: "success",
-        results: licenses.length,
-        data: { licenses },
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Server Error", error });
-    }
+    const licenses: ILicense[] = await License.find();
+    res.status(200).json({
+      status: "success",
+      results: licenses.length,
+      data: { licenses },
+    });
   },
 );
 
 export const getOneLicense = asyncHandler(
   async (req: Request, res: Response) => {
     const { licenseId } = req.params;
-    try {
-      const license: ILicense | null = await License.findOne({
-        licenseId,
-      });
 
-      res.status(200).json({
-        status: "success",
-        data: {
-          license,
-        },
-      });
-    } catch (error) {
-      res.status(500).json({ message: "Server Error", error });
-    }
+    const license: ILicense | null = await License.findOne({
+      licenseId,
+    });
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        license,
+      },
+    });
   },
 );
 
@@ -50,21 +43,17 @@ export const createLicense = asyncHandler(
       description,
     } = req.body;
 
-    try {
-      const newLicense = new License({
-        licenseId,
-        licenseName,
-        type,
-        assignedTo,
-        status,
-        department,
-        description,
-      });
-      const savedLicense = await newLicense.save();
-      res.status(201).json({ status: "success", data: { savedLicense } });
-    } catch (error) {
-      res.status(400).json({ message: "Invalid data", error });
-    }
+    const newLicense = new License({
+      licenseId,
+      licenseName,
+      type,
+      assignedTo,
+      status,
+      department,
+      description,
+    });
+    const savedLicense = await newLicense.save();
+    res.status(201).json({ status: "success", data: { savedLicense } });
   },
 );
 
@@ -93,7 +82,7 @@ export const deleteLicense = asyncHandler(
     const { licenseId } = req.params;
     const deletedLicense = await License.findOneAndDelete({
       licenseId,
-    }).lean();
+    });
 
     if (!deletedLicense) {
       res.status(404).json({ message: "License not found" });

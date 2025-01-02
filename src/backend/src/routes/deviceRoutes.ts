@@ -1,4 +1,3 @@
-// src/backend/routes/deviceRoutes.ts
 import express from "express";
 import { body, param } from "express-validator";
 import {

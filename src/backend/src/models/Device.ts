@@ -18,7 +18,8 @@ const DeviceSchema: Schema = new Schema(
   },
   {
     timestamps: true,
+    collection: "devices",
   },
 );
 
-export default mongoose.model<IDevice>("Device", DeviceSchema);
+export default mongoose.model<IDevice>("devices", DeviceSchema);
