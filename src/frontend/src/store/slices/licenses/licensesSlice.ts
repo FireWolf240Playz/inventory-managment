@@ -40,7 +40,7 @@ const initialState: LicenseState = {
       licenseName: "Adobe Photoshop",
       type: "Perpetual",
       assignedTo: null,
-      status: 1,
+      status: 0,
       department: "Marketing",
     },
     {
@@ -56,7 +56,7 @@ const initialState: LicenseState = {
       licenseName: "VPN Access",
       type: "Subscription",
       assignedTo: null,
-      status: 2, // e.g. expired
+      status: 2,
       department: "Finance",
     },
   ],

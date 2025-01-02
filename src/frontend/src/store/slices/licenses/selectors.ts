@@ -128,7 +128,12 @@ export const selectLicensesInUse = createSelector(
   (licenses) => licenses.filter((lic) => lic.status === 1),
 );
 
-export const selectLicensesUnderMaintenance = createSelector(
+export const selectLicensesAvailable = createSelector(
+  [selectLicenses],
+  (licenses) => licenses.filter((license) => license.status === 0),
+);
+
+export const selectExpiredLicenses = createSelector(
   [selectLicenses],
   (licenses) => licenses.filter((lic) => lic.status === 2),
 );
