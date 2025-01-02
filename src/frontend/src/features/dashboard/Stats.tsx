@@ -1,4 +1,3 @@
-import React from "react";
 import Stat from "./Stat.tsx";
 import { HiMiniDeviceTablet, HiMiniDevicePhoneMobile } from "react-icons/hi2";
 import { FaExclamation } from "react-icons/fa";
@@ -25,15 +24,13 @@ import {
 
 import Heading from "../../ui/Heading.tsx";
 import SectionContent from "../../ui/SectionContent.tsx";
-// Removed incorrect import of SectionContent as it's defined below
 
-// Styled Components
 const Section = styled.div`
   margin-bottom: 2rem;
 `;
 
 const SectionHeading = styled(Heading)`
-  margin-bottom: 1rem; /* Fixed the stray slash */
+  margin-bottom: 1rem;
   font-size: 1.8rem;
   color: var(--color-grey-800);
 `;
