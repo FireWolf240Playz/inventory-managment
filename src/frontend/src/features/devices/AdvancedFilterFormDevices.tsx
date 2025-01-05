@@ -83,6 +83,7 @@ const AdvancedDeviceFilterForm: React.FC = () => {
   const handleClear = () => {
     setLocalFilters({});
     dispatch(clearFilters());
+    dispatch(toggleAdvancedFilterSidebarDevices());
 
     const newSearchParams = new URLSearchParams(searchParams.toString());
 

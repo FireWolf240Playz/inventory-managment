@@ -4,7 +4,6 @@ import { Device } from "./deviceSlice.ts";
 // Base selectors
 export const selectDevices = (state: RootState) => state.devices.devices;
 export const selectDeviceFilters = (state: RootState) => state.devices.filters;
-
 // Filtered devices selector
 export const selectFilteredDevices = createSelector(
   [selectDevices, selectDeviceFilters],

@@ -5,7 +5,7 @@ export interface IDevice extends Document {
   modelName: string;
   assignedTo: string | null;
   status: 0 | 1 | 2;
-  department: string;
+  department?: string | null;
 }
 
 const DeviceSchema: Schema = new Schema(
@@ -14,7 +14,7 @@ const DeviceSchema: Schema = new Schema(
     model: { type: String, required: true },
     assignedTo: { type: String, default: null },
     status: { type: Number, enum: [0, 1, 2], default: 0 },
-    department: { type: String, required: true },
+    department: { type: String, required: false, default: null },
   },
   {
     timestamps: true,

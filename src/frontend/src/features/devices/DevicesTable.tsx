@@ -1,19 +1,17 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
-import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import { HiEye, HiPencil, HiTrash } from "react-icons/hi2";
 import {
-  selectDevices,
+  selectFilteredDevices,
   selectStatusOptions,
 } from "../../store/slices/devices/selectors.ts";
 import { RootState } from "../../store/store.ts";
 
 import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice.ts";
 import {
-  duplicateDevice,
   statusMapToStringDevices,
   setDevices,
-  Device,
 } from "../../store/slices/devices/deviceSlice.ts";
 
 import { useSearchParams } from "react-router-dom";
@@ -47,7 +45,7 @@ const DeviceTable: React.FC = () => {
     if (devices) dispatch(setDevices(devices));
   }, [dispatch, devices]);
 
-  const devicesFromRedux = useSelector(selectDevices);
+  const filteredDevicesAdvanced = useSelector(selectFilteredDevices);
 
   const [searchParams] = useSearchParams();
   const isCollapsedAdvancedSidebar = useSelector(
@@ -73,9 +71,11 @@ const DeviceTable: React.FC = () => {
 
   const filteredDevices =
     statusCode === null
-      ? devicesFromRedux
-      : devicesFromRedux !== undefined &&
-        devicesFromRedux.filter((device) => device.status === statusCode);
+      ? filteredDevicesAdvanced
+      : filteredDevicesAdvanced !== undefined &&
+        filteredDevicesAdvanced.filter(
+          (device) => device.status === statusCode,
+        );
 
   const paginatedDevices = filteredDevices
     ? filteredDevices.slice(startIndex, endIndex)
@@ -176,7 +176,7 @@ const DeviceTable: React.FC = () => {
             )}
           />
           <Table.Footer>
-            <Pagination count={devicesFromRedux.length} />
+            <Pagination count={filteredDevicesAdvanced.length} />
           </Table.Footer>
         </Table>
       </Menus>
