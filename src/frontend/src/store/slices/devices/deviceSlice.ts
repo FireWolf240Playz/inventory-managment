@@ -72,15 +72,6 @@ const deviceSlice = createSlice({
       state.filters = {};
     },
 
-    addDevice(state, action: PayloadAction<Device>) {
-      state.devices.push(action.payload);
-    },
-
-    deleteDevice(state, action: PayloadAction<string>) {
-      state.devices = state.devices.filter(
-        (device) => device.deviceId !== action.payload,
-      );
-    },
     duplicateDevice(state, action: PayloadAction<Device>) {
       const duplicatedDevice = duplicateEntity(action.payload) as Device;
       state.devices.push(duplicatedDevice);
@@ -96,13 +87,6 @@ const deviceSlice = createSlice({
           device.status = status;
         }
       });
-    },
-    updateDevice(state, action: PayloadAction<Device>) {
-      const index = state.devices.findIndex(
-        (device) => device.deviceId === action.payload.deviceId,
-      );
-
-      if (index !== -1) state.devices[index] = action.payload;
     },
 
     reassignDevicesToEmployee: (
@@ -139,11 +123,10 @@ export const {
   setDevices,
   setFilter,
   clearFilters,
-  addDevice,
-  deleteDevice,
+
   duplicateDevice,
   updateDeviceStatus,
-  updateDevice,
+
   reassignDevicesToEmployee,
 } = deviceSlice.actions;
 export default deviceSlice.reducer;

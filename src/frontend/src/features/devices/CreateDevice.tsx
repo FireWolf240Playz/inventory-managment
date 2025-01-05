@@ -4,26 +4,26 @@ import {
   SubmitErrorHandler,
   Controller,
 } from "react-hook-form";
-import Input from "../../ui/Input.tsx";
-
-import Form from "../../ui/Form.tsx";
-import Button from "../../ui/Button.tsx";
-import Textarea from "../../ui/Textarea.tsx";
-import FormRow from "../../ui/FormRow.tsx";
-
+import Input from "../../ui/Input";
+import Form from "../../ui/Form";
+import Button from "../../ui/Button";
+import Textarea from "../../ui/Textarea";
+import FormRow from "../../ui/FormRow";
 import { useDispatch, useSelector } from "react-redux";
-import { generateUniqueId } from "../../store/slices/entityUtils.ts";
-import {
-  addDevice,
-  updateDevice,
-} from "../../store/slices/devices/deviceSlice.ts";
+import { generateUniqueId } from "../../store/slices/entityUtils";
+
 import {
   findEmployeeById,
   selectAllEmployees,
-} from "../../store/slices/employees/selectors.ts";
-import { addDeviceToEmployee } from "../../store/slices/employees/employeeSlice.ts";
+} from "../../store/slices/employees/selectors";
+import { addDeviceToEmployee } from "../../store/slices/employees/employeeSlice";
 import Select from "react-select";
-import store from "../../store/store.ts";
+import store from "../../store/store";
+import { createDevice, editDevice } from "../../services/apiDevices";
+import { toast } from "react-hot-toast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { Device } from "../../store/slices/devices/deviceSlice.ts";
 
 interface DeviceData {
   model: string;
@@ -59,6 +59,30 @@ function CreateDeviceForm({
   } = deviceToEdit;
   const isEditSession = Boolean(deviceId);
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<void, Error, Device>({
+    mutationFn: createDevice,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["devices"]);
+      toast.success("Successfully created new  device");
+    },
+    onError: () => {
+      toast.error("Something went wrong while creating device");
+    },
+  });
+
+  const { mutate } = useMutation<void, Error, Device>({
+    mutationFn: editDevice,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["devices"]);
+      toast.success("Successfully updated device");
+    },
+    onError: () => {
+      toast.error("Something went wrong while updating device");
+    },
+  });
+
   const dispatch = useDispatch();
   const allEmployees = useSelector(selectAllEmployees);
 
@@ -74,22 +98,22 @@ function CreateDeviceForm({
     });
   const { errors } = formState;
 
-  const onSubmit: SubmitHandler<DeviceData> = (data) => {
+  const onSubmit: SubmitHandler<DeviceData> = async (data) => {
     const state = store.getState();
     const foundEmployee = findEmployeeById(data.assignedTo)(state);
     if (!foundEmployee) return;
 
     const isEditSession = Boolean(data.deviceId);
 
-    const transformedData = {
+    const transformedData: Device = {
       ...data,
-      status: 1 as const,
       assignedTo: foundEmployee.employeeId,
+      status: 1,
       department: foundEmployee.department,
     };
-    //We don't change the id when is editing
+
     if (isEditSession) {
-      dispatch(updateDevice(transformedData));
+      mutate(transformedData);
       dispatch(
         addDeviceToEmployee({
           employeeId: foundEmployee.employeeId,
@@ -97,10 +121,11 @@ function CreateDeviceForm({
         }),
       );
     } else {
-      //When we are creating new device, then we create newId
       const newId = generateUniqueId();
       transformedData.deviceId = newId;
-      dispatch(addDevice(transformedData));
+
+      mutation.mutate(transformedData);
+
       dispatch(
         addDeviceToEmployee({
           employeeId: foundEmployee.employeeId,

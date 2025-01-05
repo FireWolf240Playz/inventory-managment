@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
@@ -11,9 +11,9 @@ import { RootState } from "../../store/store.ts";
 import { setAdvancedFilterSidebarStateDevices } from "../../store/slices/appSlice.ts";
 import {
   duplicateDevice,
-  deleteDevice,
   statusMapToStringDevices,
   setDevices,
+  Device,
 } from "../../store/slices/devices/deviceSlice.ts";
 
 import { useSearchParams } from "react-router-dom";
@@ -134,13 +134,6 @@ const DeviceTable: React.FC = () => {
                       <Menus.Toggle id={device.deviceId} />
 
                       <Menus.List id={device.deviceId}>
-                        <Menus.Button
-                          icon={<HiSquare2Stack />}
-                          onClick={() => dispatch(duplicateDevice(device))}
-                        >
-                          Duplicate
-                        </Menus.Button>
-
                         <Modal.Open opens="edit">
                           <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
                         </Modal.Open>
@@ -161,9 +154,7 @@ const DeviceTable: React.FC = () => {
                       <Modal.Window name="delete">
                         <ConfirmDelete
                           resourceName="devices"
-                          onConfirm={() =>
-                            dispatch(deleteDevice(device.deviceId))
-                          }
+                          id={device.deviceId}
                         />
                       </Modal.Window>
 
