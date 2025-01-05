@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import { HiEye, HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
 import {
-  selectFilteredDevices,
+  selectDevices,
   selectStatusOptions,
 } from "../../store/slices/devices/selectors.ts";
 import { RootState } from "../../store/store.ts";
@@ -13,6 +13,7 @@ import {
   duplicateDevice,
   deleteDevice,
   statusMapToStringDevices,
+  setDevices,
 } from "../../store/slices/devices/deviceSlice.ts";
 
 import { useSearchParams } from "react-router-dom";
@@ -30,13 +31,31 @@ import Tag from "../../ui/Tag.tsx";
 
 import { PAGE_SIZE } from "../../utils/constants.ts";
 import { selectEmployeesMap } from "../../store/slices/employees/selectors.ts";
+import { useQuery } from "@tanstack/react-query";
+import { getDevices } from "../../services/apiDevices.ts";
+import Spinner from "../../ui/Spinner.tsx";
 
 const DeviceTable: React.FC = () => {
+  const { data: devices, isLoading } = useQuery({
+    queryKey: ["devices"],
+    queryFn: () => getDevices(),
+  });
   const dispatch = useDispatch();
+  //Temporarily till the full backend service is done. Now only the barebones of the api is finished. Will refactor later.
+
+  useEffect(() => {
+    if (devices) dispatch(setDevices(devices));
+  }, [dispatch, devices]);
+
+  const devicesFromRedux = useSelector(selectDevices);
+
   const [searchParams] = useSearchParams();
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
+  const employeesMap = useSelector(selectEmployeesMap);
+
+  if (isLoading) return <Spinner />;
 
   const currentFilter = searchParams.get("status") || "all";
   const currentPage = searchParams.get("page")
@@ -52,15 +71,15 @@ const DeviceTable: React.FC = () => {
   );
   const statusCode = statusOption?.statusCode;
 
-  const devices = useSelector(selectFilteredDevices);
-  const employeesMap = useSelector(selectEmployeesMap);
-
   const filteredDevices =
     statusCode === null
-      ? devices
-      : devices.filter((device) => device.status === statusCode);
+      ? devicesFromRedux
+      : devicesFromRedux !== undefined &&
+        devicesFromRedux.filter((device) => device.status === statusCode);
 
-  const paginatedDevices = filteredDevices.slice(startIndex, endIndex);
+  const paginatedDevices = filteredDevices
+    ? filteredDevices.slice(startIndex, endIndex)
+    : [];
 
   // Handlers for advanced filter sidebar
   const handleCloseSidebar = () =>
@@ -166,7 +185,7 @@ const DeviceTable: React.FC = () => {
             )}
           />
           <Table.Footer>
-            <Pagination count={filteredDevices.length} />
+            <Pagination count={devicesFromRedux.length} />
           </Table.Footer>
         </Table>
       </Menus>
