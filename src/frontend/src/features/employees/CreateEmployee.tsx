@@ -11,10 +11,7 @@ import Input from "../../ui/Input.tsx";
 import Form from "../../ui/Form.tsx";
 import Button from "../../ui/Button.tsx";
 
-import {
-  addEmployee,
-  editEmployee,
-} from "../../store/slices/employees/employeeSlice.ts";
+import { Employee } from "../../store/slices/employees/employeeSlice.ts";
 import {
   LOCATION_OPTIONS_OFFICE_AND_REMOTE,
   ROLE_OPTIONS,
@@ -33,6 +30,10 @@ import {
 } from "../../store/slices/devices/deviceSlice.ts";
 import store from "../../store/store.ts";
 import { selectAvailableLicenses } from "../../store/slices/licenses/selectors.ts";
+
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createEmployee, editEmployee } from "../../services/apiEmployees.ts";
+import { toast } from "react-hot-toast";
 
 interface EmployeeData {
   employeeId: string;
@@ -64,7 +65,7 @@ function CreateEmployeeForm({
   onCloseModal,
 }: CreateEmployeeProps) {
   const {
-    employeeId = "",
+    employeeId,
     employeeName,
     location,
     role,
@@ -73,6 +74,30 @@ function CreateEmployeeForm({
     assignedLicenses,
   } = employeeToEdit;
   const isEditSession = Boolean(employeeId);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<void, Error, Employee>({
+    mutationFn: createEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["employees"]);
+      toast.success("Successfully created new employee");
+    },
+    onError: () => {
+      toast.error("Something went wrong while creating employee");
+    },
+  });
+
+  const { mutate } = useMutation<void, Error, Employee>({
+    mutationFn: editEmployee,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["employees"]);
+      toast.success("Successfully updated employee");
+    },
+    onError: () => {
+      toast.error("Something went wrong while updating employee");
+    },
+  });
+
   const dispatch = useDispatch();
 
   const availableDevices = useSelector(selectAvailableDevices);
@@ -96,6 +121,7 @@ function CreateEmployeeForm({
     const state = store.getState();
     const isEditSession = Boolean(data.employeeId);
 
+    console.log(data);
     if (data.assignedDevices) {
       const foundDevices = data.assignedDevices
         .map((deviceId) => findDeviceById(deviceId)(state))
@@ -108,6 +134,8 @@ function CreateEmployeeForm({
       if (isEditSession) {
         const oldDeviceIds = employeeToEdit.assignedDevices || [];
         const newDeviceIds = data.assignedDevices || [];
+
+        mutate(transformedData);
 
         dispatch(
           reassignDevicesToEmployee({
@@ -123,12 +151,9 @@ function CreateEmployeeForm({
             status: 1,
           }),
         );
-
-        dispatch(editEmployee(transformedData));
       } else {
         transformedData.employeeId = generateUniqueId();
-
-        dispatch(addEmployee(transformedData));
+        mutation.mutate(transformedData);
       }
 
       dispatch(

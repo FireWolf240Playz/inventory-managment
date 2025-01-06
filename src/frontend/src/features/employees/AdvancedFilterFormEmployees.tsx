@@ -72,6 +72,7 @@ const AdvancedFilterFormEmployees: React.FC = () => {
   const handleClear = () => {
     setLocalFilters({});
     dispatch(clearFilters());
+    dispatch(toggleAdvancedFilterSidebarEmployees());
   };
 
   return (

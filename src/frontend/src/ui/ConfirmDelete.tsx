@@ -2,8 +2,10 @@ import styled from "styled-components";
 import Button from "./Button.tsx";
 import Heading from "./Heading.tsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deleteDevice } from "../services/apiDevices.ts";
+
 import { toast } from "react-hot-toast";
+
+import { getDeleteFn } from "../services/deleteFunctions.ts";
 
 const StyledConfirmDelete = styled.div`
   width: fit-content;
@@ -27,26 +29,33 @@ const StyledConfirmDelete = styled.div`
 `;
 
 interface ConfirmDeleteProps {
-  resourceName: string;
+  resourceName: "devices" | "employees" | "licenses";
   id: string;
 }
 
 function ConfirmDelete({ resourceName, id }: ConfirmDeleteProps) {
   const queryClient = useQueryClient();
-  const { mutate } = useMutation<void, Error, string>({
-    mutationFn: deleteDevice,
+
+  const mutationFn = getDeleteFn(resourceName);
+
+  const { mutate, isLoading } = useMutation<void, Error, string>({
+    mutationFn: mutationFn,
+
+    mutationKey: [resourceName],
+
     onSuccess: () => {
-      queryClient.invalidateQueries(["devices"]);
-      toast.success("Successfully deleted device");
+      // Invalidate so the resource list is refreshed
+      queryClient.invalidateQueries([resourceName]);
+      toast.success("Successfully deleted");
     },
     onError: () => {
-      toast.error("Something went wrong while delete device");
+      toast.error("Something went wrong while deleting");
     },
   });
 
-  const handleDelete = () => {
+  function handleClick() {
     mutate(id);
-  };
+  }
 
   return (
     <StyledConfirmDelete>
@@ -59,10 +68,12 @@ function ConfirmDelete({ resourceName, id }: ConfirmDeleteProps) {
       </p>
 
       <div>
-        <Button variation="danger" onClick={handleDelete}>
-          Delete
+        <Button variation="danger" onClick={handleClick} disabled={isLoading}>
+          {isLoading ? "Deleting..." : "Delete"}
         </Button>
-        <Button variation="secondary">Cancel</Button>
+        <Button variation="secondary" disabled={isLoading}>
+          Cancel
+        </Button>
       </div>
     </StyledConfirmDelete>
   );

@@ -36,134 +36,7 @@ export interface AddLicenseToEmployeePayload {
 }
 
 const initialState: EmployeeState = {
-  employees: [
-    {
-      employeeId: "1",
-      employeeName: "John Doe",
-      department: "IT",
-      assignedDevices: ["1", "2"], // these are the ids of devices
-      assignedLicenses: ["L1"],
-      location: "New York",
-      role: ["Developer"],
-    },
-    {
-      employeeId: "2",
-      employeeName: "Jane Smith",
-      department: "Human Resources",
-      assignedDevices: null,
-      assignedLicenses: ["L2"],
-      location: "Los Angeles",
-      role: ["Manager"],
-    },
-    {
-      employeeId: "3",
-      employeeName: "Michael Brown",
-      department: "Finance",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Chicago",
-      role: ["Accountant"],
-    },
-    {
-      employeeId: "4",
-      employeeName: "Emily Davis",
-      department: "Marketing",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Sofia",
-      role: ["Marketing Specialist"],
-    },
-    {
-      employeeId: "5",
-      employeeName: "Robert Miller",
-      department: "IT",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Sofia",
-      role: ["Developer"],
-    },
-    {
-      employeeId: "6",
-      employeeName: "Sarah Wilson",
-      department: "Human Resources",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "New York",
-      role: ["Recruiter"],
-    },
-    {
-      employeeId: "7",
-      employeeName: "David Anderson",
-      department: "Finance",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Chicago",
-      role: ["Manager"],
-    },
-    {
-      employeeId: "8",
-      employeeName: "Linda Thompson",
-      department: "Marketing",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Los Angeles",
-      role: ["Manager"],
-    },
-    {
-      employeeId: "9",
-      employeeName: "Mark Williams",
-      department: "IT",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Seattle",
-      role: ["Developer"],
-    },
-    {
-      employeeId: "10",
-      employeeName: "James Adams",
-      department: "Finance",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Chicago",
-      role: ["Paralegal"],
-    },
-    {
-      employeeId: "11",
-      employeeName: "Nicole Reed",
-      department: "Marketing",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Varna",
-      role: ["Coordinator"],
-    },
-    {
-      employeeId: "12",
-      employeeName: "William Carter",
-      department: "IT",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "New York",
-      role: ["QA Engineer"],
-    },
-    {
-      employeeId: "13",
-      employeeName: "Olivia Green",
-      department: "Human Resources",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Los Angeles",
-      role: ["Assistant"],
-    },
-    {
-      employeeId: "14",
-      employeeName: "Daniel White",
-      department: "Finance",
-      assignedDevices: null,
-      assignedLicenses: null,
-      location: "Remote",
-      role: ["Analyst"],
-    },
-  ],
+  employees: [],
   filters: {},
 };
 
@@ -171,6 +44,9 @@ const employeeSlice = createSlice({
   name: "employees",
   initialState,
   reducers: {
+    setEmployees(state, action: PayloadAction<Employee[]>) {
+      state.employees = action.payload;
+    },
     setFilter(
       state,
       action: PayloadAction<{
@@ -255,6 +131,7 @@ const employeeSlice = createSlice({
 });
 
 export const {
+  setEmployees,
   setFilter,
   clearFilters,
   addEmployee,

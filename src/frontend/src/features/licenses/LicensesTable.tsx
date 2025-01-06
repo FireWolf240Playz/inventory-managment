@@ -19,10 +19,7 @@ import {
 
 import { toggleAdvancedFilterLicenses } from "../../store/slices/appSlice.ts";
 
-import {
-  duplicateLicense,
-  deleteLicense,
-} from "../../store/slices/licenses/licensesSlice.ts";
+import { duplicateLicense } from "../../store/slices/licenses/licensesSlice.ts";
 import { PAGE_SIZE } from "../../utils/constants.ts";
 
 import CreateLicense from "./CreateLicense.tsx";
@@ -124,9 +121,7 @@ function LicenseTable() {
                       <Modal.Window name="deleteLicense">
                         <ConfirmDelete
                           resourceName="licenses"
-                          onConfirm={() =>
-                            dispatch(deleteLicense(license.licenseId))
-                          }
+                          id={license.licenseId}
                         />
                       </Modal.Window>
 

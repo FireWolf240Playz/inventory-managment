@@ -3,7 +3,7 @@ import { RootState } from "../../store/store.ts";
 import Table from "../../ui/Table.tsx";
 import Menus from "../../ui/Menus.tsx";
 import Modal from "../../ui/Modal.tsx";
-import { HiPencil, HiSquare2Stack, HiTrash, HiEye } from "react-icons/hi2";
+import { HiPencil, HiTrash, HiEye } from "react-icons/hi2";
 import ConfirmDelete from "../../ui/ConfirmDelete.tsx";
 import CreateEmployeeForm from "./CreateEmployee.tsx";
 import AdvancedFilterSidebar from "../../ui/AdvancedFilterSidebar.tsx";
@@ -12,24 +12,101 @@ import Pagination from "../../ui/Pagination.tsx";
 import ViewWindow from "../../ui/ViewWindow.tsx";
 
 import { selectFilteredEmployees } from "../../store/slices/employees/selectors.ts";
-import { selectDevicesMap } from "../../store/slices/devices/selectors.ts";
 
 import { toggleAdvancedFilterSidebarEmployees } from "../../store/slices/appSlice.ts";
 import {
-  duplicateEmployee,
   editEmployee,
-  deleteEmployee,
+  setEmployees,
 } from "../../store/slices/employees/employeeSlice.ts";
 
+import { getEmployees } from "../../services/apiEmployees.ts";
 import { PAGE_SIZE } from "../../utils/constants.ts";
 import { useSearchParams } from "react-router-dom";
-import { selectLicensesMap } from "../../store/slices/licenses/selectors.ts";
 
+import { useQuery } from "@tanstack/react-query";
+import Spinner from "../../ui/Spinner.tsx";
+import { useEffect, useMemo } from "react";
+import { getDevices } from "../../services/apiDevices.ts";
+import { getLicenses } from "../../services/apiLicenses.ts";
+import { Device, setDevices } from "../../store/slices/devices/deviceSlice.ts";
+import {
+  License,
+  setLicenses,
+} from "../../store/slices/licenses/licensesSlice.ts";
 function EmployeesTable() {
+  const dispatch = useDispatch();
+
+  const { data: employees, isLoading: isEmployeesLoading } = useQuery<
+    Employee[],
+    Error
+  >({
+    queryKey: ["employees"],
+    queryFn: getEmployees,
+  });
+
+  // Fetch devices
+  const { data: devices, isLoading: isDevicesLoading } = useQuery<
+    Device[],
+    Error
+  >({
+    queryKey: ["devices"],
+    queryFn: getDevices,
+  });
+
+  // Fetch licenses
+  const { data: licenses, isLoading: isLicensesLoading } = useQuery<
+    License[],
+    Error
+  >({
+    queryKey: ["licenses"],
+    queryFn: getLicenses,
+  });
+
+  useEffect(() => {
+    if (employees) dispatch(setEmployees(employees));
+  }, [dispatch, employees]);
+
+  useEffect(() => {
+    if (employees) {
+      dispatch(setEmployees(employees));
+    }
+  }, [dispatch, employees]);
+
+  useEffect(() => {
+    if (devices) {
+      dispatch(setDevices(devices));
+    }
+  }, [dispatch, devices]);
+
+  useEffect(() => {
+    if (licenses) {
+      dispatch(setLicenses(licenses));
+    }
+  }, [dispatch, licenses]);
+
+  const deviceMap = useMemo(() => {
+    if (!devices) return;
+    const map: Record<string, Device> = {};
+    devices.forEach((dev: Device) => {
+      map[dev.deviceId] = dev;
+    });
+    return map;
+  }, [devices]);
+
+  const licenseMap = useMemo(() => {
+    if (!licenses) return {};
+    const map: Record<string, License> = {};
+    licenses.forEach((lic: License) => {
+      map[lic.licenseId] = lic;
+    });
+    return map;
+  }, [licenses]);
+
+  const filteredEmployeesAdvanced = useSelector(selectFilteredEmployees);
+
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarEmployees,
   );
-  const dispatch = useDispatch();
 
   const [searchParams] = useSearchParams();
   const currentPage = searchParams.get("page")
@@ -39,15 +116,16 @@ function EmployeesTable() {
   const startIndex = (currentPage - 1) * PAGE_SIZE;
   const endIndex = currentPage * PAGE_SIZE;
 
-  const employees = useSelector(selectFilteredEmployees);
-  const deviceMap = useSelector(selectDevicesMap);
-  const licenseMap = useSelector(selectLicensesMap);
-
-  const paginatedEmployees = employees.slice(startIndex, endIndex);
+  const paginatedEmployees = filteredEmployeesAdvanced
+    ? filteredEmployeesAdvanced.slice(startIndex, endIndex)
+    : [];
 
   const handleCloseFilterSidebar = () => {
     dispatch(toggleAdvancedFilterSidebarEmployees());
   };
+
+  if (isDevicesLoading || isLicensesLoading || isEmployeesLoading)
+    return <Spinner />;
 
   return (
     <>
@@ -81,27 +159,26 @@ function EmployeesTable() {
                 <div data-label="Name:">{employee.employeeName}</div>
                 <div data-label="Department:">{employee.department}</div>
                 <div data-label="Assigned Devices:">
-                  {employee.assignedDevices &&
-                  employee.assignedDevices.length > 0
+                  {employee.assignedDevices
                     ? employee.assignedDevices
-                        .map(
-                          (deviceId) =>
-                            deviceMap[deviceId]?.model ?? "Unknown device",
-                        )
-                        .join(", ")
-                    : "No devices assigned"}
-                </div>
-                <div data-label="Assigned Licenses:">
-                  {employee.assignedLicenses &&
-                  employee.assignedLicenses.length > 0
-                    ? employee.assignedLicenses
-                        .map(
-                          (licenseId) =>
-                            licenseMap[licenseId]?.licenseName ??
+                        ?.map(
+                          (devId) =>
+                            (deviceMap !== undefined &&
+                              deviceMap[devId]?.model) ||
                             "Unknown device",
                         )
                         .join(", ")
-                    : "No licenses assigned"}
+                    : "No assigned devices"}
+                </div>
+                <div data-label="Assigned Licenses:">
+                  {employee.assignedLicenses
+                    ? employee.assignedLicenses
+                        ?.map(
+                          (licId) =>
+                            licenseMap[licId]?.licenseName || "Unknown device",
+                        )
+                        .join(", ")
+                    : "No assigned licenses"}
                 </div>
                 <div data-label="Location:">{employee.location}</div>
                 <div data-label="Role:">{employee.role}</div>
@@ -111,13 +188,6 @@ function EmployeesTable() {
                       <Menus.Toggle id={employee.employeeId} />
 
                       <Menus.List id={employee.employeeId}>
-                        <Menus.Button
-                          icon={<HiSquare2Stack />}
-                          onClick={() => dispatch(duplicateEmployee(employee))}
-                        >
-                          Duplicate
-                        </Menus.Button>
-
                         <Modal.Open opens="edit">
                           <Menus.Button
                             icon={<HiPencil />}
@@ -143,10 +213,7 @@ function EmployeesTable() {
                       <Modal.Window name="delete">
                         <ConfirmDelete
                           resourceName="employees"
-                          disabled={false}
-                          onConfirm={() =>
-                            dispatch(deleteEmployee(employee.employeeId))
-                          }
+                          id={employee.employeeId}
                         />
                       </Modal.Window>
 
@@ -158,15 +225,8 @@ function EmployeesTable() {
                             Department: employee.department,
                             Role: employee.role,
                             Location: employee.location,
-                            Assigned: employee.assignedDevices
-                              ? employee.assignedDevices
-                                  .map(
-                                    (deviceId) =>
-                                      deviceMap[deviceId]?.model ??
-                                      "Unknown device",
-                                  )
-                                  .join(", ")
-                              : "No devices assigned",
+                            " Assigned Devices": employee.assignedDevices,
+                            "Assigned Licenses": employee.assignedLicenses,
                           }}
                         />
                       </Modal.Window>
@@ -177,7 +237,7 @@ function EmployeesTable() {
             )}
           />
           <Table.Footer>
-            <Pagination count={employees.length} />
+            <Pagination count={filteredEmployeesAdvanced.length} />
           </Table.Footer>
         </Table>
       </Menus>

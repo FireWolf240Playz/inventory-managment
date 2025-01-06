@@ -21,6 +21,5 @@ export async function editDevice(device: Device): Promise<void> {
 }
 
 export async function deleteDevice(id: string): Promise<void> {
-  const response = await api.delete(`/devices/${id}`);
-  return response.data;
+  await api.delete(`/devices/${id}`);
 }
