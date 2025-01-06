@@ -14,16 +14,17 @@ import Input from "../../ui/Input.tsx";
 import Button from "../../ui/Button.tsx";
 
 import { generateUniqueId } from "../../store/slices/entityUtils.ts";
-import {
-  addLicense,
-  editLicense,
-} from "../../store/slices/licenses/licensesSlice.ts";
+import { License } from "../../store/slices/licenses/licensesSlice.ts";
 import {
   selectAllEmployees,
   findEmployeeById,
 } from "../../store/slices/employees/selectors.ts";
 import store from "../../store/store.ts";
 import { selectLicenseTypeOptions } from "../../store/slices/licenses/selectors.ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createLicense, editLicense } from "../../services/apiLicenses.ts";
+import { toast } from "react-hot-toast";
+import { addLicenseToEmployee } from "../../store/slices/employees/employeeSlice.ts";
 
 interface LicenseData {
   licenseId: string;
@@ -66,6 +67,28 @@ function CreateLicenseForm({
   } = licenseToEdit;
   const isEditSession = Boolean(licenseId);
 
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<void, Error, License>({
+    mutationFn: createLicense,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["licenses"]);
+      toast.success("Successfully created new license");
+    },
+  });
+
+  const { mutate } = useMutation<void, Error, License>({
+    mutationFn: editLicense,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["licenses"]);
+      toast.success("Successfully updated new license");
+    },
+
+    onError: () => {
+      toast.error("Something went wrong while updating license");
+    },
+  });
+
   const dispatch = useDispatch();
 
   const allEmployees = useSelector(selectAllEmployees);
@@ -91,23 +114,31 @@ function CreateLicenseForm({
     const foundEmployee = findEmployeeById(data.assignedTo)(state);
 
     if (!foundEmployee) return;
-    const transformedData = {
+    const transformedData: License = {
       ...data,
       status: 1 as const,
-      assignedTo: foundEmployee.employeeName,
+      assignedTo: foundEmployee.employeeId,
       department: foundEmployee.department,
     };
 
     if (isEditSession) {
       // 2A) Editing an existing license
-      dispatch(editLicense(transformedData));
+      mutate(transformedData);
     } else {
       // 2B) Creating a new license
-      transformedData.licenseId = generateUniqueId();
-      dispatch(addLicense(transformedData));
+      const newId = generateUniqueId();
+      transformedData.licenseId = newId;
+      mutation.mutate(transformedData);
+
+      dispatch(
+        addLicenseToEmployee({
+          employeeId: foundEmployee.employeeId,
+          licenseId: newId,
+        }),
+      );
     }
 
-    if (onCloseModal) onCloseModal();
+    onCloseModal?.();
   };
 
   const onError: SubmitErrorHandler<LicenseData> = (errors) => {
@@ -159,7 +190,7 @@ function CreateLicenseForm({
               options={allEmployees}
               value={allEmployees.filter((opt) => value === opt.value)}
               onChange={(selectedOption) =>
-                onChange(selectedOption ? selectedOption.value : "")
+                onChange(selectedOption ? selectedOption.value : null)
               }
               isClearable
               maxMenuHeight={200}

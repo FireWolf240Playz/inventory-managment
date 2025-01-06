@@ -1,9 +1,11 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export type LicenseType = "subscriptions" | "perpetual" | string;
+
 export interface ILicense extends Document {
   licenseId: string;
   licenseName: string;
-  type: "Subscription" | "Perpetual";
+  type: LicenseType;
   assignedTo: string | null;
   status: 0 | 1 | 2;
   department: string;

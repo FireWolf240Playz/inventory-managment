@@ -137,78 +137,87 @@ function LicenseTable() {
 
           <Table.Body
             data={paginatedLicenses}
-            render={(license) => (
-              <Table.Row key={license.licenseId}>
-                <div data-label="License ID:"> {license.licenseId}</div>
-                <div data-label="Name:">
-                  <span>{license.licenseName}</span>
-                </div>
-                <div data-label="Status:">
-                  <Tag status={license.status} />
-                </div>
-                <div data-label="Type:">{license.type}</div>
-                <div data-label="Assigned To:">
-                  {license.assignedTo && employeesMap[license.assignedTo]
-                    ? employeesMap[license.assignedTo].employeeName
-                    : "Not assigned"}
-                </div>
+            render={(license) => {
+              console.log("License Assigned To:", license.assignedTo);
+              console.log(license);
+              return (
+                <Table.Row key={license.licenseId}>
+                  <div data-label="License ID:"> {license.licenseId}</div>
+                  <div data-label="Name:">
+                    <span>{license.licenseName}</span>
+                  </div>
+                  <div data-label="Status:">
+                    <Tag status={license.status} />
+                  </div>
+                  <div data-label="Type:">{license.type}</div>
+                  <div data-label="Assigned To:">
+                    {license.assignedTo && employeesMap[license.assignedTo]
+                      ? employeesMap[license.assignedTo].employeeName
+                      : "Not assigned"}
+                  </div>
 
-                <div data-label="Department:">
-                  {license.department || "No department"}
-                </div>
-                <div data-label="Actions:">
-                  <Modal>
-                    <Menus.Menu>
-                      <Menus.Toggle id={license.licenseId} />
+                  <div data-label="Department:">
+                    {license.department || "No department"}
+                  </div>
+                  <div data-label="Actions:">
+                    <Modal>
+                      <Menus.Menu>
+                        <Menus.Toggle id={license.licenseId} />
 
-                      <Menus.List id={license.licenseId}>
-                        <Modal.Open opens="editLicense">
-                          <Menus.Button icon={<HiPencil />}>Edit</Menus.Button>
-                        </Modal.Open>
+                        <Menus.List id={license.licenseId}>
+                          <Modal.Open opens="editLicense">
+                            <Menus.Button icon={<HiPencil />}>
+                              Edit
+                            </Menus.Button>
+                          </Modal.Open>
 
-                        <Modal.Open opens="deleteLicense">
-                          <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
-                        </Modal.Open>
+                          <Modal.Open opens="deleteLicense">
+                            <Menus.Button icon={<HiTrash />}>
+                              Delete
+                            </Menus.Button>
+                          </Modal.Open>
 
-                        <Modal.Open opens="viewLicense">
-                          <Menus.Button icon={<HiEye />}>View</Menus.Button>
-                        </Modal.Open>
-                      </Menus.List>
+                          <Modal.Open opens="viewLicense">
+                            <Menus.Button icon={<HiEye />}>View</Menus.Button>
+                          </Modal.Open>
+                        </Menus.List>
 
-                      <Modal.Window name="editLicense">
-                        <CreateLicense licenseToEdit={license} />
-                      </Modal.Window>
+                        <Modal.Window name="editLicense">
+                          <CreateLicense licenseToEdit={license} />
+                        </Modal.Window>
 
-                      <Modal.Window name="deleteLicense">
-                        <ConfirmDelete
-                          resourceName="licenses"
-                          id={license.licenseId}
-                        />
-                      </Modal.Window>
+                        <Modal.Window name="deleteLicense">
+                          <ConfirmDelete
+                            resourceName="licenses"
+                            id={license.licenseId}
+                          />
+                        </Modal.Window>
 
-                      <Modal.Window name="viewLicense">
-                        <ViewWindow
-                          details={{
-                            "License ID": license.licenseId,
-                            Name: license.licenseName,
-                            Type: license.type,
-                            "Assigned To":
-                              license.assignedTo &&
-                              employeesMap[license.assignedTo]
-                                ? employeesMap[license.assignedTo].employeeName
-                                : "Unassigned",
-                            Status:
-                              statusMapToStringLicenses[license.status] ||
-                              "Unknown status",
-                            Department: license.department || "No department",
-                          }}
-                        />
-                      </Modal.Window>
-                    </Menus.Menu>
-                  </Modal>
-                </div>
-              </Table.Row>
-            )}
+                        <Modal.Window name="viewLicense">
+                          <ViewWindow
+                            details={{
+                              "License ID": license.licenseId,
+                              Name: license.licenseName,
+                              Type: license.type,
+                              "Assigned To":
+                                license.assignedTo &&
+                                employeesMap[license.assignedTo]
+                                  ? employeesMap[license.assignedTo]
+                                      .employeeName
+                                  : "Unassigned",
+                              Status:
+                                statusMapToStringLicenses[license.status] ||
+                                "Unknown status",
+                              Department: license.department || "No department",
+                            }}
+                          />
+                        </Modal.Window>
+                      </Menus.Menu>
+                    </Modal>
+                  </div>
+                </Table.Row>
+              );
+            }}
           />
           <Table.Footer>
             <Pagination count={filteredLicenses.length} />

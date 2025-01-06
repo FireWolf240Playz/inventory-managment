@@ -159,7 +159,7 @@ function EmployeesTable() {
                     ? employee.assignedLicenses
                         ?.map(
                           (licId) =>
-                            licenseMap[licId]?.licenseName || "Unknown device",
+                            licenseMap[licId]?.licenseName || "Unknown license",
                         )
                         .join(", ")
                     : "No assigned licenses"}

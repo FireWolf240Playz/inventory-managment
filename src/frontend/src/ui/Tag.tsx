@@ -16,7 +16,7 @@ interface StatusMapping {
 // Define the props for the Tag component
 interface TagProps {
   status: StatusCode;
-  purpose: Purpose;
+  purpose?: Purpose;
 }
 
 // Status mappings for devices

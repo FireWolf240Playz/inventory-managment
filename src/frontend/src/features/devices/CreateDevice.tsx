@@ -65,7 +65,7 @@ function CreateDeviceForm({
     mutationFn: createDevice,
     onSuccess: () => {
       queryClient.invalidateQueries(["devices"]);
-      toast.success("Successfully created new  device");
+      toast.success("Successfully created new device");
     },
     onError: () => {
       toast.error("Something went wrong while creating device");
@@ -103,8 +103,6 @@ function CreateDeviceForm({
     const foundEmployee = findEmployeeById(data.assignedTo)(state);
     if (!foundEmployee) return;
 
-    const isEditSession = Boolean(data.deviceId);
-
     const transformedData: Device = {
       ...data,
       assignedTo: foundEmployee.employeeId,
@@ -134,7 +132,7 @@ function CreateDeviceForm({
       );
     }
 
-    if (onCloseModal) onCloseModal();
+    onCloseModal?.();
   };
 
   const onError: SubmitErrorHandler<DeviceData> = (errors) => {

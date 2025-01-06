@@ -2,6 +2,7 @@ import { createSelector } from "@reduxjs/toolkit";
 import { RootState } from "../../store.ts";
 
 import { License } from "./licensesSlice.ts";
+import { LicenseType } from "../../../../../backend/src/models/License.ts";
 
 export const selectLicenses = (state: RootState) => state.licenses.licenses;
 export const selectLicenseFilters = (state: RootState) =>
@@ -108,13 +109,24 @@ export const selectLicenseAssignedToOptions = createSelector(
 
 export const selectLicenseTypeOptions = createSelector(
   [selectLicenses],
-  (licenses) =>
-    Array.from(new Set(licenses.map((license) => license.type))).map(
-      (type) => ({
-        value: type,
-        label: type,
-      }),
-    ),
+  (licenses) => {
+    const defaultLicenseTypes: LicenseType[] = ["subscriptions", "perpetual"];
+    // Extract unique types from licenses
+    const uniqueTypes = Array.from(
+      new Set(licenses.map((license) => license.type)),
+    );
+
+    // Combine default types with unique types, ensuring no duplicates
+    const combinedTypes: LicenseType[] = Array.from(
+      new Set([...defaultLicenseTypes, ...uniqueTypes]),
+    );
+
+    // Map types to option objects
+    return combinedTypes.map((type) => ({
+      value: type,
+      label: type,
+    }));
+  },
 );
 
 export const selectAvailableLicenses = createSelector(
