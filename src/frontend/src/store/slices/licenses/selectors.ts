@@ -74,9 +74,14 @@ export const selectLicenseIdOptions = createSelector(
 
 export const selectLicenseStatusOptions = () => [
   { value: "all", label: "All", statusCode: null },
-  { value: "0", label: "Available", statusCode: 0 },
-  { value: "1", label: "In Use", statusCode: 1 },
-  { value: "2", label: "Under Maintenance", statusCode: 2 },
+  { value: "available", label: "Available", statusCode: 0, color: "indigo" },
+  { value: "in-use", label: "In Use", statusCode: 1, color: "green" },
+  {
+    value: "under-maintenance",
+    label: "Under Maintenance",
+    statusCode: 2,
+    color: "yellow",
+  },
 ];
 
 export const selectLicenseNameOptions = createSelector(

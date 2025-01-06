@@ -113,7 +113,7 @@ const DeviceTable: React.FC = () => {
       <Menus>
         <Table columns="0.5fr 1fr 1fr 1fr 1fr 0.5fr">
           <Table.Header>
-            <div>ID</div>
+            <div>Device ID</div>
             <div>Model</div>
             <div>Status</div>
             <div>Assigned To</div>
@@ -125,10 +125,12 @@ const DeviceTable: React.FC = () => {
             data={paginatedDevices}
             render={(device) => (
               <Table.Row key={device.deviceId}>
-                <div data-label="ID:">{device.deviceId}</div>
-                <div data-label="Model:">{device.model}</div>
+                <div data-label="Device ID:">{device.deviceId}</div>
+                <div data-label="Model:">
+                  <span>{device.model}</span>{" "}
+                </div>
                 <div data-label="Status:">
-                  <Tag status={device.status} />
+                  <Tag status={device.status} purpose={"devices"} />
                 </div>
                 <div data-label="Assigned To:">
                   {device.assignedTo && employeesMap[device.assignedTo]

@@ -60,9 +60,14 @@ export const selectIdOptions = createSelector([selectDevices], (devices) =>
 
 export const selectStatusOptions = () => [
   { value: "all", label: "All", statusCode: null }, // Use null for "all"
-  { value: "available", label: "Available", statusCode: 0 },
-  { value: "in-use", label: "In Use", statusCode: 1 },
-  { value: "under-maintenance", label: "Under Maintenance", statusCode: 2 },
+  { value: "available", label: "Available", statusCode: 0, color: "indigo" },
+  { value: "in-use", label: "In Use", statusCode: 1, color: "green" },
+  {
+    value: "under-maintenance",
+    label: "Under Maintenance",
+    statusCode: 2,
+    color: "yellow",
+  },
 ];
 
 export const selectModelOptions = createSelector([selectDevices], (devices) =>

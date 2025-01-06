@@ -27,7 +27,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 import Spinner from "../../ui/Spinner.tsx";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { getDevices } from "../../services/apiDevices.ts";
 import { getLicenses } from "../../services/apiLicenses.ts";
 import { Device, setDevices } from "../../store/slices/devices/deviceSlice.ts";
@@ -35,14 +35,8 @@ import {
   License,
   setLicenses,
 } from "../../store/slices/licenses/licensesSlice.ts";
-import {
-  selectDevicesMap,
-  selectFilteredDevices,
-} from "../../store/slices/devices/selectors.ts";
-import {
-  selectLicenses,
-  selectLicensesMap,
-} from "../../store/slices/licenses/selectors.ts";
+import { selectDevicesMap } from "../../store/slices/devices/selectors.ts";
+import { selectLicensesMap } from "../../store/slices/licenses/selectors.ts";
 function EmployeesTable() {
   const dispatch = useDispatch();
 
@@ -74,12 +68,6 @@ function EmployeesTable() {
 
   useEffect(() => {
     if (employees) dispatch(setEmployees(employees));
-  }, [dispatch, employees]);
-
-  useEffect(() => {
-    if (employees) {
-      dispatch(setEmployees(employees));
-    }
   }, [dispatch, employees]);
 
   useEffect(() => {
@@ -150,7 +138,9 @@ function EmployeesTable() {
             render={(employee) => (
               <Table.Row key={employee.employeeId}>
                 <div data-label="ID:">{employee.employeeId}</div>
-                <div data-label="Name:">{employee.employeeName}</div>
+                <div data-label="Name:">
+                  <span>{employee.employeeName}</span>
+                </div>
                 <div data-label="Department:">{employee.department}</div>
                 <div data-label="Assigned Devices:">
                   {employee.assignedDevices

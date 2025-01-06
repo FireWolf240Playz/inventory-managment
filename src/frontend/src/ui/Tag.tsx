@@ -1,10 +1,26 @@
+import React from "react";
 import styled from "styled-components";
 
-interface TagProps {
-  status: 0 | 1 | 2; // Define the possible status values
+// Define the possible purposes as a TypeScript union type
+type Purpose = "devices" | "licenses";
+
+// Define the possible status codes
+type StatusCode = 0 | 1 | 2;
+
+// Define the shape of each status mapping
+interface StatusMapping {
+  text: string;
+  color: string;
 }
 
-const statusMap = {
+// Define the props for the Tag component
+interface TagProps {
+  status: StatusCode;
+  purpose: Purpose;
+}
+
+// Status mappings for devices
+const statusMapDevices: Record<StatusCode, StatusMapping> = {
   0: {
     text: "Available",
     color: "indigo",
@@ -19,20 +35,41 @@ const statusMap = {
   },
 };
 
+// Status mappings for licenses
+const statusMapLicenses: Record<StatusCode, StatusMapping> = {
+  0: {
+    text: "Available",
+    color: "indigo",
+  },
+  1: {
+    text: "In Use",
+    color: "green",
+  },
+  2: {
+    text: "Expired",
+    color: "red",
+  },
+};
+
 const StyledTag = styled.span<{ color: string }>`
-  width: fit-content;
+  display: inline-block;
   text-transform: uppercase;
-  font-size: 1.1rem;
-  padding: 0.4rem 1.2rem;
-  border-radius: 100px;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
   color: var(--color-${(props) => props.color}-700);
   background-color: var(--color-${(props) => props.color}-100);
 `;
 
-function Tag({ status }: TagProps) {
-  const { text, color } = statusMap[status];
+const Tag: React.FC<TagProps> = ({ status, purpose }) => {
+  const statusMap =
+    purpose === "devices" ? statusMapDevices : statusMapLicenses;
 
-  return <StyledTag color={color}>{text}</StyledTag>;
-}
+  const statusDetails = statusMap[status] || { text: "Unknown", color: "gray" };
+
+  return (
+    <StyledTag color={statusDetails.color}>{statusDetails.text}</StyledTag>
+  );
+};
 
 export default Tag;
