@@ -19,6 +19,8 @@ import {
   setEmployees,
 } from "../../store/slices/employees/employeeSlice.ts";
 
+import { Employee } from "../../store/slices/employees/employeeSlice.ts";
+
 import { getEmployees } from "../../services/apiEmployees.ts";
 import { PAGE_SIZE } from "../../utils/constants.ts";
 import { useSearchParams } from "react-router-dom";

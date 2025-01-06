@@ -32,18 +32,30 @@ import { selectEmployeesMap } from "../../store/slices/employees/selectors.ts";
 import { useQuery } from "@tanstack/react-query";
 import { getDevices } from "../../services/apiDevices.ts";
 import Spinner from "../../ui/Spinner.tsx";
+import { getEmployees } from "../../services/apiEmployees.ts";
+import { setEmployees } from "../../store/slices/employees/employeeSlice.ts";
 
 const DeviceTable: React.FC = () => {
   const { data: devices, isLoading } = useQuery({
     queryKey: ["devices"],
     queryFn: () => getDevices(),
   });
+
+  const { data: employees, isLoading: isEmployeesLoading } = useQuery({
+    queryKey: ["employees"],
+    queryFn: getEmployees,
+  });
+
   const dispatch = useDispatch();
   //Temporarily till the full backend service is done. Now only the barebones of the api is finished. Will refactor later.
 
   useEffect(() => {
     if (devices) dispatch(setDevices(devices));
   }, [dispatch, devices]);
+
+  useEffect(() => {
+    if (employees) dispatch(setEmployees(employees));
+  }, [dispatch, employees]);
 
   const filteredDevicesAdvanced = useSelector(selectFilteredDevices);
 
@@ -52,8 +64,6 @@ const DeviceTable: React.FC = () => {
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
   const employeesMap = useSelector(selectEmployeesMap);
-
-  if (isLoading) return <Spinner />;
 
   const currentFilter = searchParams.get("status") || "all";
   const currentPage = searchParams.get("page")
@@ -84,6 +94,8 @@ const DeviceTable: React.FC = () => {
   // Handlers for advanced filter sidebar
   const handleCloseSidebar = () =>
     dispatch(setAdvancedFilterSidebarStateDevices(false));
+
+  if (isLoading || isEmployeesLoading) return <Spinner />;
 
   return (
     <>
@@ -119,10 +131,9 @@ const DeviceTable: React.FC = () => {
                   <Tag status={device.status} />
                 </div>
                 <div data-label="Assigned To:">
-                  {device.assignedTo
-                    ? employeesMap[device.assignedTo]?.employeeName ||
-                      "Unknown employee"
-                    : "Unassigned"}
+                  {device.assignedTo && employeesMap[device.assignedTo]
+                    ? employeesMap[device.assignedTo].employeeName
+                    : "Not assigned"}
                 </div>
                 <div data-label="Department:">
                   {device.status === 0 ? "No department" : device.department}
@@ -164,7 +175,11 @@ const DeviceTable: React.FC = () => {
                             "Device ID": device.deviceId,
                             Model: device.model,
                             Status: statusMapToStringDevices[device.status],
-                            "Assigned to": device.assignedTo,
+                            "Assigned to":
+                              device.assignedTo &&
+                              employeesMap[device.assignedTo]
+                                ? employeesMap[device.assignedTo].employeeName
+                                : "Not assigned",
                             Department: device.department,
                           }}
                         />
