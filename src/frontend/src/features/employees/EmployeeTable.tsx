@@ -35,6 +35,14 @@ import {
   License,
   setLicenses,
 } from "../../store/slices/licenses/licensesSlice.ts";
+import {
+  selectDevicesMap,
+  selectFilteredDevices,
+} from "../../store/slices/devices/selectors.ts";
+import {
+  selectLicenses,
+  selectLicensesMap,
+} from "../../store/slices/licenses/selectors.ts";
 function EmployeesTable() {
   const dispatch = useDispatch();
 
@@ -86,25 +94,9 @@ function EmployeesTable() {
     }
   }, [dispatch, licenses]);
 
-  const deviceMap = useMemo(() => {
-    if (!devices) return;
-    const map: Record<string, Device> = {};
-    devices.forEach((dev: Device) => {
-      map[dev.deviceId] = dev;
-    });
-    return map;
-  }, [devices]);
-
-  const licenseMap = useMemo(() => {
-    if (!licenses) return {};
-    const map: Record<string, License> = {};
-    licenses.forEach((lic: License) => {
-      map[lic.licenseId] = lic;
-    });
-    return map;
-  }, [licenses]);
-
   const filteredEmployeesAdvanced = useSelector(selectFilteredEmployees);
+  const devicesMap = useSelector(selectDevicesMap);
+  const licenseMap = useSelector(selectLicensesMap);
 
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarEmployees,
@@ -165,8 +157,8 @@ function EmployeesTable() {
                     ? employee.assignedDevices
                         ?.map(
                           (devId) =>
-                            (deviceMap !== undefined &&
-                              deviceMap[devId]?.model) ||
+                            (devicesMap !== undefined &&
+                              devicesMap[devId]?.model) ||
                             "Unknown device",
                         )
                         .join(", ")
@@ -227,8 +219,27 @@ function EmployeesTable() {
                             Department: employee.department,
                             Role: employee.role,
                             Location: employee.location,
-                            " Assigned Devices": employee.assignedDevices,
-                            "Assigned Licenses": employee.assignedLicenses,
+                            "Assigned Devices": employee.assignedDevices
+                              ? employee.assignedDevices
+                                  ?.map(
+                                    (devId) =>
+                                      (devicesMap !== undefined &&
+                                        devicesMap[devId]?.model) ||
+                                      "Unknown device",
+                                  )
+                                  .join(", ")
+                              : "No assigned devices",
+
+                            "Assigned Licenses": employee.assignedLicenses
+                              ? employee.assignedLicenses
+                                  ?.map(
+                                    (licId) =>
+                                      (licenseMap !== undefined &&
+                                        licenseMap[licId]?.licenseName) ||
+                                      "Unknown license",
+                                  )
+                                  .join(", ")
+                              : "No assigned licenses",
                           }}
                         />
                       </Modal.Window>

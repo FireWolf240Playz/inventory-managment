@@ -57,12 +57,12 @@ const DeviceTable: React.FC = () => {
     if (employees) dispatch(setEmployees(employees));
   }, [dispatch, employees]);
 
-  const filteredDevicesAdvanced = useSelector(selectFilteredDevices);
-
   const [searchParams] = useSearchParams();
+
   const isCollapsedAdvancedSidebar = useSelector(
     (state: RootState) => state.app.isCollapsedAdvancedSidebarDevices,
   );
+  const filteredDevicesAdvanced = useSelector(selectFilteredDevices);
   const employeesMap = useSelector(selectEmployeesMap);
 
   const currentFilter = searchParams.get("status") || "all";
