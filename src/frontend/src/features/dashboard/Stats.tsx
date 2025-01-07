@@ -52,7 +52,7 @@ function Stats() {
 
   const { data: licenses, isLoading: isLoadingLicenses } = useQuery({
     queryFn: getLicenses,
-    queryKey: ["devices"],
+    queryKey: ["licenses"],
   });
 
   useEffect(() => {
@@ -60,7 +60,7 @@ function Stats() {
       dispatch(setDevices(devices));
       dispatch(setLicenses(licenses));
     }
-  }, [dispatch, devices]);
+  }, [dispatch, devices, licenses]);
 
   const allDevices = useSelector(selectDevices);
   const availableDevices = useSelector(selectAvailableDevices);
