@@ -16,7 +16,10 @@ import {
   findEmployeeById,
   selectAllEmployees,
 } from "../../store/slices/employees/selectors";
-import { addDeviceToEmployee } from "../../store/slices/employees/employeeSlice";
+import {
+  addDeviceToEmployee,
+  Employee,
+} from "../../store/slices/employees/employeeSlice";
 import Select from "react-select";
 import store from "../../store/store";
 import { createDevice, editDevice } from "../../services/apiDevices";
@@ -24,6 +27,7 @@ import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Device } from "../../store/slices/devices/deviceSlice.ts";
+import { editEmployee } from "../../services/apiEmployees.ts";
 
 interface DeviceData {
   model: string;
@@ -83,7 +87,6 @@ function CreateDeviceForm({
     },
   });
 
-  const dispatch = useDispatch();
   const allEmployees = useSelector(selectAllEmployees);
 
   const { register, handleSubmit, reset, formState, control } =
@@ -99,40 +102,43 @@ function CreateDeviceForm({
   const { errors } = formState;
 
   const onSubmit: SubmitHandler<DeviceData> = async (data) => {
-    const state = store.getState();
-    const foundEmployee = findEmployeeById(data.assignedTo)(state);
-    if (!foundEmployee) return;
+    try {
+      const state = store.getState();
+      const foundEmployee = findEmployeeById(data.assignedTo)(state);
 
-    const transformedData: Device = {
-      ...data,
-      assignedTo: foundEmployee.employeeId,
-      status: 1,
-      department: foundEmployee.department,
-    };
+      if (!foundEmployee) {
+        console.error("No employee found for the provided ID.");
+        return;
+      }
 
-    if (isEditSession) {
-      mutate(transformedData);
-      dispatch(
-        addDeviceToEmployee({
-          employeeId: foundEmployee.employeeId,
-          deviceId: transformedData.deviceId,
-        }),
-      );
-    } else {
-      const newId = generateUniqueId();
-      transformedData.deviceId = newId;
+      const deviceId = isEditSession ? data.deviceId : generateUniqueId();
 
-      mutation.mutate(transformedData);
+      const transformedData: Device = {
+        ...data,
+        deviceId,
+        status: 1,
+        assignedTo: foundEmployee.employeeId,
+        department: foundEmployee.department,
+      };
 
-      dispatch(
-        addDeviceToEmployee({
-          employeeId: foundEmployee.employeeId,
-          deviceId: newId,
-        }),
-      );
+      if (isEditSession) {
+        mutate(transformedData);
+      } else {
+        mutation.mutate(transformedData);
+      }
+
+      const updatedEmployee: Employee = {
+        ...foundEmployee,
+        assignedDevices: [...(foundEmployee.assignedDevices || []), deviceId],
+      };
+
+      // Update the employee in the backend
+      await editEmployee(updatedEmployee);
+
+      onCloseModal?.();
+    } catch (error) {
+      console.error("Error in onSubmit:", error);
     }
-
-    onCloseModal?.();
   };
 
   const onError: SubmitErrorHandler<DeviceData> = (errors) => {

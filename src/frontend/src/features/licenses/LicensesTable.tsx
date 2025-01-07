@@ -138,8 +138,6 @@ function LicenseTable() {
           <Table.Body
             data={paginatedLicenses}
             render={(license) => {
-              console.log("License Assigned To:", license.assignedTo);
-              console.log(license);
               return (
                 <Table.Row key={license.licenseId}>
                   <div data-label="License ID:"> {license.licenseId}</div>

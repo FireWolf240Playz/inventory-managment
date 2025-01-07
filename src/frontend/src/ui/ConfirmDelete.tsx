@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
 import { getDeleteFn } from "../services/deleteFunctions.ts";
+import { useDispatch } from "react-redux";
 
 const StyledConfirmDelete = styled.div`
   width: fit-content;
@@ -38,7 +39,7 @@ function ConfirmDelete({ resourceName, id }: ConfirmDeleteProps) {
 
   const mutationFn = getDeleteFn(resourceName);
 
-  const { mutate, isLoading } = useMutation<void, Error, string>({
+  const { mutate } = useMutation<void, Error, string>({
     mutationFn: mutationFn,
 
     mutationKey: [resourceName],

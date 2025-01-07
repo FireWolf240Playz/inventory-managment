@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import License, { ILicense } from "../models/License";
 import { asyncHandler } from "../utils/asyncHandlerWrapper";
+import Employee from "../models/Employee";
 
 export const getAllLicenses = asyncHandler(
   async (req: Request, res: Response) => {
@@ -80,10 +81,15 @@ export const updateLicense = asyncHandler(
 export const deleteLicense = asyncHandler(
   async (req: Request, res: Response) => {
     const { licenseId } = req.params;
+
+    await Employee.updateMany(
+      { assignedLicenses: licenseId },
+      { $pull: { assignedLicenses: licenseId } },
+    );
+
     const deletedLicense = await License.findOneAndDelete({
       licenseId,
     });
-
     if (!deletedLicense) {
       res.status(404).json({ message: "License not found" });
       return;

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Device, { IDevice } from "../models/Device";
 import { asyncHandler } from "../utils/asyncHandlerWrapper";
+import Employee from "../models/Employee";
 
 export const getAllDevices = asyncHandler(
   async (req: Request, res: Response) => {
@@ -76,6 +77,11 @@ export const updateDevice = asyncHandler(
 export const deleteDevice = asyncHandler(
   async (req: Request, res: Response) => {
     const { deviceId } = req.params;
+
+    await Employee.updateMany(
+      { assignedDevices: deviceId },
+      { $pull: { assignedDevices: deviceId } },
+    );
 
     const deletedDevice = await Device.findOneAndDelete({ deviceId });
 

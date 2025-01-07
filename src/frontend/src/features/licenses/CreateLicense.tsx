@@ -24,7 +24,12 @@ import { selectLicenseTypeOptions } from "../../store/slices/licenses/selectors.
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createLicense, editLicense } from "../../services/apiLicenses.ts";
 import { toast } from "react-hot-toast";
-import { addLicenseToEmployee } from "../../store/slices/employees/employeeSlice.ts";
+import {
+  addLicenseToEmployee,
+  Employee,
+} from "../../store/slices/employees/employeeSlice.ts";
+import { updateEmployee } from "../../../../backend/src/controllers/employeeController.ts";
+import { editEmployee } from "../../services/apiEmployees.ts";
 
 interface LicenseData {
   licenseId: string;
@@ -109,36 +114,42 @@ function CreateLicenseForm({
   const { errors } = formState;
 
   // 1) Submitting the form
-  const onSubmit: SubmitHandler<LicenseData> = (data) => {
-    const state = store.getState();
-    const foundEmployee = findEmployeeById(data.assignedTo)(state);
 
-    if (!foundEmployee) return;
-    const transformedData: License = {
-      ...data,
-      status: 1 as const,
-      assignedTo: foundEmployee.employeeId,
-      department: foundEmployee.department,
-    };
+  const onSubmit: SubmitHandler<LicenseData> = async (data) => {
+    try {
+      const state = store.getState();
+      const foundEmployee = findEmployeeById(data.assignedTo)(state);
 
-    if (isEditSession) {
-      // 2A) Editing an existing license
-      mutate(transformedData);
-    } else {
-      // 2B) Creating a new license
-      const newId = generateUniqueId();
-      transformedData.licenseId = newId;
-      mutation.mutate(transformedData);
+      if (!foundEmployee) return;
+      const licenseId = isEditSession ? data.licenseId : generateUniqueId();
 
-      dispatch(
-        addLicenseToEmployee({
-          employeeId: foundEmployee.employeeId,
-          licenseId: newId,
-        }),
-      );
+      const transformedData: License = {
+        ...data,
+        status: 1 as const,
+        licenseId,
+        assignedTo: foundEmployee.employeeId,
+        department: foundEmployee.department,
+      };
+
+      if (isEditSession) {
+        mutate(transformedData);
+      } else {
+        mutation.mutate(transformedData);
+      }
+      const updatedEmployee: Employee = {
+        ...foundEmployee,
+        assignedLicenses: [
+          ...(foundEmployee.assignedLicenses || []),
+          licenseId,
+        ],
+      };
+
+      await editEmployee(updatedEmployee);
+
+      onCloseModal?.();
+    } catch (error) {
+      console.error("Error in onSubmit:", error);
     }
-
-    onCloseModal?.();
   };
 
   const onError: SubmitErrorHandler<LicenseData> = (errors) => {

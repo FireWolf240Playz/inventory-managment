@@ -135,109 +135,116 @@ function EmployeesTable() {
 
           <Table.Body
             data={paginatedEmployees}
-            render={(employee) => (
-              <Table.Row key={employee.employeeId}>
-                <div data-label="ID:">{employee.employeeId}</div>
-                <div data-label="Name:">
-                  <span>{employee.employeeName}</span>
-                </div>
-                <div data-label="Department:">{employee.department}</div>
-                <div data-label="Assigned Devices:">
-                  {employee.assignedDevices
-                    ? employee.assignedDevices
-                        ?.map(
-                          (devId) =>
-                            (devicesMap !== undefined &&
-                              devicesMap[devId]?.model) ||
-                            "Unknown device",
-                        )
-                        .join(", ")
-                    : "No assigned devices"}
-                </div>
-                <div data-label="Assigned Licenses:">
-                  {employee.assignedLicenses
-                    ? employee.assignedLicenses
-                        ?.map(
-                          (licId) =>
-                            licenseMap[licId]?.licenseName || "Unknown license",
-                        )
-                        .join(", ")
-                    : "No assigned licenses"}
-                </div>
-                <div data-label="Location:">{employee.location}</div>
-                <div data-label="Role:">{employee.role}</div>
-                <div data-label="Actions:">
-                  <Modal>
-                    <Menus.Menu>
-                      <Menus.Toggle id={employee.employeeId} />
+            render={(employee) => {
+              console.log(employee);
+              return (
+                <Table.Row key={employee.employeeId}>
+                  <div data-label="ID:">{employee.employeeId}</div>
+                  <div data-label="Name:">
+                    <span>{employee.employeeName}</span>
+                  </div>
+                  <div data-label="Department:">{employee.department}</div>
+                  <div data-label="Assigned Devices:">
+                    {employee.assignedDevices
+                      ? employee.assignedDevices
+                          ?.map(
+                            (devId) =>
+                              (devicesMap !== undefined &&
+                                devicesMap[devId]?.model) ||
+                              "Unknown device",
+                          )
+                          .join(", ")
+                      : "No assigned devices"}
+                  </div>
+                  <div data-label="Assigned Licenses:">
+                    {employee.assignedLicenses &&
+                    employee.assignedLicenses.length > 0
+                      ? employee.assignedLicenses
+                          ?.map(
+                            (licId) =>
+                              licenseMap[licId]?.licenseName ||
+                              "Unknown license",
+                          )
+                          .join(", ")
+                      : "No assigned licenses"}
+                  </div>
+                  <div data-label="Location:">{employee.location}</div>
+                  <div data-label="Role:">{employee.role}</div>
+                  <div data-label="Actions:">
+                    <Modal>
+                      <Menus.Menu>
+                        <Menus.Toggle id={employee.employeeId} />
 
-                      <Menus.List id={employee.employeeId}>
-                        <Modal.Open opens="edit">
-                          <Menus.Button
-                            icon={<HiPencil />}
-                            onClick={() => dispatch(editEmployee(employee))}
-                          >
-                            Edit
-                          </Menus.Button>
-                        </Modal.Open>
+                        <Menus.List id={employee.employeeId}>
+                          <Modal.Open opens="edit">
+                            <Menus.Button
+                              icon={<HiPencil />}
+                              onClick={() => dispatch(editEmployee(employee))}
+                            >
+                              Edit
+                            </Menus.Button>
+                          </Modal.Open>
 
-                        <Modal.Open opens="delete">
-                          <Menus.Button icon={<HiTrash />}>Delete</Menus.Button>
-                        </Modal.Open>
+                          <Modal.Open opens="delete">
+                            <Menus.Button icon={<HiTrash />}>
+                              Delete
+                            </Menus.Button>
+                          </Modal.Open>
 
-                        <Modal.Open opens="view">
-                          <Menus.Button icon={<HiEye />}>View</Menus.Button>
-                        </Modal.Open>
-                      </Menus.List>
+                          <Modal.Open opens="view">
+                            <Menus.Button icon={<HiEye />}>View</Menus.Button>
+                          </Modal.Open>
+                        </Menus.List>
 
-                      <Modal.Window name="edit">
-                        <CreateEmployeeForm employeeToEdit={employee} />
-                      </Modal.Window>
+                        <Modal.Window name="edit">
+                          <CreateEmployeeForm employeeToEdit={employee} />
+                        </Modal.Window>
 
-                      <Modal.Window name="delete">
-                        <ConfirmDelete
-                          resourceName="employees"
-                          id={employee.employeeId}
-                        />
-                      </Modal.Window>
+                        <Modal.Window name="delete">
+                          <ConfirmDelete
+                            resourceName="employees"
+                            id={employee.employeeId}
+                          />
+                        </Modal.Window>
 
-                      <Modal.Window name="view">
-                        <ViewWindow
-                          details={{
-                            "Employee ID": employee.employeeId,
-                            Name: employee.employeeName,
-                            Department: employee.department,
-                            Role: employee.role,
-                            Location: employee.location,
-                            "Assigned Devices": employee.assignedDevices
-                              ? employee.assignedDevices
-                                  ?.map(
-                                    (devId) =>
-                                      (devicesMap !== undefined &&
-                                        devicesMap[devId]?.model) ||
-                                      "Unknown device",
-                                  )
-                                  .join(", ")
-                              : "No assigned devices",
+                        <Modal.Window name="view">
+                          <ViewWindow
+                            details={{
+                              "Employee ID": employee.employeeId,
+                              Name: employee.employeeName,
+                              Department: employee.department,
+                              Role: employee.role,
+                              Location: employee.location,
+                              "Assigned Devices": employee.assignedDevices
+                                ? employee.assignedDevices
+                                    ?.map(
+                                      (devId) =>
+                                        (devicesMap !== undefined &&
+                                          devicesMap[devId]?.model) ||
+                                        "Unknown device",
+                                    )
+                                    .join(", ")
+                                : "No assigned devices",
 
-                            "Assigned Licenses": employee.assignedLicenses
-                              ? employee.assignedLicenses
-                                  ?.map(
-                                    (licId) =>
-                                      (licenseMap !== undefined &&
-                                        licenseMap[licId]?.licenseName) ||
-                                      "Unknown license",
-                                  )
-                                  .join(", ")
-                              : "No assigned licenses",
-                          }}
-                        />
-                      </Modal.Window>
-                    </Menus.Menu>
-                  </Modal>
-                </div>
-              </Table.Row>
-            )}
+                              "Assigned Licenses": employee.assignedLicenses
+                                ? employee.assignedLicenses
+                                    ?.map(
+                                      (licId) =>
+                                        (licenseMap !== undefined &&
+                                          licenseMap[licId]?.licenseName) ||
+                                        "Unknown license",
+                                    )
+                                    .join(", ")
+                                : "No assigned licenses",
+                            }}
+                          />
+                        </Modal.Window>
+                      </Menus.Menu>
+                    </Modal>
+                  </div>
+                </Table.Row>
+              );
+            }}
           />
           <Table.Footer>
             <Pagination count={filteredEmployeesAdvanced.length} />

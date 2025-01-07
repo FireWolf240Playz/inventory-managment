@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
+import { asyncHandler } from "../utils/asyncHandlerWrapper";
+
 import Employee, { IEmployee } from "../models/Employee";
 import Device from "../models/Device";
-import { asyncHandler } from "../utils/asyncHandlerWrapper";
 import License from "../models/License";
 
 export const getAllEmployees = asyncHandler(
@@ -72,31 +73,28 @@ export const updateEmployee = asyncHandler(
     const { employeeId } = req.params;
     const { assignedDevices = [], assignedLicenses = [], ...rest } = req.body;
 
-    // 1) Find the old employee
+    console.log("Updating Employee ID:", employeeId);
+    console.log("Assigned Devices:", assignedDevices);
+    console.log("Assigned Licenses:", assignedLicenses);
+
     const oldEmployee = await Employee.findOne({ employeeId });
     if (!oldEmployee) {
       return res.status(404).json({ message: "Employee not found" });
     }
 
-    // 2) Extract old arrays
     const oldDeviceIds = oldEmployee.assignedDevices || [];
     const oldLicenseIds = oldEmployee.assignedLicenses || [];
 
-    // 3) Update the employee doc (besides assigned devices & licenses)
-    // If you want partial updates, do something like:
     if (rest.employeeName) oldEmployee.employeeName = rest.employeeName;
     if (rest.department) oldEmployee.department = rest.department;
     if (rest.location) oldEmployee.location = rest.location;
     if (rest.role) oldEmployee.role = rest.role;
 
-    // 4) Overwrite the assigned arrays with the new ones
     oldEmployee.assignedDevices = assignedDevices;
     oldEmployee.assignedLicenses = assignedLicenses;
 
-    // 5) Save the updated employee
     await oldEmployee.save();
 
-    // 6) For devices that were in old but not in new => unassign them
     const removedDeviceIds = oldDeviceIds.filter(
       (id) => !assignedDevices.includes(id),
     );
@@ -108,19 +106,20 @@ export const updateEmployee = asyncHandler(
       );
     }
 
-    // 7) For devices that are new => assign them
-    const addedDeviceIds = assignedDevices.filter(
-      (id: string) => !oldDeviceIds.includes(id),
-    );
-    if (addedDeviceIds.length) {
-      await Promise.all(
-        addedDeviceIds.map((devId: string) =>
-          Device.findOneAndUpdate(
-            { deviceId: devId },
-            { assignedTo: employeeId },
-          ),
-        ),
+    if (assignedDevices) {
+      const addedDeviceIds = assignedDevices.filter(
+        (id: string) => !oldDeviceIds.includes(id),
       );
+      if (addedDeviceIds.length) {
+        await Promise.all(
+          addedDeviceIds.map((devId: string) =>
+            Device.findOneAndUpdate(
+              { deviceId: devId },
+              { assignedTo: employeeId },
+            ),
+          ),
+        );
+      }
     }
 
     // 8) Similarly for licenses:
@@ -135,18 +134,20 @@ export const updateEmployee = asyncHandler(
       );
     }
 
-    const addedLicenseIds = assignedLicenses.filter(
-      (id: string) => !oldLicenseIds.includes(id),
-    );
-    if (addedLicenseIds.length) {
-      await Promise.all(
-        addedLicenseIds.map((licId: string) =>
-          License.findOneAndUpdate(
-            { licenseId: licId },
-            { assignedTo: employeeId },
-          ),
-        ),
+    if (assignedLicenses) {
+      const addedLicenseIds = assignedLicenses.filter(
+        (id: string) => !oldLicenseIds.includes(id),
       );
+      if (addedLicenseIds.length) {
+        await Promise.all(
+          addedLicenseIds.map((licId: string) =>
+            License.findOneAndUpdate(
+              { licenseId: licId },
+              { assignedTo: employeeId },
+            ),
+          ),
+        );
+      }
     }
 
     return res.json({
@@ -167,26 +168,19 @@ export const deleteEmployee = asyncHandler(
     }
 
     // 2) Unassign the devices
-    if (employee.assignedDevices?.length) {
-      await Promise.all(
-        employee.assignedDevices.map((devId) =>
-          Device.findOneAndUpdate({ deviceId: devId }, { assignedTo: null }),
-        ),
-      );
-    }
+    await Device.updateMany({ employeeId }, { $set: { assignedTo: null } });
 
     // 3) Unassign the licenses
-    if (employee.assignedLicenses?.length) {
-      await Promise.all(
-        employee.assignedLicenses.map((licId) =>
-          License.findOneAndUpdate({ licenseId: licId }, { assignedTo: null }),
-        ),
-      );
-    }
+    await License.updateMany({ employeeId }, { $set: { assignedTo: null } });
 
     // 4) Delete the employee doc
-    await Employee.deleteOne({ employeeId });
+    const deletedEmployee = await Employee.findOneAndDelete({ employeeId });
 
-    return res.json({ message: "Employee deleted successfully" });
+    if (!deletedEmployee) {
+      res.status(404).json({ message: "Employee not found" });
+      return;
+    }
+
+    res.status(200).json({ message: "Employee deleted successfully" });
   },
 );

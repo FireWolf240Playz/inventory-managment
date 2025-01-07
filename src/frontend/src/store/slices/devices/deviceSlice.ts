@@ -124,7 +124,6 @@ export const {
   setFilter,
   clearFilters,
 
-  duplicateDevice,
   updateDeviceStatus,
 
   reassignDevicesToEmployee,
