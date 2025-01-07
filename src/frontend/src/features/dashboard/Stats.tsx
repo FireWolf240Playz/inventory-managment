@@ -24,7 +24,14 @@ import {
 
 import Heading from "../../ui/Heading.tsx";
 import SectionContent from "../../ui/SectionContent.tsx";
-
+import { useQuery } from "@tanstack/react-query";
+import { getDevices } from "../../services/apiDevices.ts";
+import { useEffect } from "react";
+import { setDevices } from "../../store/slices/devices/deviceSlice.ts";
+import { setLicenses } from "../../store/slices/licenses/licensesSlice.ts";
+import { useDispatch } from "react-redux";
+import { getLicenses } from "../../services/apiLicenses.ts";
+import Spinner from "../../ui/Spinner.tsx";
 const Section = styled.div`
   margin-bottom: 2rem;
 `;
@@ -37,6 +44,24 @@ const SectionHeading = styled(Heading)`
 
 // Stats Component
 function Stats() {
+  const dispatch = useDispatch();
+  const { data: devices, isLoading: isLoadingDevices } = useQuery({
+    queryFn: getDevices,
+    queryKey: ["devices"],
+  });
+
+  const { data: licenses, isLoading: isLoadingLicenses } = useQuery({
+    queryFn: getLicenses,
+    queryKey: ["devices"],
+  });
+
+  useEffect(() => {
+    if (devices && licenses) {
+      dispatch(setDevices(devices));
+      dispatch(setLicenses(licenses));
+    }
+  }, [dispatch, devices]);
+
   const allDevices = useSelector(selectDevices);
   const availableDevices = useSelector(selectAvailableDevices);
   const devicesInUse = useSelector(selectDevicesInUse);
@@ -101,6 +126,8 @@ function Stats() {
       },
     ],
   };
+
+  if (isLoadingDevices || isLoadingLicenses) return <Spinner />;
 
   return (
     <>
