@@ -73,10 +73,6 @@ export const updateEmployee = asyncHandler(
     const { employeeId } = req.params;
     const { assignedDevices = [], assignedLicenses = [], ...rest } = req.body;
 
-    console.log("Updating Employee ID:", employeeId);
-    console.log("Assigned Devices:", assignedDevices);
-    console.log("Assigned Licenses:", assignedLicenses);
-
     const oldEmployee = await Employee.findOne({ employeeId });
     if (!oldEmployee) {
       return res.status(404).json({ message: "Employee not found" });

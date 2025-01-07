@@ -136,7 +136,6 @@ function EmployeesTable() {
           <Table.Body
             data={paginatedEmployees}
             render={(employee) => {
-              console.log(employee);
               return (
                 <Table.Row key={employee.employeeId}>
                   <div data-label="ID:">{employee.employeeId}</div>
