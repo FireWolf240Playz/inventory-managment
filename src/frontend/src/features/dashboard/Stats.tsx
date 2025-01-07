@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import Stat from "./Stat.tsx";
 import { HiMiniDeviceTablet, HiMiniDevicePhoneMobile } from "react-icons/hi2";
 import { FaExclamation } from "react-icons/fa";
@@ -7,14 +8,15 @@ import { TbLicense } from "react-icons/tb";
 import { MdOutlineEventAvailable } from "react-icons/md";
 import { HiOutlineUser } from "react-icons/hi";
 import { RiPassExpiredLine } from "react-icons/ri";
-
+import Heading from "../../ui/Heading.tsx";
+import SectionContent from "../../ui/SectionContent.tsx";
+import Spinner from "../../ui/Spinner.tsx";
 import {
   selectAvailableDevices,
   selectDevices,
   selectDevicesInUse,
   selectDevicesUnderMaintenance,
 } from "../../store/slices/devices/selectors.ts";
-import styled from "styled-components";
 import {
   selectAvailableLicenses,
   selectExpiredLicenses,
@@ -22,16 +24,14 @@ import {
   selectLicensesInUse,
 } from "../../store/slices/licenses/selectors.ts";
 
-import Heading from "../../ui/Heading.tsx";
-import SectionContent from "../../ui/SectionContent.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { getDevices } from "../../services/apiDevices.ts";
 import { useEffect } from "react";
-import { setDevices } from "../../store/slices/devices/deviceSlice.ts";
-import { setLicenses } from "../../store/slices/licenses/licensesSlice.ts";
 import { useDispatch } from "react-redux";
 import { getLicenses } from "../../services/apiLicenses.ts";
-import Spinner from "../../ui/Spinner.tsx";
+import { setDevices } from "../../store/slices/devices/deviceSlice.ts";
+import { setLicenses } from "../../store/slices/licenses/licensesSlice.ts";
+
 const Section = styled.div`
   margin-bottom: 2rem;
 `;

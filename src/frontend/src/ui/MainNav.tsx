@@ -85,6 +85,21 @@ const StyledNavLink = styled(NavLink)<NavProps>`
   }
 `;
 
+const StyledLastChildNavLink = styled(StyledNavLink)`
+  &:hover,
+  &:active,
+  &.active {
+    background-color: #fd5c63;
+    color: white;
+  }
+
+  &:hover svg,
+  &:active svg,
+  &.active svg {
+    color: white;
+  }
+`;
+
 function MainNav() {
   const isCollapsed = useSelector(
     (state: RootState) => state.app.isCollapsedSidebar,
@@ -119,10 +134,10 @@ function MainNav() {
           </StyledNavLink>
         </li>
         <li>
-          <StyledNavLink to="/login" isCollapsed={isCollapsed}>
+          <StyledLastChildNavLink to="/login" isCollapsed={isCollapsed}>
             <HiArrowLeftOnRectangle />
             <span>Log out</span>
-          </StyledNavLink>
+          </StyledLastChildNavLink>
         </li>
       </NavList>
     </StyledNav>
