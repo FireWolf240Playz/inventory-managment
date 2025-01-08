@@ -5,11 +5,14 @@ import FileInput from "../../ui/FileInput.tsx";
 import Form from "../../ui/Form.tsx";
 import FormRow from "../../ui/FormRow.tsx";
 import Input from "../../ui/Input.tsx";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store.ts";
 
 function UpdateUserDataForm() {
-  // Assume useUser provides a user with the correct structure
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { email, name } = user;
 
-  const [fullName, setFullName] = useState<string>("");
+  const [fullName, setFullName] = useState<string>(name);
   const [avatar, setAvatar] = useState<File | null>(null);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -23,7 +26,7 @@ function UpdateUserDataForm() {
   return (
     <Form onSubmit={handleSubmit}>
       <FormRow label="Email address">
-        <Input />
+        <Input disabled defaultValue={email} />
       </FormRow>
 
       <FormRow label="Full name">
