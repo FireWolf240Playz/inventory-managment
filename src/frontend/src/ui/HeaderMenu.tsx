@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { HiOutlineUser } from "react-icons/hi";
 import { useOutsideClick } from "../hooks/hooks/useOutsideClick.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store.ts";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -16,6 +18,7 @@ const StyledNav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 1rem;
   padding: 0.5rem 1rem;
 `;
 
@@ -124,6 +127,11 @@ const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, path }) => (
 
 function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const { name } = user;
+  const firstLetter = (user && name.split("")[0]) || "";
+  const firstLetterFromSurname = (user && name.split(" ")[1].at(0)) || "";
 
   const navItems = [
     { icon: HiOutlineUser, label: "Account", path: "/account" },
@@ -138,10 +146,15 @@ function Header() {
 
   return (
     <StyledNav>
+      <span>{name}</span>
       <div onClick={toggleDropdown}>
         <AvatarContainer ref={ref}>
           <AvatarWrapper>
-            <div className="avatar">A</div> {/* Placeholder */}
+            <div className="avatar">
+              {firstLetter}
+              {firstLetterFromSurname}
+            </div>
+
             {dropdownOpen ? (
               <FaChevronUp className="arrow" />
             ) : (
