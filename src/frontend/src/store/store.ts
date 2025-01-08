@@ -3,6 +3,7 @@ import appReducer from "./slices/appSlice.ts";
 import devicesReducer from "./slices/devices/deviceSlice.ts";
 import employeeReducer from "./slices/employees/employeeSlice.ts";
 import licensesReducer from "./slices/licenses/licensesSlice.ts";
+import authReducer from "./slices/authSlice.ts";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     devices: devicesReducer,
     employees: employeeReducer,
     licenses: licensesReducer,
+    auth: authReducer,
   },
 });
 

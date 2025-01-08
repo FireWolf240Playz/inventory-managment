@@ -10,24 +10,60 @@ import Account from "./pages/Account.tsx";
 import { Toaster, ToastBar, toast } from "react-hot-toast";
 import { HiXMark } from "react-icons/hi2";
 import Licenses from "./pages/Licenses.tsx";
+import ProtectedRoute from "./pages/ProtectedRoute.tsx";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <GlobalStyles />
-
         <Routes>
           <Route element={<AppLayout />}>
-            <Route index element={<Navigate replace to="dashboard" />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/devices" element={<Devices />} />
-            <Route path="/employees" element={<Employees />} />
-            <Route path="/licenses" element={<Licenses />} />
-            <Route path="/account" element={<Account />} />
+            <Route element={<Navigate replace to="dashboard" />} />
+
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/devices"
+              element={
+                <ProtectedRoute>
+                  <Devices />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/employees"
+              element={
+                <ProtectedRoute>
+                  <Employees />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/licenses"
+              element={
+                <ProtectedRoute>
+                  <Licenses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute>
+                  <Account />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<PageNotFound />} />
           </Route>
-          <Route path="/login" element={<Login />} />
+          <Route index path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
 

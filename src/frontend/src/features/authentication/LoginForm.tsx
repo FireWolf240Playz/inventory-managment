@@ -1,24 +1,37 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import React, { useState, ChangeEvent } from "react";
 import Button from "../../ui/Button.tsx";
 import Form from "../../ui/Form.tsx";
 import Input from "../../ui/Input.tsx";
 import FormRowVertical from "../../ui/FormRowVertical.tsx";
 import SpinnerMini from "../../ui/SpinnerMini.tsx";
+import { useDispatch } from "react-redux";
+
+import { login } from "../../store/thunks/authThunks.ts";
+import { AppDispatch } from "../../store/store.ts";
+import { useNavigate } from "react-router";
 
 function LoginForm() {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const isLoading = false; // Temporarily placed - will remove it as soon as the login feature is implemented with backend
-
-  // Handle form submission
-  function handleSubmit(e: FormEvent): void {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-  }
+    setIsLoading(true);
+    try {
+      await dispatch(login({ email, password }));
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form type="regular" onSubmit={handleSubmit}>
       <FormRowVertical label="Email address">
         <Input
           type="email"
@@ -44,7 +57,9 @@ function LoginForm() {
       </FormRowVertical>
 
       <FormRowVertical>
-        <Button size="large">{!isLoading ? "Log in" : <SpinnerMini />}</Button>
+        <Button size="large" type="submit">
+          {!isLoading ? "Log in" : <SpinnerMini />}
+        </Button>
       </FormRowVertical>
     </Form>
   );

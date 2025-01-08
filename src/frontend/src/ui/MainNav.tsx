@@ -8,8 +8,11 @@ import {
 import { FaUsers } from "react-icons/fa6";
 import { GrLicense } from "react-icons/gr";
 import ToggleButton from "./ToggleButton.tsx";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
+import { useNavigate } from "react-router";
+import { useCallback } from "react";
+import { logout } from "../store/slices/authSlice.ts";
 
 interface NavProps {
   isCollapsed: boolean;
@@ -104,6 +107,13 @@ function MainNav() {
   const isCollapsed = useSelector(
     (state: RootState) => state.app.isCollapsedSidebar,
   );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate("/login", { replace: true });
+  };
 
   return (
     <StyledNav isCollapsed={isCollapsed}>
@@ -134,7 +144,11 @@ function MainNav() {
           </StyledNavLink>
         </li>
         <li>
-          <StyledLastChildNavLink to="/login" isCollapsed={isCollapsed}>
+          <StyledLastChildNavLink
+            to="/login"
+            isCollapsed={isCollapsed}
+            onClick={handleLogout}
+          >
             <HiArrowLeftOnRectangle />
             <span>Log out</span>
           </StyledLastChildNavLink>

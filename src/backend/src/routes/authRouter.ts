@@ -1,9 +1,15 @@
 import express from "express";
 
 import { body } from "express-validator";
-import { registerUsers, loginUser } from "../controllers/usersController";
+import {
+  registerUsers,
+  loginUser,
+  getAllUsers,
+} from "../controllers/usersController";
 
 const router = express.Router();
+
+router.get("/users", getAllUsers);
 
 router.post("/register", registerUsers, [
   body("name").isString().notEmpty().withMessage("Name is required"),

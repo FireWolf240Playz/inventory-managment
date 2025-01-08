@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import bcryt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User from "../models/User";
+import User, { IUser } from "../models/User";
 import { asyncHandler } from "../utils/asyncHandlerWrapper";
 
 export interface AuthenticatedRequest extends Request {
@@ -9,6 +9,15 @@ export interface AuthenticatedRequest extends Request {
     id: string;
   };
 }
+
+export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+  const users: IUser[] = await User.find();
+  res.status(200).json({
+    status: "success",
+    results: users.length,
+    data: { users },
+  });
+});
 
 export const registerUsers = asyncHandler(
   async (req: Request, res: Response) => {
@@ -19,9 +28,9 @@ export const registerUsers = asyncHandler(
     if (existingUser) {
       return res.status(401).json({ message: "User already exists" });
     }
-    const salt = await bcryt.genSalt(10);
+    const salt = await bcrypt.genSalt(10);
 
-    const hashedPassword = await bcryt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
       name,
@@ -44,7 +53,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     return;
   }
 
-  const isMatch = await bcryt.compare(password, user.password);
+  const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
     return res.status(401).json({ message: "Invalid credentials" });
