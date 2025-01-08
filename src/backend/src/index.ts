@@ -10,6 +10,7 @@ import connectDB from "./config/db";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import mongoSanitize from "express-mongo-sanitize";
+import authRouter from "./routes/authRouter";
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use(
 app.use("/api/devices", deviceRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/licenses", licenseRoutes);
+app.use("/api/auth", authRouter);
 
 // Health Check Endpoint
 app.get("/", (req, res) => {
