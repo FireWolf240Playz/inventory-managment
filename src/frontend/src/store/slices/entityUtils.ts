@@ -8,7 +8,7 @@ export function duplicateEntity(entity: Entity): Entity {
   if ("model" in entity) {
     return {
       ...entity,
-      deviceId: generateUniqueId(), //Todo: Will come up with something better later
+      deviceId: generateUniqueId(),
       model: `Copy of ${entity.model}`,
     };
   }
@@ -16,7 +16,7 @@ export function duplicateEntity(entity: Entity): Entity {
   if ("employeeName" in entity) {
     return {
       ...entity,
-      employeeId: generateUniqueId(), //Todo: Will come up with something better later
+      employeeId: generateUniqueId(),
       employeeName: `Copy of ${entity.employeeName}`,
     };
   }
