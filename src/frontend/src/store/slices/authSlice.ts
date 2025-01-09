@@ -1,13 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthState {
-  user: { id: string; name: string; email: string } | null;
+  user: { id: string; name: string; email: string; avatar: string } | null;
   token: string | null;
   isAuthenticated: boolean;
 }
 
 const initialState: AuthState = {
-  user: JSON.parse(localStorage.getItem("user") || "null"),
+  user: (() => {
+    try {
+      return JSON.parse(localStorage.getItem("user") || "null");
+    } catch (e) {
+      console.error("Failed to parse user from localStorage", e);
+      return null;
+    }
+  })(),
   token: localStorage.getItem("token"),
   isAuthenticated: !!localStorage.getItem("token"),
 };
@@ -31,8 +38,15 @@ const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
     },
+    updateUserSuccess(state, action) {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+        state.user.avatar = action.payload.avatar;
+        localStorage.setItem("user", JSON.stringify(state.user));
+      }
+    },
   },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { loginSuccess, logout, updateUserSuccess } = authSlice.actions;
 export default authSlice.reducer;

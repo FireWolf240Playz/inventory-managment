@@ -121,7 +121,6 @@ function CreateEmployeeForm({
     const state = store.getState();
     const isEditSession = Boolean(data.employeeId);
 
-    console.log(data);
     if (data.assignedDevices) {
       const foundDevices = data.assignedDevices
         .map((deviceId) => findDeviceById(deviceId)(state))

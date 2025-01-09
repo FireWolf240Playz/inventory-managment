@@ -1,4 +1,3 @@
-// src/backend/index.ts
 import express from "express";
 import dotenv from "dotenv";
 import deviceRoutes from "./routes/deviceRoutes";
@@ -11,6 +10,8 @@ import rateLimit from "express-rate-limit";
 import cors from "cors";
 import mongoSanitize from "express-mongo-sanitize";
 import authRouter from "./routes/authRouter";
+import usersRoute from "./routes/usersRoute";
+import path from "path";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const app = express();
 connectDB();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(helmet());
 
@@ -36,9 +38,14 @@ app.use(limiter);
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     credentials: true,
   }),
+);
+
+app.use(
+  "/uploads/avatars",
+  express.static(path.join(__dirname, "uploads/avatars")),
 );
 
 // Routes
@@ -46,6 +53,7 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/licenses", licenseRoutes);
 app.use("/api/auth", authRouter);
+app.use("/api/users", usersRoute);
 
 // Health Check Endpoint
 app.get("/", (req, res) => {

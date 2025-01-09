@@ -1,31 +1,58 @@
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../../store/store";
+import { updateUser } from "../../store/thunks/authThunks";
+import Button from "../../ui/Button";
+import FileInput from "../../ui/FileInput";
+import Form from "../../ui/Form";
+import FormRow from "../../ui/FormRow";
+import Input from "../../ui/Input";
+import { toast } from "react-hot-toast";
 
-import Button from "../../ui/Button.tsx";
-import FileInput from "../../ui/FileInput.tsx";
-import Form from "../../ui/Form.tsx";
-import FormRow from "../../ui/FormRow.tsx";
-import Input from "../../ui/Input.tsx";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store.ts";
+interface UpdateUserDataFormInputs {
+  fullName: string;
+  avatar: FileList | null;
+}
 
 function UpdateUserDataForm() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch<AppDispatch>();
 
   const { email, name } = user;
 
-  const [fullName, setFullName] = useState<string>(name);
-  const [avatar, setAvatar] = useState<File | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<UpdateUserDataFormInputs>({
+    defaultValues: { fullName: name, avatar: null },
+  });
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-  }
+  const avatar = watch("avatar");
 
-  function handleCancel() {
-    setAvatar(null);
-  }
+  const onSubmit = async (data: UpdateUserDataFormInputs) => {
+    try {
+      const avatarFile = data.avatar ? data.avatar[0] : null;
+
+      await dispatch(
+        updateUser({ fullName: data.fullName, avatar: avatarFile }),
+      ).unwrap();
+      toast.success("User updated successfully!");
+
+      reset({ fullName: data.fullName, avatar: null });
+    } catch {
+      toast.error("Failed to update user. Please try again.");
+    }
+  };
+
+  const handleCancel = () => {
+    reset({ fullName: name, avatar: null });
+  };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <FormRow label="Email address">
         <Input disabled defaultValue={email} />
       </FormRow>
@@ -33,29 +60,22 @@ function UpdateUserDataForm() {
       <FormRow label="Full name">
         <Input
           type="text"
-          value={fullName}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setFullName(e.target.value)
-          }
           id="fullName"
+          {...register("fullName", { required: "Full name is required" })}
         />
+        {errors.fullName && <p className="error">{errors.fullName.message}</p>}
       </FormRow>
 
       <FormRow label="Avatar image">
-        <FileInput
-          id="avatar"
-          accept="image/*"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            if (e.target.files) setAvatar(e.target.files[0]);
-          }}
-        />
+        <FileInput id="avatar" accept="image/*" {...register("avatar")} />
+        {avatar && avatar[0] && <p>Selected file: {avatar[0].name}</p>}
       </FormRow>
 
       <FormRow>
         <Button type="reset" variation="secondary" onClick={handleCancel}>
           Cancel
         </Button>
-        <Button>Update account</Button>
+        <Button type="submit">Update account</Button>
       </FormRow>
     </Form>
   );

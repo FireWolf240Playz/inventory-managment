@@ -15,6 +15,7 @@
     "@tanstack/react-query-devtools": "^5.62.2",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.7",
+    "@types/multer": "^1.4.12",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
@@ -27,6 +28,7 @@
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.1.2",
@@ -38,6 +40,7 @@
     "react-router-dom": "^7.0.2",
     "react-select": "^5.9.0",
     "recharts": "^2.14.1",
+    "redux-persist": "^6.0.0",
     "styled-components": "^6.1.13",
     "xss-clean": "^0.1.4"
   },

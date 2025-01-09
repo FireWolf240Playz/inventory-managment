@@ -8,6 +8,7 @@ export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
   };
+  file?: Express.Multer.File;
 }
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
@@ -23,13 +24,16 @@ export const registerUsers = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(401).json({ message: "User already exists" });
     }
-    const salt = await bcrypt.genSalt(10);
 
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = await User.create({
@@ -74,24 +78,56 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   });
 });
 
-export const authenticateUser = asyncHandler(
-  async (req: AuthenticatedRequest, res: Response, next?: NextFunction) => {
-    const token = req.header("Authorization")?.split(" ")[1];
+export const authenticateUser = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  const token = req.header("Authorization")?.split(" ")[1];
 
-    if (!token) {
-      res.status(401).json({ message: "No token, authorization denied" });
-      return;
+  if (!token) {
+    res.status(401).json({ message: "No token, authorization denied" });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: string;
+    };
+    req.user = { id: decoded.id };
+    next();
+  } catch {
+    res.status(401).json({ message: "Invalid token" });
+  }
+};
+
+export const updateUser = asyncHandler(
+  async (req: AuthenticatedRequest, res: Response) => {
+    const { name } = req.body;
+
+    const user = await User.findById(req.user?.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as {
-        id: string;
-      };
-      req.user = { id: decoded.id };
-      if (next) next();
-    } catch {
-      res.status(401).json({ message: "Invalid token" });
-      return;
+    if (name) user.name = name;
+
+    if (req.file) {
+      user.avatar = req.file.filename;
     }
+
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+        },
+      },
+    });
   },
 );
