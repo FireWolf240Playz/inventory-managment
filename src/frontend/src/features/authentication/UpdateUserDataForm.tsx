@@ -10,6 +10,7 @@ import { RootState } from "../../store/store.ts";
 
 function UpdateUserDataForm() {
   const user = useSelector((state: RootState) => state.auth.user);
+
   const { email, name } = user;
 
   const [fullName, setFullName] = useState<string>(name);

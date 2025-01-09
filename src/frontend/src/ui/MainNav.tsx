@@ -8,11 +8,11 @@ import {
 import { FaUsers } from "react-icons/fa6";
 import { GrLicense } from "react-icons/gr";
 import ToggleButton from "./ToggleButton.tsx";
+
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../store/store.ts";
+import { AppDispatch, RootState } from "../store/store.ts";
 import { useNavigate } from "react-router";
-import { useCallback } from "react";
-import { logout } from "../store/slices/authSlice.ts";
+import { logoutUser } from "../store/thunks/authThunks.ts";
 
 interface NavProps {
   isCollapsed: boolean;
@@ -107,12 +107,16 @@ function MainNav() {
   const isCollapsed = useSelector(
     (state: RootState) => state.app.isCollapsedSidebar,
   );
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await dispatch(logout());
-    navigate("/login", { replace: true });
+    try {
+      await dispatch(logoutUser());
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
   };
 
   return (

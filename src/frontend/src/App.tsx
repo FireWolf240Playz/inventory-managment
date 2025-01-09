@@ -10,7 +10,7 @@ import Account from "./pages/Account.tsx";
 import { Toaster, ToastBar, toast } from "react-hot-toast";
 import { HiXMark } from "react-icons/hi2";
 import Licenses from "./pages/Licenses.tsx";
-import ProtectedRoute from "./pages/ProtectedRoute.tsx";
+import ProtectedRoute from "./ui/ProtectedRoute.tsx";
 
 function App() {
   return (
@@ -18,9 +18,11 @@ function App() {
       <BrowserRouter>
         <GlobalStyles />
         <Routes>
-          <Route element={<AppLayout />}>
-            <Route element={<Navigate replace to="dashboard" />} />
+          <Route path="/" element={<Navigate replace to="/login" />} />
 
+          <Route path="/login" element={<Login />} />
+
+          <Route element={<AppLayout />}>
             <Route
               path="/dashboard"
               element={
@@ -61,9 +63,9 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="*" element={<PageNotFound />} />
           </Route>
-          <Route index path="/login" element={<Login />} />
+
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
 
