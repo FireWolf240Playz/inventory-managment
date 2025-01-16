@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
+import { IUser } from "../models/User";
 import { asyncHandler } from "../utils/asyncHandlerWrapper";
 
 export interface AuthenticatedRequest extends Request {
