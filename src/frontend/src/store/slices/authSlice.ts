@@ -41,8 +41,8 @@ const authSlice = createSlice({
     },
     updateUserSuccess(state, action) {
       if (state.user) {
-        state.user = { ...state.user, ...action.payload };
-        state.user.avatar = action.payload.avatar;
+        state.user! = { ...state.user!, ...action.payload };
+        state.user!.avatar = action.payload.avatar;
         localStorage.setItem("user", JSON.stringify(state.user));
       }
     },

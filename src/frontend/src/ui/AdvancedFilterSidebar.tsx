@@ -64,7 +64,7 @@ const AdvancedFilterSidebar: React.FC<AdvancedFilterSidebarProps> = ({
   }, [isOpen]);
 
   return (
-    <Overlay isOpen={isOpen} onClick={onClose} aria-hidden={!isOpen}>
+    <Overlay onClick={onClose} aria-hidden={!isOpen}>
       {isOpen && (
         <FocusTrap>
           <SidebarContainer

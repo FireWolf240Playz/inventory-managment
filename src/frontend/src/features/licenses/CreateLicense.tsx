@@ -4,7 +4,7 @@ import {
   SubmitErrorHandler,
   Controller,
 } from "react-hook-form";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Select from "react-select";
 
 import Form from "../../ui/Form.tsx";
@@ -24,11 +24,8 @@ import { selectLicenseTypeOptions } from "../../store/slices/licenses/selectors.
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createLicense, editLicense } from "../../services/apiLicenses.ts";
 import { toast } from "react-hot-toast";
-import {
-  addLicenseToEmployee,
-  Employee,
-} from "../../store/slices/employees/employeeSlice.ts";
-import { updateEmployee } from "../../../../backend/src/controllers/employeeController.ts";
+import { Employee } from "../../store/slices/employees/employeeSlice.ts";
+
 import { editEmployee } from "../../services/apiEmployees.ts";
 
 interface LicenseData {
@@ -77,7 +74,9 @@ function CreateLicenseForm({
   const mutation = useMutation<void, Error, License>({
     mutationFn: createLicense,
     onSuccess: () => {
-      queryClient.invalidateQueries(["licenses"]);
+      queryClient.invalidateQueries({
+        queryKey: ["licenses"],
+      });
       toast.success("Successfully created new license");
     },
   });
@@ -85,7 +84,9 @@ function CreateLicenseForm({
   const { mutate } = useMutation<void, Error, License>({
     mutationFn: editLicense,
     onSuccess: () => {
-      queryClient.invalidateQueries(["licenses"]);
+      queryClient.invalidateQueries({
+        queryKey: ["licenses"],
+      });
       toast.success("Successfully updated new license");
     },
 
@@ -93,8 +94,6 @@ function CreateLicenseForm({
       toast.error("Something went wrong while updating license");
     },
   });
-
-  const dispatch = useDispatch();
 
   const allEmployees = useSelector(selectAllEmployees);
   const typeLicenseOptions = useSelector(selectLicenseTypeOptions);

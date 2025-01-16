@@ -3,18 +3,16 @@ import Device, { IDevice } from "../models/Device";
 import { asyncHandler } from "../utils/asyncHandlerWrapper";
 import Employee from "../models/Employee";
 
-export const getAllDevices = asyncHandler(
-  async (req: Request, res: Response) => {
-    const devices = await Device.find().lean();
-    res.status(200).json({
-      status: "success",
-      results: devices.length,
-      data: {
-        devices,
-      },
-    });
-  },
-);
+export const getAllDevices = asyncHandler(async (_: Request, res: Response) => {
+  const devices = await Device.find().lean();
+  res.status(200).json({
+    status: "success",
+    results: devices.length,
+    data: {
+      devices,
+    },
+  });
+});
 
 export const getOneDevice = asyncHandler(
   async (req: Request, res: Response) => {

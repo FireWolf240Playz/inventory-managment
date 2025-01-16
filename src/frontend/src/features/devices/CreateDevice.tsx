@@ -9,17 +9,14 @@ import Form from "../../ui/Form";
 import Button from "../../ui/Button";
 import Textarea from "../../ui/Textarea";
 import FormRow from "../../ui/FormRow";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { generateUniqueId } from "../../store/slices/entityUtils";
 
 import {
   findEmployeeById,
   selectAllEmployees,
 } from "../../store/slices/employees/selectors";
-import {
-  addDeviceToEmployee,
-  Employee,
-} from "../../store/slices/employees/employeeSlice";
+import { Employee } from "../../store/slices/employees/employeeSlice";
 import Select from "react-select";
 import store from "../../store/store";
 import { createDevice, editDevice } from "../../services/apiDevices";
@@ -68,7 +65,7 @@ function CreateDeviceForm({
   const mutation = useMutation<void, Error, Device>({
     mutationFn: createDevice,
     onSuccess: () => {
-      queryClient.invalidateQueries(["devices"]);
+      queryClient.invalidateQueries({ queryKey: ["devices"] });
       toast.success("Successfully created new device");
     },
     onError: () => {
@@ -79,7 +76,7 @@ function CreateDeviceForm({
   const { mutate } = useMutation<void, Error, Device>({
     mutationFn: editDevice,
     onSuccess: () => {
-      queryClient.invalidateQueries(["devices"]);
+      queryClient.invalidateQueries({ queryKey: ["devices"] });
       toast.success("Successfully updated device");
     },
     onError: () => {

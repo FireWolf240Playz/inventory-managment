@@ -11,7 +11,7 @@ export interface AuthenticatedRequest extends Request {
   file?: Express.Multer.File;
 }
 
-export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
+export const getAllUsers = asyncHandler(async (_: Request, res: Response) => {
   const users: IUser[] = await User.find();
   res.status(200).json({
     status: "success",

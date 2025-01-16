@@ -1,26 +1,25 @@
-import { useEffect, useRef } from "react";
-
-type UseOutsideClickHandler = () => void;
+import { useEffect, useRef, RefObject } from "react";
 
 export function useOutsideClick<T extends HTMLElement>(
-  handler: UseOutsideClickHandler,
-  listenCapturing: boolean = true,
-): React.RefObject<T> {
+  handler: () => void,
+  isEnabled = true,
+): RefObject<T> {
   const ref = useRef<T>(null);
 
   useEffect(() => {
-    function handleClick(e: MouseEvent) {
+    if (!isEnabled) return;
+
+    function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         handler();
       }
     }
 
-    document.addEventListener("click", handleClick, listenCapturing);
-
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClick, listenCapturing);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [handler, listenCapturing]);
+  }, [handler, isEnabled]);
 
   return ref;
 }

@@ -6,7 +6,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 
 import { getDeleteFn } from "../services/deleteFunctions.ts";
-import { useDispatch } from "react-redux";
 
 const StyledConfirmDelete = styled.div`
   width: fit-content;
@@ -46,7 +45,9 @@ function ConfirmDelete({ resourceName, id }: ConfirmDeleteProps) {
 
     onSuccess: () => {
       // Invalidate so the resource list is refreshed
-      queryClient.invalidateQueries([resourceName]);
+      queryClient.invalidateQueries({
+        queryKey: [resourceName],
+      });
       toast.success("Successfully deleted");
     },
     onError: () => {
@@ -69,12 +70,10 @@ function ConfirmDelete({ resourceName, id }: ConfirmDeleteProps) {
       </p>
 
       <div>
-        <Button variation="danger" onClick={handleClick} disabled={isLoading}>
-          {isLoading ? "Deleting..." : "Delete"}
+        <Button variation="danger" onClick={handleClick}>
+          {"Delete"}
         </Button>
-        <Button variation="secondary" disabled={isLoading}>
-          Cancel
-        </Button>
+        <Button variation="secondary">Cancel</Button>
       </div>
     </StyledConfirmDelete>
   );

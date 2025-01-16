@@ -18,7 +18,7 @@ function UpdateUserDataForm() {
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch<AppDispatch>();
 
-  const { email, name } = user;
+  const { name, email } = user!;
 
   const {
     register,

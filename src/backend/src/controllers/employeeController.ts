@@ -6,7 +6,7 @@ import Device from "../models/Device";
 import License from "../models/License";
 
 export const getAllEmployees = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (_: Request, res: Response) => {
     const employees: IEmployee[] = await Employee.find();
     res.status(200).json({
       status: "success",

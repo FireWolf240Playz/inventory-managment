@@ -56,7 +56,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRoute);
 
 // Health Check Endpoint
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.send("API is running...");
 });
 

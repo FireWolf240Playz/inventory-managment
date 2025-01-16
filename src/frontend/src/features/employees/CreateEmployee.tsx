@@ -79,7 +79,7 @@ function CreateEmployeeForm({
   const mutation = useMutation<void, Error, Employee>({
     mutationFn: createEmployee,
     onSuccess: () => {
-      queryClient.invalidateQueries(["employees"]);
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
       toast.success("Successfully created new employee");
     },
     onError: () => {
@@ -90,7 +90,7 @@ function CreateEmployeeForm({
   const { mutate } = useMutation<void, Error, Employee>({
     mutationFn: editEmployee,
     onSuccess: () => {
-      queryClient.invalidateQueries(["employees"]);
+      queryClient.invalidateQueries({ queryKey: ["employees"] });
       toast.success("Successfully updated employee");
     },
     onError: () => {

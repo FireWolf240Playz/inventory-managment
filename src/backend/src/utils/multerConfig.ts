@@ -3,10 +3,10 @@ import path from "path";
 import { FileFilterCallback } from "multer";
 import { Request } from "express";
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: function (_, _file, cb) {
     cb(null, path.join(__dirname, "../uploads/avatars"));
   },
-  filename: function (req, file, cb) {
+  filename: function (_, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const ext = path.extname(file.originalname);
     cb(null, uniqueSuffix + ext);
@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (
-  req: Request,
+  _: Request,
   file: Express.Multer.File,
   cb: FileFilterCallback,
 ) => {

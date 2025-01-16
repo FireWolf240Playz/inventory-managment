@@ -5,7 +5,7 @@ import { asyncHandler } from "../utils/asyncHandlerWrapper";
 import Employee from "../models/Employee";
 
 export const getAllLicenses = asyncHandler(
-  async (req: Request, res: Response) => {
+  async (_: Request, res: Response) => {
     const licenses: ILicense[] = await License.find();
     res.status(200).json({
       status: "success",

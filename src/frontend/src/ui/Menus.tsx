@@ -142,7 +142,7 @@ function List({ id, children }: ListProps) {
     throw new Error("List must be used within a Menus provider.");
   }
   const { openId, position, close } = context;
-  const ref = useOutsideClick(close, false);
+  const ref = useOutsideClick<HTMLUListElement>(close, false);
 
   if (openId !== id) return null;
 

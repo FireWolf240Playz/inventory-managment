@@ -22,7 +22,7 @@ const StyledNav = styled.nav`
   padding: 0.5rem 1rem;
 `;
 
-const AvatarContainer = styled.div`
+const AvatarContainer = styled.ul`
   position: relative;
   display: flex;
   flex-direction: column;
@@ -147,7 +147,7 @@ function Header() {
   ];
 
   const close = () => setDropdownOpen(false);
-  const ref = useOutsideClick(close, false);
+  const ref = useOutsideClick<HTMLUListElement>(close, false);
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
