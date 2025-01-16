@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import User, { IUser } from "../models/User";
+import User from "../models/User";
 import { asyncHandler } from "../utils/asyncHandlerWrapper";
 
 export interface AuthenticatedRequest extends Request {
@@ -12,7 +12,7 @@ export interface AuthenticatedRequest extends Request {
 }
 
 export const getAllUsers = asyncHandler(async (_: Request, res: Response) => {
-  const users: IUser[] = await User.find();
+  const users: (typeof User)[] = await User.find();
   res.status(200).json({
     status: "success",
     results: users.length,
