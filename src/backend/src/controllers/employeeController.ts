@@ -92,11 +92,11 @@ export const updateEmployee = asyncHandler(
     await oldEmployee.save();
 
     const removedDeviceIds = oldDeviceIds.filter(
-      (id) => !assignedDevices.includes(id),
+      (id: string) => !assignedDevices.includes(id),
     );
     if (removedDeviceIds.length) {
       await Promise.all(
-        removedDeviceIds.map((devId) =>
+        removedDeviceIds.map((devId: string) =>
           Device.findOneAndUpdate({ deviceId: devId }, { assignedTo: null }),
         ),
       );
@@ -120,11 +120,11 @@ export const updateEmployee = asyncHandler(
 
     // 8) Similarly for licenses:
     const removedLicenseIds = oldLicenseIds.filter(
-      (id) => !assignedLicenses.includes(id),
+      (id: string) => !assignedLicenses.includes(id),
     );
     if (removedLicenseIds.length) {
       await Promise.all(
-        removedLicenseIds.map((licId) =>
+        removedLicenseIds.map((licId: string) =>
           License.findOneAndUpdate({ licenseId: licId }, { assignedTo: null }),
         ),
       );
