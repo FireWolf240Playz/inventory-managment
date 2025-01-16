@@ -48,6 +48,13 @@ const AvatarWrapper = styled.div`
     font-size: 1.2rem;
   }
 
+  .avatar-image {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
   .arrow {
     width: 1.5rem;
     height: 1.5rem;
@@ -129,9 +136,11 @@ function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
 
-  const { name } = user;
-  const firstLetter = (user && name.split("")[0]) || "";
-  const firstLetterFromSurname = (user && name.split(" ")[1].at(0)) || "";
+  const avatar = user?.avatar || "";
+  const name = user?.name || "";
+  const firstLetter = (user && user.name.split("")[0]) || "";
+  const firstLetterFromSurname = (user && user.name.split(" ")[1].at(0)) || "";
+  const defaultAvatar = `${firstLetter}${firstLetterFromSurname}`;
 
   const navItems = [
     { icon: HiOutlineUser, label: "Account", path: "/account" },
@@ -150,10 +159,16 @@ function Header() {
       <div onClick={toggleDropdown}>
         <AvatarContainer ref={ref}>
           <AvatarWrapper>
-            <div className="avatar">
-              {firstLetter}
-              {firstLetterFromSurname}
-            </div>
+            {avatar ? (
+              <img
+                crossOrigin={"anonymous"}
+                src={`http://localhost:8000/uploads/avatars/${avatar}`}
+                alt={`${name}'s avatar`}
+                className="avatar-image"
+              />
+            ) : (
+              <div className="avatar">{defaultAvatar}</div>
+            )}
 
             {dropdownOpen ? (
               <FaChevronUp className="arrow" />

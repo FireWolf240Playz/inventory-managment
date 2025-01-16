@@ -8,7 +8,6 @@ interface UpdateUserPayload {
 }
 
 import api from "../../services/api.ts";
-import { useQueryClient } from "@tanstack/react-query";
 
 export const login = createAsyncThunk(
   "auth/login",
