@@ -4,339 +4,322 @@
   <meta charset="UTF-8" />
   <title>Inventory Management System – README</title>
   <style>
-    /* Basic Reset */
+    /* Basic reset & global styles */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: Arial, sans-serif;
-      background: #f3f3f3;
+      background: #f9f9f9;
       color: #333;
       line-height: 1.6;
+      padding: 1rem;
     }
-
-    header {
-      background: #4b0082;
-      color: #fff;
-      padding: 2rem;
+    a {
+      color: #4b0082;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    h1, h2, h3, h4 {
+      margin-bottom: 1rem;
+    }
+    /* Center headings if desired */
+    [align="center"] {
       text-align: center;
     }
 
-    header h1 {
+    /* Container for content */
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Title and logo */
+    .title-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .title-section img {
+      max-width: 180px;
       margin-bottom: 1rem;
     }
 
-    header p {
-      font-size: 1.2rem;
-      opacity: 0.9;
-    }
-
-    main {
-      max-width: 960px;
-      margin: 2rem auto;
-      padding: 1rem;
-      background: #fff;
-      border-radius: 0.5rem;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    nav {
-      margin-bottom: 2rem;
-    }
-
-    nav ul {
-      list-style-type: none;
+    /* Navigation links (like a mini table of contents) */
+    .nav-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 1rem;
+      justify-content: center;
+      gap: 0.5rem;
+      list-style: none;
+      margin-bottom: 2rem;
     }
-
-    nav li {
+    .nav-links li {
       background: #ececec;
       border-radius: 0.3rem;
     }
-
-    nav a {
+    .nav-links li a {
       display: block;
       padding: 0.5rem 1rem;
-      text-decoration: none;
-      color: #4b0082;
       font-weight: bold;
     }
-
-    nav a:hover {
+    .nav-links li a:hover {
       background: #4b0082;
       color: #fff;
     }
 
+    /* Sections */
     section {
       margin-bottom: 2rem;
     }
-
     section h2 {
       border-bottom: 2px solid #4b0082;
       padding-bottom: 0.3rem;
       margin-bottom: 1rem;
     }
 
-    ul, ol {
-      margin-left: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    code, pre {
-      background: #f5f5f5;
-      font-family: 'Courier New', Courier, monospace;
-    }
-
+    /* Code blocks */
     pre {
+      background: #f5f5f5;
+      border-radius: 4px;
       padding: 1rem;
-      border-radius: 0.3rem;
-      overflow: auto;
+      overflow-x: auto;
       margin-bottom: 1rem;
     }
+    code {
+      font-family: "Courier New", Courier, monospace;
+      color: #d14;
+    }
 
+    /* Tables */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 1rem;
     }
-
     table th, table td {
       border: 1px solid #ccc;
       padding: 0.5rem 1rem;
+    }
+    table th {
+      background: #f0f0f0;
       text-align: left;
     }
 
-    table th {
-      background: #f0f0f0;
+    /* Images / Gifs */
+    .demo-gifs img {
+      border: 1px solid #eee;
+      border-radius: 0.3rem;
+      margin-bottom: 1rem;
+      max-width: 100%;
     }
 
+    /* Footer */
     footer {
       text-align: center;
-      color: #999;
       margin-top: 3rem;
-      margin-bottom: 1rem;
+      color: #999;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Inventory Management System</h1>
-  <p>A comprehensive system to manage devices, employees, licenses, and authentication.</p>
-</header>
+  <div class="container">
 
-<main>
-  <!-- Table of Contents -->
-  <nav>
-    <ul>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#tech-stack">Tech Stack</a></li>
-      <li><a href="#project-structure">Project Structure</a></li>
-      <li><a href="#getting-started">Getting Started</a></li>
-      <li><a href="#api-endpoints">API Endpoints</a></li>
-      <li><a href="#avatar-upload">Avatar Upload</a></li>
-      <li><a href="#contributing">Contributing</a></li>
+    <!-- Title & Logo -->
+    <div class="title-section">
+      <h1 align="center">
+        <br>
+        <a href="https://github.com/YourUser/inventory-management-system">
+          <img src="https://placehold.co/180x180" alt="IMS Logo">
+        </a>
+        <br>
+        Inventory Management System
+        <br>
+      </h1>
+      <h4 align="center">A comprehensive application for managing devices, employees, licenses, and authentication.</h4>
+    </div>
+
+    <!-- Navigation Links -->
+    <ul class="nav-links">
+      <li><a href="#key-features">Key Features</a></li>
+      <li><a href="#demonstration">Demonstration</a></li>
+      <li><a href="#how-to-use">How To Use</a></li>
+      <li><a href="#api-usage">API Usage</a></li>
+      <li><a href="#deployment">Deployment</a></li>
+      <li><a href="#build-with">Build With</a></li>
+      <li><a href="#to-do">To-do</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#known-bugs">Known Bugs</a></li>
+      <li><a href="#future-updates">Future Updates</a></li>
+      <li><a href="#acknowledgement">Acknowledgement</a></li>
       <li><a href="#license">License</a></li>
     </ul>
-  </nav>
 
-  <!-- Features -->
-  <section id="features">
-    <h2>Features</h2>
-    <ul>
-      <li><strong>Authentication &amp; Authorization:</strong> Secure login/logout with JWT.</li>
-      <li><strong>User Profile Management:</strong> Update personal info and avatar.</li>
-      <li><strong>Devices Management:</strong> Create, read, update, and delete devices.</li>
-      <li><strong>Employees Management:</strong> CRUD for employee records.</li>
-      <li><strong>Licenses Management:</strong> Track software licenses, keys, and expiries.</li>
-      <li><strong>Responsive Frontend:</strong> Built with React, Redux (or React Query), and styled components or CSS.</li>
-    </ul>
-  </section>
+    <!-- Key Features -->
+    <section id="key-features">
+      <h2>Key Features</h2>
+      <ul>
+        <li><strong>Authentication &amp; Authorization:</strong> Secure login, logout, update, and reset password with JWT.</li>
+        <li><strong>Devices Management:</strong> Create, read, update, delete devices; track brand, model, status.</li>
+        <li><strong>Employees Management:</strong> Manage employee records, assign devices to employees, etc.</li>
+        <li><strong>Licenses Management:</strong> Handle software licenses, keys, expiry dates.</li>
+        <li><strong>Avatar Upload:</strong> Users can upload profile pictures, served via Express static route.</li>
+        <li><strong>Responsive Frontend:</strong> Built with React &amp; Redux; styled with CSS/Styled Components.</li>
+      </ul>
+    </section>
 
-  <!-- Tech Stack -->
-  <section id="tech-stack">
-    <h2>Tech Stack</h2>
-    <p><strong>Backend:</strong> Node.js, Express, MongoDB, Multer (for file uploads), JWT for auth, CORS for cross-origin support.</p>
-    <p><strong>Frontend:</strong> React, Redux Toolkit, TypeScript (optional), react-hook-form or react-query, Styled Components or plain CSS.</p>
-    <p><strong>Other:</strong> ESLint, Prettier (code formatting), Jest/React Testing Library (optional tests).</p>
-  </section>
+    <!-- Demonstration -->
+    <section id="demonstration">
+      <h2>Demonstration</h2>
+      <p class="demo-gifs">
+        <!-- Replace placeholders with your own images/gifs -->
+        <img src="https://placehold.co/600x400" alt="Demo 1">
+        <img src="https://placehold.co/600x400" alt="Demo 2">
+      </p>
+      <p>Below are a few demonstrations of the Inventory Management System in action:</p>
+      <ol>
+        <li>Users can log in, view devices, assign them to employees.</li>
+        <li>Track software licenses, expire dates, and renewal notifications (planned).</li>
+      </ol>
+    </section>
 
-  <!-- Project Structure -->
-  <section id="project-structure">
-    <h2>Project Structure</h2>
-    <pre><code>inventory-management-system/
- ├─ src/
- │   └─ backend/
- │       ├─ src/
- │       │   ├─ config/
- │       │   ├─ controllers/
- │       │   ├─ models/
- │       │   ├─ routes/
- │       │   ├─ utils/
- │       │   └─ index.ts
- │       └─ package.json
- ├─ frontend/
- │   ├─ src/
- │   │   ├─ pages/
- │   │   ├─ store/
- │   │   ├─ components/
- │   │   └─ App.tsx
- │   └─ package.json
- ├─ .env.example
- └─ README.md
-</code></pre>
-  </section>
+    <!-- How To Use -->
+    <section id="how-to-use">
+      <h2>How To Use</h2>
+      <ul>
+        <li><strong>Log in</strong> with your credentials or register a new user.</li>
+        <li><strong>Devices</strong>: View, add, or update device details.</li>
+        <li><strong>Employees</strong>: Create employee records and assign them devices.</li>
+        <li><strong>Licenses</strong>: Manage software license records, mark renewals.</li>
+        <li><strong>Profile</strong>: Update your user info, including a new avatar image.</li>
+      </ul>
+    </section>
 
-  <!-- Getting Started -->
-  <section id="getting-started">
-    <h2>Getting Started</h2>
-    <h3>Prerequisites</h3>
-    <ul>
-      <li>Node.js v14+ (or higher)</li>
-      <li>npm or yarn</li>
-      <li>MongoDB (local or remote)</li>
-    </ul>
+    <!-- API Usage -->
+    <section id="api-usage">
+      <h2>API Usage</h2>
+      <p>Check the <strong>Inventory Management System</strong> API endpoints below (examples):</p>
 
-    <h3>Installation</h3>
-    <ol>
-      <li>
-        <strong>Clone the Repo:</strong>
-        <pre><code>git clone https://github.com/your-username/inventory-management-system.git
+      <ul>
+        <li><code>POST /api/auth/login</code>: Log in a user, returns JWT.</li>
+        <li><code>PATCH /api/users/account</code>: Update user data, including avatar upload.</li>
+        <li><code>GET /api/devices</code>: Fetch all devices.</li>
+        <li><code>POST /api/devices</code>: Create a new device.</li>
+        <li><code>GET /api/employees</code>: Retrieve employee list.</li>
+        <li><code>POST /api/licenses</code>: Add a new license record.</li>
+      </ul>
+
+      <p>Use Postman or a similar tool to interact with these endpoints. Include the <code>Authorization: Bearer [token]</code> header for protected routes.</p>
+    </section>
+
+    <!-- Deployment -->
+    <section id="deployment">
+      <h2>Deployment</h2>
+      <p>Below are suggested steps if you want to deploy to services like Heroku or Render:</p>
+      <ol>
+        <li><strong>Set up environment variables</strong> (PORT, MONGO_URI, JWT_SECRET, etc.).</li>
+        <li><strong>Push your repo</strong> to GitHub or similar.</li>
+        <li><strong>Deploy</strong> the backend by connecting your repo to Heroku/Render. Define your env vars in their dashboard.</li>
+        <li>For the <strong>frontend</strong>, build with <code>npm run build</code> (if using CRA or Vite) and deploy the static assets to Netlify, Vercel, or Heroku (buildpack).</li>
+      </ol>
+    </section>
+
+    <!-- Build With -->
+    <section id="build-with">
+      <h2>Build With</h2>
+      <ul>
+        <li><strong>NodeJS</strong> – JS runtime environment</li>
+        <li><strong>Express</strong> – Web framework for Node</li>
+        <li><strong>MongoDB &amp; Mongoose</strong> – Database &amp; ODM</li>
+        <li><strong>React &amp; Redux</strong> – Frontend library &amp; state management</li>
+        <li><strong>Multer</strong> – File uploading middleware (for avatars)</li>
+        <li><strong>JWT</strong> – Authentication tokens</li>
+      </ul>
+    </section>
+
+    <!-- To-do -->
+    <section id="to-do">
+      <h2>To-do</h2>
+      <ul>
+        <li>Implement license renewal notifications via email</li>
+        <li>Role-based access control for admin vs. regular users</li>
+        <li>Advanced reporting &amp; analytics on device usage</li>
+        <li>Add searching &amp; filtering for employees and devices</li>
+      </ul>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation">
+      <h2>Installation</h2>
+      <ol>
+        <li><strong>Clone</strong> the repo:
+          <pre><code>git clone https://github.com/your-username/inventory-management-system.git
 cd inventory-management-system
 </code></pre>
-      </li>
-      <li>
-        <strong>Backend Setup:</strong>
-        <pre><code>cd src/backend
+        </li>
+        <li><strong>Backend setup</strong>:
+          <pre><code>cd src/backend
 npm install
-</code></pre>
-      </li>
-      <li>
-        <strong>Frontend Setup:</strong>
-        <pre><code>cd ../../frontend
-npm install
-</code></pre>
-      </li>
-    </ol>
-
-    <h3>Environment Variables</h3>
-    <ul>
-      <li>Create a <code>.env</code> file in <code>src/backend</code>, based on <code>.env.example</code>.</li>
-      <li>Provide:
-        <pre><code>PORT=8000
-MONGO_URI=mongodb://localhost:27017/inventoryDB
-JWT_SECRET=your_jwt_secret_here
-</code></pre>
-      </li>
-    </ul>
-
-    <h3>Running the App</h3>
-    <ol>
-      <li><strong>Start Backend</strong>: 
-        <pre><code>cd src/backend
 npm run dev
 </code></pre>
-        This runs the Express server at <code>http://localhost:8000</code>.
-      </li>
-      <li><strong>Start Frontend</strong>:
-        <pre><code>cd ../../frontend
+        </li>
+        <li><strong>Frontend setup</strong>:
+          <pre><code>cd ../../frontend
+npm install
 npm run dev
 </code></pre>
-        The React app runs at <code>http://localhost:5173</code> by default.
-      </li>
-      <li>
-        Visit <code>http://localhost:5173</code> in your browser.
-      </li>
-    </ol>
-  </section>
+        </li>
+        <li>Open <strong>http://localhost:5173</strong> to access the frontend.</li>
+      </ol>
+      <p>
+        Be sure to create a <code>.env</code> file in <code>src/backend</code> with your environment variables (e.g. MONGO_URI, JWT_SECRET, etc.).
+      </p>
+    </section>
 
-  <!-- API Endpoints -->
-  <section id="api-endpoints">
-    <h2>API Endpoints</h2>
+    <!-- Known Bugs -->
+    <section id="known-bugs">
+      <h2>Known Bugs</h2>
+      <ul>
+        <li>Avatar preview might not refresh immediately if caching is too aggressive.</li>
+        <li>Some older devices might appear in the UI without updated statuses (need manual refresh).</li>
+      </ul>
+      <p>If you encounter additional issues, please open an issue or PR on GitHub!</p>
+    </section>
 
-    <h3>Authentication Routes</h3>
-    <table>
-      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-      <tr><td>POST</td><td><code>/api/auth/register</code></td><td>Register a new user</td></tr>
-      <tr><td>POST</td><td><code>/api/auth/login</code></td><td>Login and receive JWT token</td></tr>
-    </table>
+    <!-- Future Updates -->
+    <section id="future-updates">
+      <h2>Future Updates</h2>
+      <ul>
+        <li>PWA support for offline usage</li>
+        <li>Two-factor authentication</li>
+        <li>Integration with other HR/financial systems</li>
+      </ul>
+    </section>
 
-    <h3>User Routes</h3>
-    <table>
-      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-      <tr><td>PATCH</td><td><code>/api/users/account</code></td><td>Update user profile &amp; avatar</td></tr>
-      <tr><td>GET</td><td><code>/api/users</code></td><td>(Admin) Get all users</td></tr>
-    </table>
+    <!-- Acknowledgement -->
+    <section id="acknowledgement">
+      <h2>Acknowledgement</h2>
+      <p>Special thanks to all contributors and the Node/React communities for their wonderful libraries and documentation!</p>
+    </section>
 
-    <h3>Devices Routes</h3>
-    <table>
-      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-      <tr><td>GET</td><td><code>/api/devices</code></td><td>Get all devices</td></tr>
-      <tr><td>POST</td><td><code>/api/devices</code></td><td>Create a new device</td></tr>
-      <tr><td>GET</td><td><code>/api/devices/:id</code></td><td>Get a single device by ID</td></tr>
-      <tr><td>PATCH</td><td><code>/api/devices/:id</code></td><td>Update a device</td></tr>
-      <tr><td>DELETE</td><td><code>/api/devices/:id</code></td><td>Delete a device</td></tr>
-    </table>
+    <!-- License -->
+    <section id="license">
+      <h2>License</h2>
+      <p>This project is open-sourced under the <strong>MIT License</strong>.</p>
+    </section>
 
-    <h3>Employees Routes</h3>
-    <table>
-      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-      <tr><td>GET</td><td><code>/api/employees</code></td><td>Get all employees</td></tr>
-      <tr><td>POST</td><td><code>/api/employees</code></td><td>Create a new employee</td></tr>
-      <tr><td>GET</td><td><code>/api/employees/:id</code></td><td>Get a single employee by ID</td></tr>
-      <tr><td>PATCH</td><td><code>/api/employees/:id</code></td><td>Update an employee</td></tr>
-      <tr><td>DELETE</td><td><code>/api/employees/:id</code></td><td>Delete an employee</td></tr>
-    </table>
-
-    <h3>Licenses Routes</h3>
-    <table>
-      <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
-      <tr><td>GET</td><td><code>/api/licenses</code></td><td>Get all software licenses</td></tr>
-      <tr><td>POST</td><td><code>/api/licenses</code></td><td>Create a new license</td></tr>
-      <tr><td>GET</td><td><code>/api/licenses/:id</code></td><td>Get a single license by ID</td></tr>
-      <tr><td>PATCH</td><td><code>/api/licenses/:id</code></td><td>Update a license</td></tr>
-      <tr><td>DELETE</td><td><code>/api/licenses/:id</code></td><td>Delete a license</td></tr>
-    </table>
-  </section>
-
-  <!-- Avatar Upload -->
-  <section id="avatar-upload">
-    <h2>Avatar Upload &amp; Serving Static Files</h2>
-    <ul>
-      <li><strong>Upload:</strong> Send a <code>multipart/form-data</code> request (PATCH) to <code>/api/users/account</code> with <code>avatar</code> field.</li>
-      <li><strong>Storage:</strong> Multer writes images to <code>src/backend/src/uploads/avatars</code>.</li>
-      <li><strong>Static Serving:</strong> Express exposes them at <code>http://localhost:8000/uploads/avatars/&lt;filename&gt;</code>.</li>
-      <li><strong>Frontend:</strong> Reference <code>&lt;img src="http://localhost:8000/uploads/avatars/&lt;file&gt;" /&gt;</code> in the UI.</li>
-    </ul>
-  </section>
-
-  <!-- Contributing -->
-  <section id="contributing">
-    <h2>Contributing</h2>
-    <ol>
-      <li>Fork the repository.</li>
-      <li>Create a new branch for your feature or fix.</li>
-      <li>Commit changes with clear messages.</li>
-      <li>Submit a pull request against the main repo.</li>
-    </ol>
-    <p>Your contributions are welcome!</p>
-  </section>
-
-  <!-- License -->
-  <section id="license">
-    <h2>License</h2>
-    <p>This project is licensed under the <strong>MIT License</strong>. See the <code>LICENSE</code> file for details.</p>
-  </section>
-</main>
-
-<footer>
-  <p>© 2023 Inventory Management System</p>
-</footer>
-
+    <footer>
+      <p>© 2023 Inventory Management System</p>
+    </footer>
+  </div>
 </body>
 </html>
