@@ -10,6 +10,8 @@ import {
 
 import DashboardBox from "./DashboardBox.tsx";
 import styled from "styled-components";
+import { useDevicesByDepartment } from "../../hooks/hooks/useDevicesByDepartment.ts";
+import Spinner from "../../ui/Spinner.tsx";
 
 const ChartContainer = styled.div`
   width: 100%;
@@ -34,16 +36,15 @@ const StyledDeviceChart = styled(DashboardBox)`
   }
 `;
 
-//TODO: This data will be dynamic once the back end service is ready.
-const data = [
-  { department: "IT", devices: 50 },
-  { department: "HR", devices: 20 },
-  { department: "Sales", devices: 30 },
-  { department: "Marketing", devices: 10 },
-  { department: "Finance", devices: 40 },
-];
-
 function DepartmentBarChart() {
+  const { data, isLoading, error } = useDevicesByDepartment();
+
+  if (isLoading) return <Spinner />;
+
+  if (error) {
+    return <StyledDeviceChart>Error: {error}</StyledDeviceChart>;
+  }
+
   return (
     <StyledDeviceChart>
       <ChartContainer>
