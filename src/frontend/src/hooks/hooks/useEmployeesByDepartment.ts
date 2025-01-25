@@ -1,4 +1,3 @@
-// src/hooks/useEmployeesByDepartment.ts
 import { Employee } from "../../store/slices/employees/employeeSlice.ts";
 import { getEmployees } from "../../services/apiEmployees.ts";
 import { useGroupedData } from "./useGroupedData";
