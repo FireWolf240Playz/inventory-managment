@@ -182,14 +182,39 @@ const GlobalStyles = createGlobalStyle`
         font-weight: bold;
  
     }
-
     img {
         max-width: 100%;
-
-        /* For dark mode */
         filter: grayscale(var(--image-grayscale)) opacity(var(--image-opacity));
     }
+    ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px; 
+    }
 
+    ::-webkit-scrollbar-track {
+        background: var(--color-grey-100);
+        border-radius: 10px; 
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--color-brand-600); 
+        border-radius: 10px; 
+        border: 2px solid var(--color-grey-100);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: var(--color-brand-800);
+    }
+    
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-brand-600) var(--color-grey-100); 
+    }
+    
+    body {
+        scrollbar-color: var(--color-brand-600) var(--color-grey-100);
+        scrollbar-width: thin;
+    }
 `;
 
 export default GlobalStyles;

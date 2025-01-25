@@ -1,8 +1,8 @@
 import styled from "styled-components";
+import Heading from "../../ui/Heading.tsx";
 import Stats from "./Stats.tsx";
 import DevicesChart from "./DevicesChart.tsx";
 import LicenseChart from "./LicenseChart.tsx";
-import Heading from "../../ui/Heading.tsx";
 
 const StyledDashboardLayout = styled.div`
   display: flex;
