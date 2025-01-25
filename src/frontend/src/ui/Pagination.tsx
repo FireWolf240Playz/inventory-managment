@@ -3,6 +3,7 @@ import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import { PAGE_SIZE } from "../utils/constants.ts";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 interface PaginationProps {
   count: number;
@@ -13,8 +14,11 @@ const StyledPagination = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-`;
 
+  @media screen and (max-width: 500px) {
+    justify-content: center;
+  }
+`;
 const P = styled.p`
   font-size: 1.4rem;
   margin-left: 0.8rem;
@@ -27,6 +31,11 @@ const P = styled.p`
 const Buttons = styled.div`
   display: flex;
   gap: 0.6rem;
+
+  @media screen and (max-width: 500px) {
+    justify-content: space-evenly;
+    width: 100%;
+  }
 `;
 
 const PaginationButton = styled.button<{ active?: boolean }>`
@@ -72,6 +81,9 @@ const Pagination: React.FC<PaginationProps> = ({ count }) => {
 
   const pageCount = Math.ceil(count / PAGE_SIZE);
 
+  const windowSize = useWindowSize();
+  const { width } = windowSize;
+
   const nextPage = () => {
     const next = currentPage === pageCount ? currentPage : currentPage + 1;
     searchParams.set("page", next.toString());
@@ -88,13 +100,15 @@ const Pagination: React.FC<PaginationProps> = ({ count }) => {
 
   return (
     <StyledPagination>
-      <P>
-        Showing <span>{(currentPage - 1) * PAGE_SIZE + 1}</span> to{" "}
-        <span>
-          {currentPage === pageCount ? count : currentPage * PAGE_SIZE}
-        </span>{" "}
-        of <span>{count}</span> results
-      </P>
+      {(width ?? 0) < 490 ? null : (
+        <P>
+          Showing <span>{(currentPage - 1) * PAGE_SIZE + 1}</span> to{" "}
+          <span>
+            {currentPage === pageCount ? count : currentPage * PAGE_SIZE}
+          </span>{" "}
+          of <span>{count}</span> results
+        </P>
+      )}
 
       <Buttons>
         <PaginationButton onClick={prevPage} disabled={currentPage === 1}>
