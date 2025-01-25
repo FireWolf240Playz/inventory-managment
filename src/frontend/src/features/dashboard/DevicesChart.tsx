@@ -30,6 +30,11 @@ const StyledDeviceChart = styled(DashboardBox)`
     stroke: var(--color-grey-300);
   }
 
+  &[data-theme="dark"] .recharts-cartesian-grid-horizontal line,
+  &[data-theme="dark"] .recharts-cartesian-grid-vertical line {
+    stroke: var(--color-grey-700);
+  }
+
   @media (max-width: 768px) {
     padding: 1rem;
   }
@@ -39,12 +44,13 @@ function DepartmentBarChart() {
   const { data, isLoading, error } = useDevicesByDepartment();
   console.log(data);
 
-  if (isLoading) return <Spinner />;
+  const isDarkMode = document.documentElement.classList.contains("dark-mode");
 
+  if (isLoading) return <Spinner />;
   if (error) return <StyledDeviceChart>Error: {error}</StyledDeviceChart>;
 
   return (
-    <StyledDeviceChart>
+    <StyledDeviceChart data-theme={isDarkMode ? "dark" : "light"}>
       <ChartContainer>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
@@ -57,6 +63,7 @@ function DepartmentBarChart() {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
+
             <XAxis
               dataKey="label"
               label={{
@@ -64,18 +71,59 @@ function DepartmentBarChart() {
                 position: "insideBottom",
                 offset: -5,
               }}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fontSize: 12,
+                fill: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
             />
+
             <YAxis
               label={{
                 value: "Number of Devices",
                 angle: -90,
                 position: "insideLeft",
               }}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fontSize: 12,
+                fill: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
             />
-            <Tooltip />
-            <Bar dataKey="value" fill="#3730a3" name="Devices" />
+
+            <Tooltip
+              cursor={{
+                fill: isDarkMode
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "rgba(0, 0, 0, 0.1)",
+              }}
+              contentStyle={{
+                backgroundColor: isDarkMode
+                  ? "var(--color-grey-800)"
+                  : "var(--color-grey-100)",
+                borderRadius: "8px",
+                border: `1px solid ${
+                  isDarkMode ? "var(--color-grey-600)" : "var(--color-grey-300)"
+                }`,
+                color: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
+              itemStyle={{
+                color: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
+            />
+
+            <Bar
+              dataKey="value"
+              fill={isDarkMode ? "#3b82f6" : "#2563eb"}
+              name="Devices"
+              onMouseOver={(e) => console.log("Hovered:", e)}
+            />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>

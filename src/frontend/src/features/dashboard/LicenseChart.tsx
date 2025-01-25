@@ -25,10 +25,14 @@ const StyledLicenseChart = styled(DashboardBox)`
   grid-column: 1 / -1;
   height: fit-content;
 
-  /* Customize grid line colors */
   & .recharts-cartesian-grid-horizontal line,
   & .recharts-cartesian-grid-vertical line {
     stroke: var(--color-grey-300);
+  }
+
+  &[data-theme="dark"] .recharts-cartesian-grid-horizontal line,
+  &[data-theme="dark"] .recharts-cartesian-grid-vertical line {
+    stroke: var(--color-grey-700);
   }
 
   @media (max-width: 768px) {
@@ -38,13 +42,16 @@ const StyledLicenseChart = styled(DashboardBox)`
 
 function LicensesBarChart() {
   const { data, isLoading, error } = useLicensesByDepartment();
+
+  const isDarkMode = document.documentElement.classList.contains("dark-mode");
+
   console.log("License data:", data);
 
   if (isLoading) return <Spinner />;
   if (error) return <StyledLicenseChart>Error: {error}</StyledLicenseChart>;
 
   return (
-    <StyledLicenseChart>
+    <StyledLicenseChart data-theme={isDarkMode ? "dark" : "light"}>
       <ChartContainer>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
@@ -57,6 +64,7 @@ function LicensesBarChart() {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
+
             <XAxis
               dataKey="label"
               label={{
@@ -64,18 +72,59 @@ function LicensesBarChart() {
                 position: "insideBottom",
                 offset: -5,
               }}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fontSize: 12,
+                fill: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
             />
+
             <YAxis
               label={{
                 value: "Number of Licenses",
                 angle: -90,
                 position: "insideLeft",
               }}
-              tick={{ fontSize: 12 }}
+              tick={{
+                fontSize: 12,
+                fill: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
             />
-            <Tooltip />
-            <Bar dataKey="value" fill="#3730a3" name="Licenses" />
+
+            <Tooltip
+              cursor={{
+                fill: isDarkMode
+                  ? "rgba(255, 255, 255, 0.1)"
+                  : "rgba(0, 0, 0, 0.1)",
+              }}
+              contentStyle={{
+                backgroundColor: isDarkMode
+                  ? "var(--color-grey-800)"
+                  : "var(--color-grey-100)",
+                borderRadius: "8px",
+                border: `1px solid ${
+                  isDarkMode ? "var(--color-grey-600)" : "var(--color-grey-300)"
+                }`,
+                color: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
+              itemStyle={{
+                color: isDarkMode
+                  ? "var(--color-grey-100)"
+                  : "var(--color-grey-900)",
+              }}
+            />
+
+            <Bar
+              dataKey="value"
+              fill={isDarkMode ? "#3b82f6" : "#2563eb"}
+              name="Licenses"
+              onMouseOver={(e) => console.log("Hovered:", e)}
+            />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
