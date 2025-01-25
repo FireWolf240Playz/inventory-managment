@@ -7,6 +7,7 @@ import { HiOutlineUser } from "react-icons/hi";
 import { useOutsideClick } from "../hooks/hooks/useOutsideClick.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
+import DarkModeToggle from "./DarkModeToggle.tsx";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -156,6 +157,7 @@ function Header() {
   return (
     <StyledNav>
       <span>{name}</span>
+      <DarkModeToggle />
       <div onClick={toggleDropdown}>
         <AvatarContainer ref={ref}>
           <AvatarWrapper>

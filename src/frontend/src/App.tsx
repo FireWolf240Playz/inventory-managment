@@ -11,63 +11,73 @@ import { Toaster, ToastBar, toast } from "react-hot-toast";
 import { HiXMark } from "react-icons/hi2";
 import Licenses from "./pages/Licenses.tsx";
 import ProtectedRoute from "./ui/ProtectedRoute.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { DarkModeProvider } from "./context/DarkModeContext.tsx";
 
 function App() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { staleTime: 0 } },
+  });
+
   return (
     <>
-      <BrowserRouter>
-        <GlobalStyles />
-        <Routes>
-          <Route path="/" element={<Navigate replace to="/login" />} />
+      <DarkModeProvider>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <GlobalStyles />
+            <Routes>
+              <Route path="/" element={<Navigate replace to="/login" />} />
 
-          <Route path="/login" element={<Login />} />
+              <Route path="/login" element={<Login />} />
 
-          <Route element={<AppLayout />}>
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/devices"
-              element={
-                <ProtectedRoute>
-                  <Devices />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/employees"
-              element={
-                <ProtectedRoute>
-                  <Employees />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/licenses"
-              element={
-                <ProtectedRoute>
-                  <Licenses />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/account"
-              element={
-                <ProtectedRoute>
-                  <Account />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
+              <Route element={<AppLayout />}>
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/devices"
+                  element={
+                    <ProtectedRoute>
+                      <Devices />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/employees"
+                  element={
+                    <ProtectedRoute>
+                      <Employees />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/licenses"
+                  element={
+                    <ProtectedRoute>
+                      <Licenses />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account"
+                  element={
+                    <ProtectedRoute>
+                      <Account />
+                    </ProtectedRoute>
+                  }
+                />
+              </Route>
 
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
+              <Route path="*" element={<PageNotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
+      </DarkModeProvider>
 
       <Toaster
         position="top-center"
