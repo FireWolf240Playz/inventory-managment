@@ -8,6 +8,7 @@ import { useOutsideClick } from "../hooks/hooks/useOutsideClick.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store.ts";
 import DarkModeToggle from "./DarkModeToggle.tsx";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -136,6 +137,8 @@ const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, path }) => (
 function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
+  const windowSize = useWindowSize();
+  const { width } = windowSize;
 
   const avatar = user?.avatar || "";
   const name = user?.name || "";
@@ -156,7 +159,7 @@ function Header() {
 
   return (
     <StyledNav>
-      <span>{name}</span>
+      {(width ?? 0) < 460 ? null : <span>{name}</span>}
       <DarkModeToggle />
       <div onClick={toggleDropdown}>
         <AvatarContainer ref={ref}>
