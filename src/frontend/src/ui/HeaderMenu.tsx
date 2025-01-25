@@ -159,8 +159,8 @@ function Header() {
 
   return (
     <StyledNav>
-      {(width ?? 0) < 460 ? null : <span>{name}</span>}
       <DarkModeToggle />
+      {(width ?? 0) < 460 ? null : <span>{name}</span>}
       <div onClick={toggleDropdown}>
         <AvatarContainer ref={ref}>
           <AvatarWrapper>
