@@ -4,35 +4,34 @@ import {
   SubmitErrorHandler,
   Controller,
 } from "react-hook-form";
-import FormRow from "../../ui/FormRow.tsx";
 import { useDispatch, useSelector } from "react-redux";
 
-import Input from "../../ui/Input.tsx";
-import Form from "../../ui/Form.tsx";
-import Button from "../../ui/Button.tsx";
+import FormRow from "../../ui/FormRow";
+import Input from "../../ui/Input";
+import Button from "../../ui/Button";
+import ThemedForm from "../../ui/ThemedForm.tsx";
+import { ThemedSelect } from "../../ui/ThemedSelect";
 
-import { Employee } from "../../store/slices/employees/employeeSlice.ts";
+import { generateUniqueId } from "../../store/slices/entityUtils";
+import store from "../../store/store";
+import {
+  findDeviceById,
+  selectAvailableDevices,
+} from "../../store/slices/devices/selectors";
+import { selectAvailableLicenses } from "../../store/slices/licenses/selectors";
 import {
   LOCATION_OPTIONS_OFFICE_AND_REMOTE,
   ROLE_OPTIONS,
   DEPARTMENT_OPTIONS,
-} from "../../utils/constants.ts";
-import Select from "react-select";
+} from "../../utils/constants";
 
-import {
-  findDeviceById,
-  selectAvailableDevices,
-} from "../../store/slices/devices/selectors.ts";
-import { generateUniqueId } from "../../store/slices/entityUtils.ts";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createEmployee, editEmployee } from "../../services/apiEmployees";
+import { Employee } from "../../store/slices/employees/employeeSlice";
 import {
   updateDeviceStatus,
   reassignDevicesToEmployee,
-} from "../../store/slices/devices/deviceSlice.ts";
-import store from "../../store/store.ts";
-import { selectAvailableLicenses } from "../../store/slices/licenses/selectors.ts";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createEmployee, editEmployee } from "../../services/apiEmployees.ts";
+} from "../../store/slices/devices/deviceSlice";
 import { toast } from "react-hot-toast";
 
 interface EmployeeData {
@@ -73,10 +72,14 @@ function CreateEmployeeForm({
     assignedDevices,
     assignedLicenses,
   } = employeeToEdit;
+
   const isEditSession = Boolean(employeeId);
   const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
-  const mutation = useMutation<void, Error, Employee>({
+  const isDarkMode = document.documentElement.classList.contains("dark-mode");
+
+  const createMutation = useMutation<void, Error, Employee>({
     mutationFn: createEmployee,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -86,8 +89,7 @@ function CreateEmployeeForm({
       toast.error("Something went wrong while creating employee");
     },
   });
-
-  const { mutate } = useMutation<void, Error, Employee>({
+  const editMutation = useMutation<void, Error, Employee>({
     mutationFn: editEmployee,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
@@ -98,28 +100,30 @@ function CreateEmployeeForm({
     },
   });
 
-  const dispatch = useDispatch();
-
   const availableDevices = useSelector(selectAvailableDevices);
   const availableLicenses = useSelector(selectAvailableLicenses);
 
-  const { control, register, handleSubmit, reset, formState } =
-    useForm<EmployeeData>({
-      defaultValues: {
-        employeeId: employeeId || "",
-        employeeName: employeeName || "",
-        assignedDevices: assignedDevices || [],
-        assignedLicenses: assignedLicenses || [],
-        department: department || "",
-        location: location || "",
-        role: role || [],
-      },
-    });
-  const { errors } = formState;
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<EmployeeData>({
+    defaultValues: {
+      employeeId: employeeId || "",
+      employeeName: employeeName || "",
+      assignedDevices: assignedDevices || [],
+      assignedLicenses: assignedLicenses || [],
+      department: department || "",
+      location: location || "",
+      role: role || [],
+    },
+  });
 
   const onSubmit: SubmitHandler<EmployeeData> = (data) => {
     const state = store.getState();
-    const isEditSession = Boolean(data.employeeId);
+    const isEdit = Boolean(data.employeeId);
 
     if (data.assignedDevices) {
       const foundDevices = data.assignedDevices
@@ -130,11 +134,12 @@ function CreateEmployeeForm({
         ...data,
         assignedDevices: foundDevices?.map((device) => device!.deviceId) || [],
       };
-      if (isEditSession) {
+
+      if (isEdit) {
         const oldDeviceIds = employeeToEdit.assignedDevices || [];
         const newDeviceIds = data.assignedDevices || [];
 
-        mutate(transformedData);
+        editMutation.mutate(transformedData);
 
         dispatch(
           reassignDevicesToEmployee({
@@ -143,7 +148,6 @@ function CreateEmployeeForm({
             newDeviceIds,
           }),
         );
-
         dispatch(
           updateDeviceStatus({
             deviceIds: newDeviceIds,
@@ -152,7 +156,7 @@ function CreateEmployeeForm({
         );
       } else {
         transformedData.employeeId = generateUniqueId();
-        mutation.mutate(transformedData);
+        createMutation.mutate(transformedData);
       }
 
       dispatch(
@@ -161,16 +165,18 @@ function CreateEmployeeForm({
           status: 1 as const,
         }),
       );
-      if (onCloseModal) onCloseModal();
+
+      onCloseModal?.();
     }
   };
 
-  const onError: SubmitErrorHandler<EmployeeData> = (errors) => {
-    console.error("Form validation errors:", errors);
+  const onError: SubmitErrorHandler<EmployeeData> = (formErrors) => {
+    console.error("Form validation errors:", formErrors);
   };
 
   return (
-    <Form
+    <ThemedForm
+      data-theme={isDarkMode ? "dark-mode" : "light-mode"}
       onSubmit={handleSubmit(onSubmit, onError)}
       type={onCloseModal ? "modal" : "regular"}
     >
@@ -197,9 +203,9 @@ function CreateEmployeeForm({
               : { required: "This field is required" }
           }
           render={({ field: { onChange, value } }) => (
-            <Select
-              options={availableDevices}
+            <ThemedSelect
               isMulti
+              options={availableDevices}
               value={availableDevices.filter((opt) =>
                 value?.includes(opt.value),
               )}
@@ -231,9 +237,9 @@ function CreateEmployeeForm({
               : { required: "This field is required" }
           }
           render={({ field: { onChange, value } }) => (
-            <Select
-              options={availableLicenses}
+            <ThemedSelect
               isMulti
+              options={availableLicenses}
               value={availableLicenses.filter((opt) =>
                 value?.includes(opt.value),
               )}
@@ -246,7 +252,7 @@ function CreateEmployeeForm({
               }
               isClearable
               maxMenuHeight={200}
-              placeholder="Select devices"
+              placeholder="Select licenses"
             />
           )}
         />
@@ -262,9 +268,9 @@ function CreateEmployeeForm({
               : { required: "This field is required" }
           }
           render={({ field: { onChange, value } }) => (
-            <Select
-              options={[...DEPARTMENT_OPTIONS]}
-              value={[...DEPARTMENT_OPTIONS].find((opt) => opt.value === value)}
+            <ThemedSelect
+              options={DEPARTMENT_OPTIONS}
+              value={DEPARTMENT_OPTIONS.find((opt) => opt.value === value)}
               onChange={(selectedOption) => onChange(selectedOption?.label)}
               isClearable
               maxMenuHeight={200}
@@ -284,14 +290,11 @@ function CreateEmployeeForm({
               : { required: "This field is required" }
           }
           render={({ field: { onChange, value } }) => (
-            <Select
-              // The array of location options, including remote
-              options={[...LOCATION_OPTIONS_OFFICE_AND_REMOTE]}
-              // Convert the string from the form state back into a proper { value, label } object
-              value={[...LOCATION_OPTIONS_OFFICE_AND_REMOTE].find(
+            <ThemedSelect
+              options={LOCATION_OPTIONS_OFFICE_AND_REMOTE}
+              value={LOCATION_OPTIONS_OFFICE_AND_REMOTE.find(
                 (opt) => opt.value === value,
               )}
-              // Only store .label (a string) in the form
               onChange={(selectedOption) => onChange(selectedOption?.label)}
               isClearable
               maxMenuHeight={200}
@@ -311,8 +314,9 @@ function CreateEmployeeForm({
               : { required: "This field is required" }
           }
           render={({ field: { onChange, value } }) => (
-            <Select
-              options={[...ROLE_OPTIONS]}
+            <ThemedSelect
+              isMulti
+              options={ROLE_OPTIONS}
               value={ROLE_OPTIONS.filter((opt) => value.includes(opt.label))}
               onChange={(selectedOption) => onChange(selectedOption?.label)}
               isClearable
@@ -338,7 +342,7 @@ function CreateEmployeeForm({
           {isEditSession ? "Edit Employee" : "Create Employee"}
         </Button>
       </FormRow>
-    </Form>
+    </ThemedForm>
   );
 }
 

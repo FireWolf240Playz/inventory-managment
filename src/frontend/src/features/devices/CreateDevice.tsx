@@ -4,27 +4,28 @@ import {
   SubmitErrorHandler,
   Controller,
 } from "react-hook-form";
-import Input from "../../ui/Input";
-import Form from "../../ui/Form";
-import Button from "../../ui/Button";
-import Textarea from "../../ui/Textarea";
-import FormRow from "../../ui/FormRow";
 import { useSelector } from "react-redux";
-import { generateUniqueId } from "../../store/slices/entityUtils";
 
+import FormRow from "../../ui/FormRow";
+import Input from "../../ui/Input";
+import Textarea from "../../ui/Textarea";
+import Button from "../../ui/Button";
+import ThemedForm from "../../ui/ThemedForm.tsx";
+import { ThemedSelect } from "../../ui/ThemedSelect";
+
+import { generateUniqueId } from "../../store/slices/entityUtils";
 import {
   findEmployeeById,
   selectAllEmployees,
 } from "../../store/slices/employees/selectors";
-import { Employee } from "../../store/slices/employees/employeeSlice";
-import Select from "react-select";
 import store from "../../store/store";
 import { createDevice, editDevice } from "../../services/apiDevices";
 import { toast } from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { editEmployee } from "../../services/apiEmployees";
 
-import { Device } from "../../store/slices/devices/deviceSlice.ts";
-import { editEmployee } from "../../services/apiEmployees.ts";
+import { Device } from "../../store/slices/devices/deviceSlice";
+import { Employee } from "../../store/slices/employees/employeeSlice";
 
 interface DeviceData {
   model: string;
@@ -60,9 +61,10 @@ function CreateDeviceForm({
   } = deviceToEdit;
   const isEditSession = Boolean(deviceId);
 
-  const queryClient = useQueryClient();
+  const isDarkMode = document.documentElement.classList.contains("dark-mode");
 
-  const mutation = useMutation<void, Error, Device>({
+  const queryClient = useQueryClient();
+  const createMutation = useMutation<void, Error, Device>({
     mutationFn: createDevice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["devices"] });
@@ -72,8 +74,7 @@ function CreateDeviceForm({
       toast.error("Something went wrong while creating device");
     },
   });
-
-  const { mutate } = useMutation<void, Error, Device>({
+  const editMutation = useMutation<void, Error, Device>({
     mutationFn: editDevice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["devices"] });
@@ -86,17 +87,21 @@ function CreateDeviceForm({
 
   const allEmployees = useSelector(selectAllEmployees);
 
-  const { register, handleSubmit, reset, formState, control } =
-    useForm<DeviceData>({
-      defaultValues: {
-        model: model || "",
-        deviceId: deviceId || "",
-        assignedTo: assignedTo || "",
-        deviceFactorySerialNumber: deviceFactorySerialNumber || "0",
-        description: description || "",
-      },
-    });
-  const { errors } = formState;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    control,
+  } = useForm<DeviceData>({
+    defaultValues: {
+      model: model || "",
+      deviceId: deviceId || "",
+      assignedTo: assignedTo || "",
+      deviceFactorySerialNumber: deviceFactorySerialNumber || "0",
+      description: description || "",
+    },
+  });
 
   const onSubmit: SubmitHandler<DeviceData> = async (data) => {
     try {
@@ -104,32 +109,33 @@ function CreateDeviceForm({
       const foundEmployee = findEmployeeById(data.assignedTo)(state);
 
       if (!foundEmployee) {
-        console.error("No employee found for the provided ID.");
+        console.error("No employee found for that ID");
         return;
       }
 
-      const deviceId = isEditSession ? data.deviceId : generateUniqueId();
+      const newDeviceId = isEditSession ? data.deviceId : generateUniqueId();
 
       const transformedData: Device = {
         ...data,
-        deviceId,
+        deviceId: newDeviceId,
         status: 1,
         assignedTo: foundEmployee.employeeId,
         department: foundEmployee.department,
       };
 
       if (isEditSession) {
-        mutate(transformedData);
+        editMutation.mutate(transformedData);
       } else {
-        mutation.mutate(transformedData);
+        createMutation.mutate(transformedData);
       }
 
       const updatedEmployee: Employee = {
         ...foundEmployee,
-        assignedDevices: [...(foundEmployee.assignedDevices || []), deviceId],
+        assignedDevices: [
+          ...(foundEmployee.assignedDevices || []),
+          newDeviceId,
+        ],
       };
-
-      // Update the employee in the backend
       await editEmployee(updatedEmployee);
 
       onCloseModal?.();
@@ -139,11 +145,12 @@ function CreateDeviceForm({
   };
 
   const onError: SubmitErrorHandler<DeviceData> = (errors) => {
-    console.error("Form validation errors:", errors);
+    console.error("Validation errors:", errors);
   };
 
   return (
-    <Form
+    <ThemedForm
+      data-theme={isDarkMode ? "dark-mode" : "light-mode"}
       onSubmit={handleSubmit(onSubmit, onError)}
       type={onCloseModal ? "modal" : "regular"}
     >
@@ -167,9 +174,9 @@ function CreateDeviceForm({
               : { required: "This field is required" }
           }
           render={({ field: { onChange, value } }) => (
-            <Select
+            <ThemedSelect
               options={allEmployees}
-              value={allEmployees.filter((opt) => value === opt.value)}
+              value={allEmployees.filter((opt) => opt.value === value)}
               onChange={(selectedOption) =>
                 onChange(selectedOption ? selectedOption.value : null)
               }
@@ -222,7 +229,7 @@ function CreateDeviceForm({
           {isEditSession ? "Edit device" : "Create new device"}
         </Button>
       </FormRow>
-    </Form>
+    </ThemedForm>
   );
 }
 
