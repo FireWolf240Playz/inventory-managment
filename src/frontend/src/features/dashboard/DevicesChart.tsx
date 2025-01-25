@@ -25,7 +25,6 @@ const StyledDeviceChart = styled(DashboardBox)`
   grid-column: 1 / -1;
   height: fit-content;
 
-  /* Hack to change grid line colors */
   & .recharts-cartesian-grid-horizontal line,
   & .recharts-cartesian-grid-vertical line {
     stroke: var(--color-grey-300);
@@ -38,12 +37,11 @@ const StyledDeviceChart = styled(DashboardBox)`
 
 function DepartmentBarChart() {
   const { data, isLoading, error } = useDevicesByDepartment();
+  console.log(data);
 
   if (isLoading) return <Spinner />;
 
-  if (error) {
-    return <StyledDeviceChart>Error: {error}</StyledDeviceChart>;
-  }
+  if (error) return <StyledDeviceChart>Error: {error}</StyledDeviceChart>;
 
   return (
     <StyledDeviceChart>
@@ -60,7 +58,7 @@ function DepartmentBarChart() {
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
-              dataKey="department"
+              dataKey="label"
               label={{
                 value: "Department",
                 position: "insideBottom",
@@ -77,7 +75,7 @@ function DepartmentBarChart() {
               tick={{ fontSize: 12 }}
             />
             <Tooltip />
-            <Bar dataKey="devices" fill="#3730a3" name="Devices" />
+            <Bar dataKey="value" fill="#3730a3" name="Devices" />
           </BarChart>
         </ResponsiveContainer>
       </ChartContainer>

@@ -1,50 +1,21 @@
-import { useState, useEffect } from "react";
+import { Device } from "../../store/slices/devices/deviceSlice";
 import { getDevices } from "../../services/apiDevices.ts";
-import { Device } from "../../store/slices/devices/deviceSlice.ts";
+import { useGroupedData } from "./useGroupedData";
 
-interface DeptDeviceCount {
-  department: string;
-  devices: number;
-}
-
-export function useDevicesByDepartment() {
-  const [data, setData] = useState<DeptDeviceCount[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchDevices() {
-      try {
-        setIsLoading(true);
-        const allDevices: Device[] = await getDevices();
-        const grouped = groupDevicesByDepartment(allDevices);
-        setData(grouped);
-      } catch {
-        setError("Failed to fetch or group devices");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchDevices();
-  }, []);
-
-  return { data, isLoading, error };
-}
-
-function groupDevicesByDepartment(devices: Device[]): DeptDeviceCount[] {
+function groupDevicesByDepartment(devices: Device[]) {
   const departmentMap: Record<string, number> = {};
 
   devices.forEach((device) => {
     const dept = device.department || "Not assigned";
-    if (!departmentMap[dept]) {
-      departmentMap[dept] = 1;
-    } else {
-      departmentMap[dept]++;
-    }
+    departmentMap[dept] = (departmentMap[dept] || 0) + 1;
   });
 
-  return Object.entries(departmentMap).map(([department, count]) => ({
-    department,
-    devices: count,
+  return Object.entries(departmentMap).map(([dept, count]) => ({
+    label: dept,
+    value: count,
   }));
+}
+
+export function useDevicesByDepartment() {
+  return useGroupedData<Device>(getDevices, groupDevicesByDepartment);
 }
